@@ -1,0 +1,49 @@
+          S U N S P O T  GROUP REPORTS  Mt. Wilson Jan 1962 - Present
+                                         USAF/NOAA Dec 1981 - Present
+===============================================================================
+  Column  Fmt  Description
+-------------------------------------------------------------------------------
+   1- 2   I2   Data code: always 11 for sunspot data 
+   3- 4   I2   Year 
+   5- 6   I2   Month 
+   7- 8   I2   Day 
+      9   A1   Blank 
+  10-13   I4   Universal time of observation 
+     14   A1   Blank 
+     15   A1   N or S for North or South 
+  16-17   I2   Heliographic latitude 
+     18   A1   E or W for East or West 
+  19-20   I2   Central meridian distance 
+  21-24   A4   Mt Wilson Magnetic classification; the USAF records are cast in
+                the form 1X,A3.
+     25   1X   Blank 
+     26   A1   Max magnetic field strength in group (MWIL only) 
+     27   1X   Blank 
+  28-32   I5   Mount Wilson spot group number (MWIL only) 
+     33   A1   This field is used by WDC to subscript the Mt. Wilson sunspot
+                 number, for example, 23197,223197A, etc.
+  34-38   I5   NOAA/USAF sunspot group number after Aug 1982
+     39   A1   This field is used by WDC  to subscript the NOAA/USAF sunspot
+                 number, for example 4013, 4013A.
+     40   A1   Zurich class (USAF only)
+     41   A1   Penumbra class (USAF only)
+     42   A1   Compactness class (USAF only)
+     43   1X   Blank
+  44-45   I2   Number of spots (USAF only)
+     46   1X   Blank
+  47-48   I2   Longitudinal extent in degrees (USAF only)
+  49-52   I4   Area in millionths of solar hemisphere (USAF only)
+     53   1X   Blank
+  54-55   I2   Individual Central Meridian Passage year
+  56-57   I2   Individual Central Meridian Passage month
+  58-61   F4.1 Individual Central Meridian Passage day
+     62   1X   Blank
+  63-64   I2   Regional Central Meridian Passage year
+  65-66   I2   Regional Central Meridian Passage month
+  67-70   F4.1 Regional Central Meridian Passage day
+     71   1X   Blank
+  72-74   I3   Station serial number
+     75   1X   Blank
+     76   I1   Quality (1=very poor, 2=poor, 3=fair, 4=good, 5=excellent)
+  77-80   A4   4-letter station abbreviation
+-------------------------------------------------------------------------------

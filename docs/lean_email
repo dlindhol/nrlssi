@@ -1,0 +1,46 @@
+From: Judith Lean [mailto:jlean@ssd5.nrl.navy.mil]
+Sent: Monday, September 24, 2012 11:40 AM
+To: Marty Snow
+Cc: Peter Pilewskie; Greg Kopp; Judith Lean
+Subject: Re: sunspot blocking index for NRLSSI
+
+Hi Marty - wow you are really on the ball with this - that is great.
+
+So, here are the files that I use to calculate the SSB. The program is over 
+ten years old so I am sure you can improve it programmatically!
+
+I started to improve it myself in April this year (as part of NASA Glory and 
+NOAA CDR work) but haven't finished yet - but since this version is what is 
+used in the NRLSSI model to date this would be suitable for you to work with.
+
+The IDL program reads in the Air Force multiple white light observations of 
+sunspot regions. I've attached recent such files so you can get started - 
+updates are at 
+
+http://www.ngdc.noaa.gov/stp/spaceweather.html
+
+ftp access
+SOLAR_DATA
+SUNSPOT_REGIONS
+AUAF_MWL
+
+The person to contact for queries is Bill Denig   wdenig <william.denig@noaa.gov>
+
+The program also reads in a generic solar orientation file - the beta angle - 
+and I've attached the file that I use for this too... you can probably improve 
+this aspect to I suspect..
+
+The program makes an output file of the sunspot blocking function for bolometric 
+radiation and for UV radiation - file attached of that too. This is the file that 
+the NRLSSI model then uses, together with the Mg index (which you HAVE!!).
+
+So, why don't you see if you can get this program going, and then for the rest 
+of the year we can each calculate our own SSB files and then compare them early 
+next year. Meanwhile, I will try and get started on making the actual model 
+program a bit more user friendly in order to send that to you too.
+
+Let me know you have any questions, etc etc
+
+Thanks for doing this! I am excited at the prospect of having this updated regularly on LISIRD!
+
+Judith

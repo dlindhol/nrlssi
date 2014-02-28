@@ -1,0 +1,343 @@
+Judith's model uses our MgII and the Air Force's sunspot blocking index
+
+--
+Air Force's sunspot blocking index:
+
+ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SUNSPOT_REGIONS/USAF_MWL/
+There is a directory for each year with a single data file. 
+Recent years are a bit confused. e/g/ for 2012:
+  solar_regions_reports_2012ytd-input.txt
+  solar_regions_reports_2012ytd-processed.txt
+  usaf_12-ytd.txt
+I assumed the last file would be the one to use but the "processed" file is more recent.
+For 2011, solar_regions_reports_2011-processed.txt and usaf_11.txt apear to be the same.
+2010 has:
+  usaf_10.txt which is smaller than
+  USAF.10 which appears to be what Judith used.
+2005-2010 have USAF.yy
+1981-2005 have usaf_mwl.yy
+  except 1995: usaf_mwl.95.rev
+I put copies on jayhawk:/data/NRLSSI
+++not sorted by time!
+  11101001 1459 N18W66 A            1110 AXX  2  2  20 100926.7 100927.0 084 4HOLL
+  11101002 0715 N21W74 A            1110 AXX  1        100926.7 100927.0 075 2SVTO
+  11101001 0131 N21W38 BG           1109 DKI 13  9 310 100928.2 100928.2 081 3LEAR
+++multiple samples at same time, diff ss group same station?
+
+data file format defined in docs/usaf_mwl.fmt
+
+See other docs at:
+ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SUNSPOT_REGIONS/USAF_MWL/docs/
+
+---
+Lean 2000 GRL paper:
+Evolution of the Sun's Spectral Irradiance Since the Maunder Minimum
+Ps: sunspot darkening
+"Bolometric Ps(t) are calculated from direct observations of sunspot areas and heliocentric locations"
+ [Lean et al., ApJ 1998]
+  equation from Foukal 1981, Frolich et al 1994:
+    relative change in flux = 5mu*area/2piRsun*excess*center-to-limb
+    bolometric ctl = (3mu + 2)/5 (Allen 1981)
+"bolometric sunspot blocking function", Ps (Foukal 1981)
+  a.k.a. "photometric sunspot index"
+C-1: "residual intensity contrast of the sunspot", "excess" in Judith's code?
+Brandt et al 1994, emperically: C-1 = -(0.2231 + 0.0244 log(area))
+  ++see if it is for units of millionths of solar area
+this paper uses 200nm, code uses 320nm
+center to limb for UV is emperical 4th order polynomial, integral (excess?) is 0.3446
+  code uses .464 for 320nm
+  
+
+---
+calc_spotindex_Apr12.pro
+
+Judith's code to read input data and generate input files for her model
+
+--
+generic solar orientation file - the beta angle
+betasun.dat
+leap day is in the data file, repeats previous value
+value for each day of year
+  beta: angle ~ -7 to 7, 0 at June7 going positive, 
+    Heliographic latitude of the central point of the solar disk
+    see /data_systems/tools/knapp/src/astronomy/helios.f
+  betad: date = month*100 + day of month
+blat=xlat-beta, xlat is lat of sunspot group on sun
+
+make new solar_b0.dat
+remove feb 29
+serve as days since 1970 (not a leap year)
+++use equation from astron algs
+
+-
+Why USAF_Denig_2010-2012.txt instead of from ftp?
+  starts 2010-10-01, ends 2012-02-29
+USAF.10 starts at 10-01-07 (not in order, ends with ^Z) ends into 2011: Jan 5
+  ordered by Regional Central Meridian Passage time? not time of observation
+++different!? or just out of order
+  Denig's has more samples in 2010 ??? (note from 2012, not seeing that now - Feb 2014)
+    denig: 192 samples for Oct 2010
+    USAF.10: cut off on Oct 4!?
+    solar_regions_reports_2010-processed.txt: 192 samples
+    solar_regions_reports_2010-input.txt: 
+      starts in Oct!?
+      192 samples in Oct 2010
+    ???2010-12-01 the same 3 samples
+    Nov 2010 sample count:
+      USAF.10: 356  duplicates the data!?
+      denig: 181
+      processed: 181
+      input: 181
+  2011,2: same samples but ftp has Individual Central Meridian Passage time
+    but no Regional Central Meridian Passage time
+    In denig's, looks like Indiv time moved to Reg time and new indiv time added
+  those times are both in the USAF.10 data but differ in Denig's
+  USAF.10 doesn't have 0 padding day, Denig does
+  Denig missing some group IDs: e.g. //// instead of 11136
+**USAF.10 has gaps! 11101004 to 11101101, or just no activity?
+    is this why the Denig file starts in Oct? trying to fix a found problem? but missed Jan?
+  formatting problems!? group id 1109 to 11120
+  that got fixed but then stopped padding day with 0 
+   11101004 1015 N21W86 A            1109 HAX  1  3  90 100927.9 100928.2 073 2SVTO
+   11101101 0206 N37E54 B           11120 DSO  7 10 140 1011 5.4 1011 5.0 097 2LEAR
+  maybe starting Jan 7 and ending in ctrl-Z is another symptom?
+    or starts on 7th because organized by center time?
+    USAF.09 doesn't end in ctrl-Z but USAF.05 does
+  USAF.10 starts with fishy group IDs: 1040
+  1st center time with day < 10, no 0 day padding:
+   11100130 1752 N27E38 B            1043 BXO  4  3  40 1002 2.7 1002 2.8 004 4HOLL
+  1st ob in Feb fixes group id from 1043 to 11043
+  1st ob in Oct goes from ID 11109 to 1110, with some 1109s
+  group ID fixed for Nov, still no 0 pad
+  
+USAF.09 (2009) also ordered by center time, no apparent group ID problems
+also appears to be no group spanning years
+
+usaf_mwl.YY ordered by obs time
+usaf_mwl.04 includes diff set of numbers from MWIL
+both formats for 2005, USAF.05 ordered by center time
+  no MWIL for 2005 or later
+still mix of ^Z, no day padding
+
+2012 input data: (also in ftp://ftp.ngdc.noaa.gov/STP/swpc_products/monthly_reports/eswds/)
+SELDADS SPOTS Data for 2012-01-01
+120101LEA03002692301654931316046013893
+120101LEA03002682141872/10201008013883
+120101LEA03002663301442720203006013863
+120101SVI08032793351772/10101004013862
+...
+120131SVI08400253091910/102020010////2
+120131SVI08400261180832720613005014132
+SELDADS SPOTS Data for 2012-02-01
+120201LEA00520214650772/10101007014084
+...
+
++can we get these from raw "SELDADS SPOTS Data"? YES
+Space Environment Laboratory Data Acquisition and Display System (SELDADS)
+ftp://ftp.ngdc.noaa.gov/STP/swpc_products/monthly_reports/eswds/2010/10/SPOTSData_2010_10_01.txt
+101001LEA01310831431220720702001011113
+101001 LEA 43 12 02 0010 1111
+
+++TODO: see code that presumably produces the processed from the input:
+ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SUNSPOT_REGIONS/USAF_MWL/docs/miscellaneous/software/solarregionreports.pro
+
+
+--
+vars from ss data used by Judith's code:
+ idate yyMMdd
+ mdate yyMMdd from data record (2-7) e.g. 101001
+ xlat: "Heliographic latitude", from 14-16, negate if S, 0 if not defined
+ along: "Central meridian distance", from 17-19, negate if E (east!?), 0 if not defined
+ fld: Max magnetic field strength in group (MWIL only) from 25, used for magf if from MWIL station
+   not used, has code for dealing with old obs disappeared?
+ noaa: "NOAA/USAF sunspot group number after Aug 1982" from 33-37, used for 'group', only for duplicate detection
+ iarea: "Area in millionths of solar hemisphere (USAF only)", as opposed to disc, from 48-51, used for 'area', -888 if not defined
+ STATION: "4-letter station abbreviation" from 76-79
+
+sample:
+11101001 0131 N12E43 B           11111 BXO  2  7  10 101004.0 101004.3 083 3LEAR
+          1         2         3         4         5         6         7         8
+012345678901234567890123456789012345678901234567890123456789012345678901234567890
+  ------      ------     -       -----     --   ----                        ----
+doesn't use center times so no biggie of the Denig diffs
+++but Denig has some //// for group ID where ftp has values
+  looks like that is what the raw file has, are these manual repairs?
++ignores time of day
+
+
+--
+trace code:
+
+outer loop for each year, separate input and output files
+loop over each record (see above)
+js = int for station, used for 'istn'
+  could we use "Station serial number" in data file? or is this just an index
+loop over days: 0 to nday-1
+  inside reading loop so time order doesn't matter, yet?
+if record date is diff or area undefined, continue to next day
+numobs: accumulate number of obs for each day, max 170
+  could be diff station or sunspot group
+area: 2D, indexed by day and obs count
+alat: 2D, indexed by day and obs count
+bsun: B0 for the obs date
+blat=xlat-bsun
+amu = cos(blat*!pi/180.)*cos(along*!pi/180.) : for each day and obs
+  from ApJ1998, mu is the "heliocentric position" = 1 at disc center (not heliographic center), 0 at edge
+spotnum: sunspot count for each day and obs (group)
+istn: station index for each day and obs
+do for all records
+
+CALCULATE THE SUNSPOT BLOCKING FUNCTION FOR EACH OF THE EIGHT STATIONS ON EACH DAY, THEN AVERAGE
+loop over days: i = 0 to nday-1
+loop over number of obs for that day (n)
+loop over 10 stations: k=0 to 9
+set duplicate data to -888
+* bolometric:
+  sb=amu(n,i)*(3*amu(n,i)+2)/2.*area(n,i)*(0.2231+0.0244*alog10(area(n,i)))
+  ssblock(k,i)=ssblock(k,i)+sb   accumulate bolometric sb for each station and day, i.e. combine groups
+++Lean et al 1998, ApJ 492, 390-401 (see notes above)
+  3mu+2 comes from center to limb function (Allen 1981)
+  0.2231+0.0244*logA comes from Brandt et al 1994: emperical measure of contrast as function of ss size
+  
+* UV at 320 nm:
+  ctl=1.-cl320(0)-cl320(1)+cl320(0)*amu(n,i)+cl320(1)*amu(n,i)*amu(n,i)
+  sbuv=5.0*amu(n,i)*ctl/2.*area(n,i)*(0.2231+0.0244*alog10(area(n,i)))
+  ssbuv(k,i)=ssbuv(k,i)+sbuv*excess320/excess
+coeffs for 320 nm center-to-limb variation from Allen, 1979, p.171
+  cl320=[0.88,0.03]
+scale using ratio of integrated excesses, since the f(logA) is for bolometric?
+
+ssblock, ssbuv
+  2D, indexed by station and day (multiple groups combined)
+  -1 for all stations if no obs (numobs eq 0) for that day
+
+calculate means of stations for each day (still inside day loop)
+++should we make dataset for each station? SFO could be just another "station"?
+for each day compute:
+  avssbt: average bolometric sunspot blocking value
+  stdevt: standard deviation
+  avssbu: average 320nm 
+  stdevu: standard deviation
+  -999 for missing value
+print result for each day
+  output file, one for each year:
+  SSB_USAF_'+string(iyear,'$(i4)')+'_'+ver+'.txt'
+  ver = 'Apr12'
+  fmt678='(I12,4F10.2)'
+  printf,8,format=fmt678,IDATE(I),AVSSBT(i),STDEVT(i),AVSSBU(i),STDEVU(i)
+
+-
+algorithm summary:
+foreach year
+  read data file
+  foreach record
+    foreach day (note, trying each day for each record, sorting not needed
+      is this record suitable, if not go to next day
+    multiple records per day, not necc in order
+    store 2D data, (obs index, day):
+      area
+      amu (computed)
+      istn: station index
+      
+  foreach day
+    ssblock, ssbuv: computed for each (station,day)
+    -1 if no obs for entire day
+    foreach obs
+      foreach station
+      does this obs belong to this station
+        foreach obs, set duplicate (station, amu, ssgroup#) area to -888, does this ever happen?
+        compute sb, sum with ssblock(stn index, day)
+        compute sbuv, sum with ssbuv(stn index, day)
+    get standard dev for ssb* for all stations that have at least 1 obs
+      stdev* = -999 if cnt is 0 or 1
+      avssb* = mean, -999 if none
+    
+    output: one row per day (I12,4F10.2)
+      idate, avssbt, stdevt, avssbu, stdevu
+    
+++any need to keep station separate? no
+  simply calc ssb for each record, avg all for each day?
+  group by day?
+    use leap day as Feb 28?
+
+    
+---
+implement algorithm with LaTiS data model
+
+++how to model multiple sunspot groups and multiple stations?
+  could be time series of tuples, but tuples may vary each day
+  otherwise need to deal with multiple records with same time
+  think db unique key = domain
+  (time, stn, group) -> (lon, lat, area)
+  area = 0 if not otherwise recorded
+  like sparse 3D array, sum over group dim, avg over stn dim
+  or break into separate datasets, e.g. by station
+++how to impl nD array with sparse dims
+  recall Function is just an iterable Map, need to define DomainSet then range with same ordering
+  but would like to access effectively by time and station (and group)
+  HashMap with composite key? but would like to specify just one
+  how does db index do it?
+  visad approach: indexOf(d), valueOf(i)?
+  Function mapping ss group id to start/end times? 
+    then time to index
+    only works because group ID is clustered around same time, diagonal through 2D time/id space
+    akin to db table and joins?
+++model ss group as Event?
+  this won't be the last time we have to deal with a dataset of events
+  start, end times
+++enable plotting track of ss groups on solar disk
+++make new dataset with daily/stn avgd sb, sbuv (and area?)
+use group id (not in Denig nor always in raw data) 
+    current code just assumes each record for given station and day is diff ss group
+use station serial number instead of name
+
+hack: add ss group id as small time offset
+  now can be time series, no duplicate times
+  total daily samples to get total area
+
+*the sunspot dataset, with dup times..., is not a Function
+treat each record as a Tuple
+define functions to split/group/... it into a time series
+scala Seq.groupBy
+
+
+-----------------------------------------------------------------
+current model datefile: katja_spectra_2000_2011d_13Apr12.txt
+
+skip 4 lines
+756 rows of 5 "wavelength (nm) grid centers"
+slip line
+756 rows of 5 "wavelength bands (nm) centered on above wls", bin widths: 1,5,10,50 (see below)
+skip 2 lines
+yyyy  MM  dd   tsi
+756 rows of 5 SSI values
+(for days 2000-01-01 - 2011-12-31)
+
+wavelength bands vary:
+   120.5 - 749.5, 1nm  (120-750)  = 630
+   752.5 - 4997.5, 5nm (750-5000)  = 850
+  5005.0 - 9995.0, 10nm (5000-10000) = 500
+  10025.0 - 99975.0, 50nm (10000-100000) = 1800
+3780 wavelengths 5*756
+
+-
+1950-1999: spectra_1950_1999d_11yr_new.txt
+2 rows
+3780 wavelengths
+1 row
+3780 wavelength band widths
+2 rows
+  yyyy    MM    dd 
+3780 ssi
+(for days 1950-01-01 - 1999-12-31 including leap days)
+
+--
+++compare to SFO data
+  starts in 1986, daily, sunspot area and irradiance dficit
+  seems like it could work
+++are irradiance contributions from umbra and penumbra still valid? (Allen, 1979)
+  Astrophysical Quantities, see 4th edition, 2000
+++make an intermediate sunspot area product?
++ earlier sunspot area from "NOAA World Data Center records"
+
+-

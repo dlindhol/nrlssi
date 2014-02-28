@@ -1,0 +1,16 @@
+<tsml>
+
+  <dataset name="usaf_mwl_2012">
+    <adapter class="latis.reader.SubstringAdapter" url="file:/data/NRLSSI/usaf_12-ytd.txt" />
+    
+    <scalar name="time"       type="Time"  substring="2,8" units="yyMMdd"/> <!--don't need HHmm-->
+    <scalar name="hemisphere" type="Text"  substring="14,15"/>
+    <scalar name="hlat"       type="Real"  substring="15,17"/>
+    <scalar name="hlon"       type="Real"  substring="18,20"/>
+    <scalar name="group"      type="Index" substring="33,38"/>
+    <scalar name="area"       type="Real"  substring="48,52"/>
+    <scalar name="station"    type="Text"  substring="76,80"/>
+    
+  </dataset>
+
+</tsml>

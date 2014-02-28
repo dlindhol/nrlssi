@@ -1,0 +1,44 @@
+_NOTES
+  Cryptic developer notes as I try to understand the state of things.
+
+
+calc_spotindex_Apr12.pro.ORIG
+  Code used by Judith to process the sunspot blocking data from NOAA.
+  Produces solar_b0.dat which is used as input to her model.
+
+calc_spotindex_Apr12.pro
+  Copy of Judith's code with my annotations.
+  
+betasun.dat
+  Solar beta angle given to us by Judith. 
+  Used by calc_spotindex_Apr12.
+  
+solar_b0.dat
+  My cleaned up version of betasun.dat that I never did much with.
+  We should be able to reproduce her values. See _NOTES.
+
+
+USAF_Denig_2010-2012.txt
+  Given to us by Judith Lean.
+  Used in her recent update.
+  Apparently generated manually for her by Bill Denig.
+
+USAF.10
+  Downloaded Sep 2012 (same as of Feb 26 2014) from
+  ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SUNSPOT_REGIONS/USAF_MWL/2010/
+
+solar_regions_reports_2010-input.txt
+  Downloaded Feb 26 2014 from
+  ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SUNSPOT_REGIONS/USAF_MWL/2010/solar_regions_reports_2010-input.txt
+  New since I last looked in Sep 2012?
+
+solar_regions_reports_2010-processed.txt
+  Downloaded Feb 26 2014 from
+  ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SUNSPOT_REGIONS/USAF_MWL/2010/solar_regions_reports_2010-processed.txt
+  New since I last looked in Sep 2012?
+  Same as usaf_10.txt.
+  
+SSB_USAF_2010_Apr12.txt
+SSB_USAF_2011_Apr12.txt  
+  Output files of sunspot blocking from calc_spotindex_Apr12 that Judith gave us to validate our runs.
+  

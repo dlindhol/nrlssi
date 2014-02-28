@@ -1,0 +1,24 @@
+<tsml>
+
+  <dataset>
+    <adapter class="latis.reader.NrlssiAdapter"
+             headerLength="2" valuesPerLine="5"
+             url="file:/data/NRLSSI/spectra_1950_1999d_11yr_new.txt" />
+    
+    <domain>
+      <scalar name="time" type="Time" units="yyyy MM dd"/>
+    </domain>
+    
+    <range>
+      <scalar name="tsi" type="Real"/>
+      <domain>
+        <scalar name="wavelength" length="3780" type="Real"/>
+      </domain>
+      <range>
+        <scalar name="irradiance" type="Real"/>
+      </range>
+    </range>
+    
+  </dataset>
+
+</tsml>

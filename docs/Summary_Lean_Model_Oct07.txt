@@ -1,0 +1,41 @@
+Calculations of Solar Spectral Irradiance (daily from 1950 to 2006)
+Judith Lean
+11/2/2007
+
+The overall approach for calculating the solar spectral irradiance involves the 
+parameterization of an observed irradiance time series at a given wavelength in terms of 
+the proxy indicators needed to represent the known sources of variability at that 
+wavelength. For wavelengths longer than 300 nm there are two main sources of 
+variability, the dark sunspots and the bright faculae, which are represented by, 
+respectively, the sunspot blocking function and the Mg index. For wavelengths from 
+about 30 to 300 nm, the variations are primarily causes by emission from bright plages, 
+approximately overlying the visible faculae, and the Mg index is used as a proxy for the 
+sources of these variations. For the parameterizations of the shortest EUV and X-ray 
+emissions (mainly at wavelengths below about 27 nm) the 10.7 cm radio flux is also used, 
+in addition to the Mg index, to account for emission from hot coronal plasma overlying 
+the bright plage.
+
+Because the measurements of the solar spectral irradince have traditionally suffered from 
+wavelength dependent degradation, the multiple regression that determines the 
+association of the proxies with the observations is undertaken using detrended time series 
+(both the proxies and the irradiance). In essence, this means that the associations are 
+determined from a subset of the range of possible variations. The reconstruction of the 
+irradiance from the proxy indicators (using the proxies themselves, i.e.., not detrended) 
+therefore assumes that the proxies and the irradiance behave in similar ways over both 
+rotational and solar cycle time scales. This direct multiple regression approach is applied 
+to the wavelength range 120 to 300 nm using the UARS/SOLSTICE data and to the 
+wavelength range 0 to 120 nm using the TIMED/SEE data. For wavelengths longer than 
+300 nm, the spectral dependence of the variability is determined from the spectral 
+dependence of the sunspot blocking and facular brightening. The total flux from 120 to 
+100000 nm is constrained in absolute magnitude such that the total equals the actual 
+bolometric observations of total solar irradince (modeled separately).
+
+
+The approach is documented in detail in:
+J.L. Lean, G.J. Rottman, H.L. Kyle, T.N. Woods, J.R. Hickey, and L.C. Puga, Detection 
+and parameterization of variations in solar mid and near ultraviolet radiation (200 to 
+400 nm), J. Geophys. Res., 102, 29939-29956, 1997.
+Judith Lean, Evolution of the Sun's Spectral Irradiance since the Maunder Minimum, 
+Geophys. Res. Lett., 27, 2425-2428, 2000.
+J. Lean, G. Rottman, J. Harder and G Kopp, SORCE contributions to new understanding 
+of global change and solar variability, Solar Phys., 230:27-53, 2005.
