@@ -1,6 +1,8 @@
 _NOTES
   Cryptic developer notes as I try to understand the state of things.
 
+----
+idl:
 
 calc_spotindex_Apr12.pro.ORIG
   Code used by Judith to process the sunspot blocking data from NOAA.
@@ -9,6 +11,10 @@ calc_spotindex_Apr12.pro.ORIG
 calc_spotindex_Apr12.pro
   Copy of Judith's code with my annotations.
   
+  
+----
+data:
+
 betasun.dat
   Solar beta angle given to us by Judith. 
   Used by calc_spotindex_Apr12.
@@ -42,3 +48,8 @@ SSB_USAF_2010_Apr12.txt
 SSB_USAF_2011_Apr12.txt  
   Output files of sunspot blocking from calc_spotindex_Apr12 that Judith gave us to validate our runs.
   
+  
+----
+docs:
+
+TODO
