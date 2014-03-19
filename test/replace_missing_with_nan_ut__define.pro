@@ -1,7 +1,4 @@
 
-
-
-
 function replace_missing_with_nan_ut::test_one_value_missing
   compile_opt strictarr
   
@@ -110,6 +107,18 @@ function replace_missing_with_nan_ut::test_integers
   return, 1
 end
 
+function replace_missing_with_nan_ut::test_doubles
+  compile_opt strictarr
+  
+  data = [1d,-999d,3d]
+  result = replace_missing_with_nan(data, -999d)
+  tmp = where(finite(result, /nan) ne 0, nan_count)
+  assert, nan_count eq 1
+  assert, result[0] eq 1d
+  assert, result[1] ne -999d
+
+  return, 1
+end
 
 
 pro replace_missing_with_nan_ut__define
