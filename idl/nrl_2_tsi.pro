@@ -64,95 +64,16 @@
 
 PRO nrl_2_tsi,infile
 
-;template to read ascii file of multiple regression output from file = 'infile'
-temp = {version:1.0, $
-    datastart:15L, $
-    delimiter:32b, $
-    missingvalue:!VALUES.F_NAN, $
-    commentsymbol:'', $
-    fieldcount:7l, $
-    fieldtypes:[4l, 4l, 4l, 4l, 4l,4l, 4l], $ ; float
-    fieldnames:['Year', 'DOY', 'Day_Number', $
-                'TSI_data','TSI_model','PX','PS'], $
-    fieldlocations:[1L, 12L, 20L, 28L, 42L,52L,69L], $
-    fieldgroups:[0L, 1L, 2L, 3L, 4L, 5L, 6L]}            
+  ; Get the coefficients for the TSI model
+  coeffs = get_tsi_model_coeffs()
+  
+  ; Get the regression data for the TSI model
+  regression_data = get_tsi_model_regression(infile)
+  
+  ; Compute the TSI model
+  model = compute_tsi_model(coeffs, regression_data)
+  
+  ; Save the model results to NetCDF
+  status = write_tsi_model_to_netcdf(model, 'nrl_tsi.nc')
 
-    query = read_ascii(infile, template = temp)
-;
-;assign structure variables to arrays and replace missing data with NaN values
-year = query.year
-doy = query.DOY
-day_number = query.Day_Number
-TSI_data = query.TSI_data
-tmp = where (TSI_data eq -99.0000,count) 
-if count gt 0 then TSI_data[tmp]=!VALUES.F_NAN ; -99.0 = missing data
-TSI_model = query.TSI_model
-tmp = where (TSI_model eq -99.0000,count) 
-if count gt 0 then TSI_model[tmp]=!VALUES.F_NAN ; -99.0 = missing data
-PX = query.PX
-tmp = where (PX eq -99.0000,count) 
-if count gt 0 then PX[tmp]=!VALUES.F_NAN ;
-PS = query.PS
-tmp = where (PS eq -999.0000, count) 
-if count gt 0 then PS[tmp]=!VALUES.F_NAN ; -999.0 = missing data
-
-;Knowns, Coefficients, and multiregression formula (obtained from infile) **REMOVE??*
-openr,1,infile
-line=''
-while not eof(1) do begin
-    readf,1,line
-    if strmid(line,5,5) eq 'quiet' then reads,strmid(line,21,10),S0, format = '(f16.6)'
-    if strmid(line,1,2) eq 'a0' then reads,strmid(line,4,16),a0,format = '(f16.6)' 
-    if strmid(line,1,2) eq 'a1' then reads,strmid(line,4,16),a1,format = '(f16.6)' 
-    if strmid(line,1,2) eq 'a2' then reads,strmid(line,4,16),a2,format = '(f16.6)' 
-endwhile
-close,1
-
-;compute daily TSI from multiple regression coefficients
-TI = a0 + a1*px + a2*S0*ps/1.e6
-
-;create NetCDF file for writing output
-id = NCDF_CREATE('nrl_tsi.nc', /CLOBBER,/netCDF4_format) ;noclobber = don't overwrite existing file
-; Fill the file with default values (? DO THIS?)
-NCDF_CONTROL, id, FILL=4; pre-fill with default value 9.96921E+36 (type = float)
-tid = NCDF_DIMDEF(id, 'T', /UNLIMITED) ; Make dimensions.
-; Define variables:
-xid = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
-pid = NCDF_VARDEF(id, 'Year', [tid], /FLOAT)
-qid = NCDF_VARDEF(id, 'DOY', [tid], /FLOAT)
-rid = NCDF_VARDEF(id, 'Day_Number', [tid], /FLOAT)
-
-NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.5"
-NCDF_ATTPUT, id, /GLOBAL, "title", "Daily TSI calculated using NRL TSI 2-component model"
-NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics"
-
-
-NCDF_ATTPUT, id, xid, 'long_name', 'Daily Total Solar Irradiance (Watt/ m**2)'
-NCDF_ATTPUT, id, xid, 'standard_name', 'daily_TSI'
-NCDF_ATTPUT, id, xid, 'units', 'W/m2'
-
-NCDF_ATTPUT, id, pid, 'long_name', 'Year'
-NCDF_ATTPUT, id, pid, 'standard_name', 'year'
-NCDF_ATTPUT, id, pid, 'units','yr'
-
-NCDF_ATTPUT, id, qid, 'long_name', 'Day of Year'
-NCDF_ATTPUT, id, qid, 'standard_name', 'day_of_year'
-
-NCDF_ATTPUT, id, rid, 'long_name', 'Cumulative Day Number From 1 Jan 1978'
-NCDF_ATTPUT, id, rid, 'standard_name','cum_day_number_from_1_Jan_1978'
-NCDF_ATTPUT, id, rid, 'units','days since 1978-1-1 0:0:0'
-
-;TO DO: is year/time correct, how to do fill_value, missing_value, and/or valid_range
-; Put file in data mode:
-NCDF_CONTROL, id, /ENDEF
-; Input data:
-NCDF_VARPUT, id, pid, year
-NCDF_VARPUT, id, qid, doy
-NCDF_VARPUT, id, rid, day_number
-NCDF_VARPUT, id, xid, TI
-; Read the data back out:
-NCDF_VARGET, id, xid, output_data
-NCDF_VARGET, id, rid, time
-NCDF_CLOSE, id ; Close the NetCDF file.
-stop
-end; pro
+end
