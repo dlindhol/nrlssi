@@ -62,7 +62,7 @@
 ;@***** 
 
 
-PRO nrl_2_tsi,infile
+PRO nrl_2_tsi_orig,infile
 
 ;template to read ascii file of multiple regression output from file = 'infile'
 temp = {version:1.0, $
