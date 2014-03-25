@@ -1,0 +1,72 @@
+
+
+On 3/11/14 7:48 AM, "Judith Lean" <judith.lean@nrl.navy.mil> wrote:
+
+> Dear Bill,
+>
+> Many thanks for your email alerting me to where these files will now be
+> stored. Indeed, I continue to use them regularly, especially now that we
+> have a NOAA CDR grant to transition  solar irradiance modeling (which
+> uses these sunspot region data files as input) to NOAA. I am copying
+> Odele Coddington, Peter Pilewskie and Marty Snow on this email, since I
+> am working with them on the NOAA CDR transition.
+>
+> I heard from Peter, that you are to be the NOAA Program Scientist for
+> TSIS on the Space Station - that is fantastic! we are all delighted.
+> Although the NOAA Asheville folk (with whom we work on the CDR project)
+> didn¹t know about TSIS being manifested for the ISS, the two projects -
+> TSIS and the solar irradiance CDR - are of course very closely
+> interlinked since the TSIS data will provide the follow on information of
+> the historical values that the models calculate.
+>
+> Re the 2014 data - I¹ve not actually looked at them yet - am planing to
+> do that soon, so thanks again for your timely email.
+>
+> Looking forward to working with you on the NOAA projects.
+> Judith
+>
+> ps. I assume you have heard that Juliette Harrington was awarded her
+> Doctorate! Since you introduced us, we have stayed in touch by email -
+> she is quite a dynamo!
+>
+>
+> On Mar 9, 2014, at 5:49 PM, William Denig - NOAA Federal
+> <william.denig@noaa.gov> wrote:
+>
+>> Judith - I wanted to inform you that these data have been moved and are
+>> now available at:
+>> http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/suns
+>> pot-regions/usaf_mwl/
+>>
+>> If you prefer ftp then use:
+>> ftp://ftp.ngdc.noaa.gov/STP/space-weather/solar-data/solar-features/sunsp
+>> ot-regions/usaf_mwl/
+>>
+>> Regards, Bill Denig
+>>
+>> P.S. If you had recently been at this new site you may have noticed
+>> that the Jan 2014 data were obviously bad (incorrect input file). This
+>> has now been corrected.
+>>
+>> On 2/12/2013 9:16 PM, William Denig - NOAA Federal wrote:
+>>> Thanks also go to Karen Horan who pulls the data from SWPC on a
+>>> monthly basis.  - Bill
+>>>
+>>> On 2/12/2013 11:34 AM, Judith Lean wrote:
+>>>> Dear Bill,
+>>>>
+>>>> I just wanted to thank you for keeping the USAF MWL sunspot region
+>>>> files updated - I just downloaded the completed 2012 datafile to use
+>>>> to reconstruct solar spectral irradiance for all of 2012 (for which a
+>>>> number of people are now bugging me ... we are all part of a complex
+>>>> "bugging" chain for the latest data) - in the past, the complete file
+>>>> typically hasn't been available for another month or so.
+>>>>
+>>>> THANKS!!
+>>>> Judith
+>>>>
+>>>
+>>
+>> <usaf_solar-region-reports_2014ytd.txt>
+>
+
