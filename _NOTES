@@ -248,6 +248,7 @@ foreach year
         foreach obs, set duplicate (station, amu, ssgroup#) area to -888, does this ever happen?
         compute sb, sum with ssblock(stn index, day)
         compute sbuv, sum with ssbuv(stn index, day)
+        accumulate ssb from all obs for a given station
     get standard dev for ssb* for all stations that have at least 1 obs
       stdev* = -999 if cnt is 0 or 1
       avssb* = mean, -999 if none
@@ -339,5 +340,17 @@ wavelength bands vary:
   Astrophysical Quantities, see 4th edition, 2000
 ++make an intermediate sunspot area product?
 + earlier sunspot area from "NOAA World Data Center records"
+
+---
+2014-03-21
+ran calc_spotindex for 2012 -> /data/NRLSSI/SSB_USAF_2012_Doug_v0.txt
+
+% Program caused arithmetic error: Floating divide by 0
+% Program caused arithmetic error: Floating illegal operand
+
+start refactoring...
+
+--
+no data for 120310
 
 -
