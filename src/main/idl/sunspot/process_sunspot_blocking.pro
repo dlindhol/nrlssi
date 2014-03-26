@@ -64,7 +64,7 @@ pro process_sunspot_blocking, year
       ssb_struct.dssbuv = stddev(ssbuv_array)
     endif else begin
       ;no data for this day, fill with missing value
-      print, 'WARNING: No data produced for Julian Day ' + strtrim(jdn,2)
+      print, 'WARNING: No data produced for date (yymmdd) ' + strtrim(jd2yymmdd(jdn),2)
       ssb_struct.ssbt   = missing_value
       ssb_struct.dssbt  = missing_value
       ssb_struct.ssbuv  = missing_value
