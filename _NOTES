@@ -353,4 +353,35 @@ start refactoring...
 --
 no data for 120310
 
+lots of missing days for 2006-2010, must have been quiet?
+
+lots of missing areas as we go back
+MWIL looks particularly bad
+what does J's code do about missing area:
+  set to -888
+  note, for each record, it loops through all days!
+  if area is -888 skip everything via a goto but keep looping over days!?
+  presumably works because numobs isn't incremented and the value is not added to the area array
+***shouldn't we invalidate the entire set of obs for that station
+11030101 1640 N19W29 A           10234 HAX  5  2  20 021230.6 021230.4 553 3HOLL
+11030101 1640 S09E01 B           10239 DAI 17  6 100 0301 1.8 0301 1.6 560 3HOLL
+11030101 1640 S08E09 B           10240 BXO  2  4  10 0301 2.4 0301 2.6 362 3HOLL
+11030101 1640 S18W08 A           10243 AXX  1  1     0301 1.1 0301 1.4 001 3HOLL
+RAMY measures 20 for that group that day
+
+
+++try limited list of stations
+
+++duplication test:
+tries all purmutations of obs for a given day matching station, mu, area, and group
+  sets area to -888 for duplicate record
+  if area = -888, skips adding it to the ssb accumulation
+
+++issue with year/file boundary? 1993 data at end of 92 file
+
+++stddev with 1 elmnt -> NaN
+
++++is it safe to assume that each station has only one set of obs per day?
+the set for each appear to have the same time, is that always the case?
+
 -
