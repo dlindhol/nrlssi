@@ -2,6 +2,9 @@
 ;Each record is for a sunspot group measurement.
 function parse_line, line
 
+  ;Fail on short lines, e.g. strange character at end of file
+  if (strlen(line) lt 80) then return, -1  ;TODO: log warning?
+
   ;          1         2         3         4         5         6         7
   ;01234567890123456789012345678901234567890123456789012345678901234567890123456789
   ;11080306 0110 S08W68 B           10984 BXO  2  1  30 080229.9 080229.8 009 2LEAR
@@ -39,7 +42,12 @@ function parse_line, line
   ;  invalidate all obs from that station for that day? since we need accumulation of all ss groups?
   ;  note some records have area = 0, assume 0 for missing?
   ;  compare obs from other stations
-  area = float(strmid(line,48,4))
+  area_string = strmid(line,48,4)
+  if (area_string ne '    ') then area = float(area_string)  $
+  else begin
+    area = 0.0
+    print, 'WARNING: No area define. Using 0. ' + line
+  endelse
   
   ;Station name
   station = strmid(line,76,4)
@@ -58,9 +66,42 @@ function parse_line, line
 end
 
 ;-----------------------------------------------------------------------------
-;Read sunspot data from NGDC usaf_mwl data files.
+;
+;Read sunspot data from the NGDC usaf_mwl web site.
 ;e.g. http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/usaf_solar-region-reports_2012.txt
 function get_sunspot_data, year
+
+  url_path = 'stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/usaf_solar-region-reports_' + strtrim(year,2) + '.txt'
+
+  netUrl = OBJ_NEW('IDLnetUrl')
+  netUrl->SetProperty, URL_HOST = 'www.ngdc.noaa.gov'
+  ;netUrl->SetProperty, URL_PORT = port
+  netURL->SetProperty, URL_PATH = url_path
+
+  lines = netURL->Get(/string_array)
+
+  OBJ_DESTROY, netUrl
+  
+  ;Make list to hold results
+  records = List()
+  
+  ;Iterate through each line and parse into a data record
+  for i = 0, n_elements(lines)-1 do begin
+    ;This will return -1 if the line is not a valid data record.
+    struct = parse_line(lines[i])
+;TODO: look for duplicate records
+    ;Add valid data to the results list.
+    if (size(struct, /type) eq 8) then records.add, struct
+  endfor
+  
+  ;Return results as an array of structures.
+  return, records.toArray()
+end
+
+;-----------------------------------------------------------------------------
+;Read sunspot data from NGDC usaf_mwl data files.
+;e.g. http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/usaf_solar-region-reports_2012.txt
+function get_sunspot_data_from_local_file, year
   ;TODO: time range?
   ;TODO: List of Hashes?
 
