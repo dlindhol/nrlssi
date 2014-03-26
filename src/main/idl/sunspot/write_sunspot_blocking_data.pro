@@ -16,6 +16,7 @@ pro write_sunspot_blocking_data, sunspot_blocking_data
   version = sunspot_blocking_data[jdn_sorted[0]].version
   start_date = jd2yymmdd(jdn_sorted[0])
   stop_date  = jd2yymmdd(jdn_sorted[-1])
+  ;TODO: pad timestamp with 0s
   file = '/data/NRLSSI/SSB_USAF_' + start_date +'-'+ stop_date +'_'+ version +'.txt'
   openw, 8, file
   
