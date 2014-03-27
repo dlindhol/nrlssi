@@ -1,11 +1,11 @@
-import latis.reader.TsmlReader
+//import latis.reader.TsmlReader
 import latis.dm._
 
 object SunspotProcessor extends App {
 
-  val reader = new TsmlReader("datasets/usaf_mwl.tsml")
-  val ds = reader.getDataset()
-  val f = ds.getVariable(0).asInstanceOf[Function[Variable]] 
+//  val reader = new TsmlReader("datasets/usaf_mwl.tsml")
+//  val ds = reader.getDataset()
+//  val f = ds.getVariable(0).asInstanceOf[Function[Variable]] 
   
   //TODO: ds.getVariable(name): Function
   
