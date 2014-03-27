@@ -1,15 +1,20 @@
 <tsml>
 
-  <dataset name="usaf_mwl_2012">
-    <adapter class="latis.reader.SubstringAdapter" url="file:/data/NRLSSI/usaf_12-ytd.txt" />
+  <dataset name="usaf_mwl">
+    <adapter class="latis.reader.tsml.SubstringAdapter" 
+             location="/sorce_data/NRLSSI/usaf_solar-region-reports.txt"
+             substring="2,8;14,15;15,17;17,18;18,20;33,38;48,52;76,80" />
     
-    <scalar name="time"       type="Time"  substring="2,8" units="yyMMdd"/> <!--don't need HHmm-->
-    <scalar name="hemisphere" type="Text"  substring="14,15"/>
-    <scalar name="hlat"       type="Real"  substring="15,17"/>
-    <scalar name="hlon"       type="Real"  substring="18,20"/>
-    <scalar name="group"      type="Index" substring="33,38"/>
-    <scalar name="area"       type="Real"  substring="48,52"/>
-    <scalar name="station"    type="Text"  substring="76,80"/>
+    <!--index/-->
+    <!--time name="time" type="text" units="yyMMdd HHmm" length="11"/-->
+    <time name="time" type="text" units="yyMMdd" length="6"/>
+    <text name="lathem" />
+    <real name="lat"/>
+    <text name="lonhem" />
+    <real name="lon"/>
+    <integer name="group" missing_value="-999"/>
+    <real name="area" missing_value="-999"/>
+    <text name="station"/>
     
   </dataset>
 
