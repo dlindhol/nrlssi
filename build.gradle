@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    compile 'lasp:LaTiS:2.3.13'
+    compile 'lasp:LaTiS:2.3.14'
     runtime 'oracle:ojdbc6:11.2'
     runtime 'sybase:jconn3:6.0'
     
