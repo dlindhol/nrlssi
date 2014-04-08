@@ -64,11 +64,11 @@
 
 PRO nrl_2_tsi,infile
 
-  ; Get the coefficients for the TSI model
+  ; Get the multiple linear regression coefficients for the TSI model
   coeffs = get_tsi_model_coeffs()
   
-  ; Get the regression data for the TSI model
-  regression_data = get_tsi_model_regression(infile)
+  ; Get the facular brightening and sunspot blocking functions for the TSI model
+  regression_data = get_tsi_model_functions(infile)
   
   ; Compute the TSI model
   model = compute_tsi_model(coeffs, regression_data)

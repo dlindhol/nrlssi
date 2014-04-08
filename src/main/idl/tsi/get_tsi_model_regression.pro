@@ -1,4 +1,4 @@
-function get_tsi_model_regression, file
+function get_tsi_model_functions, file
 
   ;template to read ascii file of multiple regression output from file
   temp = {version:1.0, $
