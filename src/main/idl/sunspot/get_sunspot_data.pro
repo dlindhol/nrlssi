@@ -1,5 +1,48 @@
-;Parse the given record into a data structure.
-;Each record is for a sunspot group measurement.
+;@***h* TSI_FCDR/get_sunspot_data.pro
+; 
+; NAME
+;   get_sunspot_data.pro
+;
+; PURPOSE
+;   Aquire U.S. Air Force white Light sunspot region data from a NOAA/NGDC web repository- point of contact: Bill Denig.
+;   http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/
+;
+; DESCRIPTION
+;   This routine is called from the main driver, process_sunspot_blocking.pro. 
+;   It accesses the above url and parses the given record into a data structure. Each record is for a sunspot group 
+;   measurement. The time (YYMMDD), solar latitude and longitude, sunspot area, and station ID are parsed from each record.
+;   
+; INPUTS
+;   year - four digit year (i.e. 1978) (TODO: update to time range args)
+;   
+; OUTPUTS
+;   Data structure containing (for each record in the USAF data):
+;   jd      - Julian Date (converted from yymmdd) 
+;   lat     - latitude of sunspot group
+;   lon     - longitude of sunspot group
+;   area    - sunspot area
+;   station - station name 
+;
+; AUTHOR
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   
+; COPYRIGHT 
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   04/09/2014 Initial Version prepared for NCDC
+; 
+; USAGE
+;   get_sunspot_data,year
+;
+;@***** 
 function parse_line, line
 
   ;Fail on short lines, e.g. strange character at end of file
