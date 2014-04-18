@@ -4,44 +4,41 @@
 ;   nrl_2_tsi.pro
 ;
 ; PURPOSE
-;   The nrl_2_tsi.pro routine reads pre-tabulated output of facular brightening (PX) and photometric
-;   sunspot blocking (PS) and computes daily TSI (TI) from these values according to a multi-regression
-;   formula.  The formula and coefficients (a0, a1, a2, and S0) for the multi-regression are 
-;   identified in the routine are computed by Judith Lean.  The routine writes the output 
-;   to NetCDF4 format.
+;   The nrl_2_tsi.pro procedure computes Judith Lean (Naval Research Laboratory) daily
+;   Model Total Solar Irradiance and writes the output to NetCDF4 format.
 ;
 ; DESCRIPTION
-;   This routine reads a text file of multiple regression output and computes a daily TSI value. 
-;   Missing values are replaced with NaN values. The output data are written to a NetCDF4 file named
-;   nrl_tsi.nc
+;   The nrl_2_tsi.pro procedure is the main routine that applies pre-computed multi-regression 
+;   coefficients to facular brightening and sunspot blocking functions in 2-component formula
+;   (Judith Lean-Naval Research Laboratory) to compute daily Model Total Solar Irradiance. The 
+;   model output is written to NetCDF4 format.
 ;   Reference describing the solar variability model using a linear combination of sunspot darkening
 ;   and facular brightening: Fröhlich, C., and J. Lean, The Sun’s total irradiance: Cycles, trends 
 ;   and climate change uncertainties since 1976, Geophys. Res. Lett., 25, 4377‐4380, 1998.
-; 
-; INPUTS
-;   the input file 'infile' is an ascii text columnar file from which the following inputs and
-;   2-component multiple regression output are obtained:
-;   TSI measurements (TSI data)
-;   sunspot blocking (PS): using area-dependent contrasts - Dec 05
-;   facular brightening (PX): from Viereck, R. A., et al. (2004), Space Weather, 2, S100005 
-;   and SORCE Mg index
-;   quiet Sun (S0) =  1360.700 Watt/m**2
+;   
 ;   2-Component regression formula and coefficients: TI = a0 + a1*px + a2*S0*ps/1.e6
-;                                                    a0 = 1327.371582
-;                                                    a1 = 126.925819
-;                                                    a2 = -1.351869
+;   
+; INPUTS
+;   infile - is an ascii text columnar file from which the following inputs and 2-component 
+;            multiple regression output are obtained:
+;   PS     - sunspot blocking function computed using area-dependent contrasts - Dec 05
+;   PX     - facular brightening function from Viereck, R. A., et al. (2004), Space Weather, 2, S100005 
+;            and SORCE Mg index
+;   S0     - adopted value of quiet Sun irradiance
+;   a0     - constant term in the multiple linear regression 
+;   a1     - multiple linear regression coefficient for the relative sunspot component (darkening) contribution
+;   a2     - multple linear regression coefficient for the relative facular component (brightening) contribution
 ;
 ; OUTPUTS
 ;   in netCDF4 format (output filename will be named 'nrl_tsi.nc')
-;   TSI        = daily Total Solar irradiance (units W/m2) derived from multi-regression formula 
+;   TSI        - daily Total Solar irradiance (units W/m2) derived from multi-regression formula 
 ;                (from 1 JAN 1978 to 31 DEC 2005)
-;   Year       = Year (1978, 1979, etc.)
-;   DOY        = Day of Year (from 1 to 365; then repeats for next year, etc.)
-;   Day_Number = Day Number (cumulative from start of time series; Day number 1 is 1 JAN 1978)  
+;   Year       - Year (1978, 1979, etc.)
+;   DOY        - Day of Year (from 1 to 365; then repeats for next year, etc.)
+;   Day_Number - Day Number (cumulative from start of time series; Day number 1 is 1 JAN 1978)  
 ;
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
-;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -60,8 +57,6 @@
 ;   nrl_2_tsi,infile
 ;
 ;@***** 
-
-
 PRO nrl_2_tsi,infile
 
   ; Get the multiple linear regression coefficients for the TSI model

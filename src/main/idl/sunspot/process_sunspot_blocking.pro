@@ -1,3 +1,59 @@
+;@***h* TSI_FCDR/process_sunspot_blocking.pro
+; 
+; NAME
+;   process_sunspot_blocking.pro
+;
+; PURPOSE
+;   The process_sunspot_blocking.pro procedure computes the sunspot blocking function from U.S. Air Force
+;   White Light sunspot region data (obtained from a NOAA/NGDC web repository- point of contact: Bill Denig).
+;
+; DESCRIPTION
+;   This routine is the main driver routine.  It calls a series of subroutines with the name/purpose:
+;   get_sunspot_data.pro - aquire USAF white light sunspot region data from NOAA/NGDC web repository and store
+;                          in a structure identified by index -> (jd, lat, lon, area, station)
+;   group_by_day.pro     - group the USAF white light data by Julian date: jdn -> (jd, lat, lon, area, station)
+;   
+;   For each day of data, and for each sunspot measuring station, the (cosine-weighted) solar latitude, longitude, and 
+;   area of each sunspot grouping is recorded. The sunspot blocking for each grouping is 
+;   calculated (compute_sunspot_blocking.pro) and the total sunspot blocking function (total and uv) for each measuring 
+;   station is the sum of the sunspot blocking for the individual groupings.
+;   
+;   The daily mean and standard deviation for all available stations is stored for the total sunspot blocking 
+;   function (ssbt and dssbt) and for the uv sunspot blocking function (ssbuv and dssbuv).
+;   
+;   write_sunspot_blocking_data.pro - Outputs the mean and standard deviation daily sunspot blocking functions to ascii 
+;                                     file ('SSB_USAF_(start_date)-(stop_date)_(version).txt') with the format: 
+;                                     time (YYMMDD), ssbt, dssbt, ssbuv, dssbuv. 
+;                                     Missing data identified by -999
+;   
+; INPUTS
+;   year - four digit year (i.e. 1978) (TODO: update to time range args)
+;   
+; OUTPUTS
+;   Outputs the mean and standard deviation daily sunspot blocking functions to ascii 
+;   file ('SSB_USAF_(start_date)-(stop_date)_(version).txt') with the format: 
+;   time (YYMMDD), ssbt, dssbt, ssbuv, dssbuv. 
+;
+; AUTHOR
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   
+; COPYRIGHT 
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   04/09/2014 Initial Version prepared for NCDC
+; 
+; USAGE
+;   process_sunspot_blocking,year
+;
+;@***** 
 pro process_sunspot_blocking, year
   ;TODO: time range args, not just years
   ;TODO: optional stations arg to limit to one station, or array
