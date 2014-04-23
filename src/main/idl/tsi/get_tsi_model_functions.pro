@@ -4,23 +4,24 @@
 ;   get_tsi_model_functions.pro
 ;
 ; PURPOSE
-;   The get_tsi_model_functions.pro function extracts an array of facular brightening (px) and
-;   sunspot blocking (ps) functions specific to the NRLTSI-2 model contained in [insert file name here].
+;   The get_tsi_model_functions.pro function extracts a structure of facular brightening and
+;   sunspot blocking functions specific to the NRLTSI-2 model. 
 ;   This function is called from the main routine, nrl_2_tsi.pro.
 ;
 ; DESCRIPTION
-;   This routine returns a data structure containing facular brightening (px) and
-;   sunspot blocking (ps) functions to the main routine, nrl_2_tsi.pro.
+;   This routine returns a data structure containing facular brightening and
+;   sunspot blocking functions to the main routine, nrl_2_tsi.pro.
 ; 
 ; INPUTS
 ;   file - ascii file containing facular brightening and sunspot darkening functions.
 ;   
 ; OUTPUTS
-;   data.px = facular brightening function
-;   data.ps = sunspot blocking function
+;   data - a structure containing facular brightening ('px') and sunspot darkening ('ps') functions
 
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO   
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -33,10 +34,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/08/2014 Initial Version prepared for NCDC
+;   04/23/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   get_tsi_model_functions
+;   get_tsi_model_functions, file
 ;
 ;@***** 
 function get_tsi_model_functions, file
@@ -57,9 +58,6 @@ function get_tsi_model_functions, file
   data = read_ascii(file, template = temp)
   
   ;Replace missing values with NaN
-  ;TODO remove TSI_data and TSI_model from the structure (redundant?)
-  data.TSI_data = replace_missing_with_nan(data.TSI_data, -99.0)
-  data.TSI_model = replace_missing_with_nan(data.TSI_model, -99.0)
   data.PX = replace_missing_with_nan(data.PX, -99.0)
   data.PS = replace_missing_with_nan(data.PS, -999.0)
   

@@ -4,18 +4,17 @@
 ;   get_tsi_model_coeffs.pro
 ;
 ; PURPOSE
-;   The get_tsi_model_coeffs.pro function extracts an array of TSI model coefficients 
-;   specific to the NRLTSI-2 model contained in [insert file name here].This function is 
-;   called from the main routine, nrl_2_tsi.pro.
+;   The get_tsi_model_coeffs.pro function extracts a structure of TSI model regression coefficients 
+;   specific to the NRLTSI-2 model.
 ;
 ; DESCRIPTION
-;   This routine returns a structure containing TSI model coefficients ('coeffs') to the main routine, nrl_2_tsi.pro.
+;   This routine returns a structure containing TSI model coefficients to the main routine, nrl_2_tsi.pro.
 ; 
 ; INPUTS
-;   None (TODO: Update if file passed as input)
+;   file - name of file containing the linear regression coefficients 
 ;   
 ; OUTPUTS
-;   structure containing TSI model coefficients
+;   structure ('struct') containing TSI model regression coefficients:
 ;   a0 = constant term in the multiple linear regression 
 ;   a1 = multiple linear regression coefficient for the relative sunspot component (darkening) contribution
 ;   a2 = multple linear regression coefficient for the relative facular component (brightening) contribution
@@ -23,6 +22,8 @@
 
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -35,10 +36,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/08/2014 Initial Version prepared for NCDC
+;   04/23/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   get_tsi_model_coeffs
+;   get_tsi_model_coeffs, file
 ;
 ;@***** 
 function get_tsi_model_coeffs, file

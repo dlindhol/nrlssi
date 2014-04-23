@@ -1,28 +1,28 @@
-;@***h* TSI_FCDR/compute_tsi_model.pro
+;@***h* TSI_FCDR/write_tsi_model_to_netcdf.pro
 ; 
 ; NAME
 ;   write_tsi_model_to_netcdf.pro
 ;
 ; PURPOSE
-;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance to a netcdf4 file.
-;   This function is called from the main routine, nrl_2_tsi.pro.
+;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance, year, day of year, and cumulative day number 
+;   to a netcdf4 file. This function is called from the main routine, nrl_2_tsi.pro.
 ;
 ; DESCRIPTION
-;   This routine is passed a data array of Model TSI irradiance ('data'). It creates a netCDF4 formatted file
-;   for data output. CF-1.5 metadata conventions are used in defining global and variable name attributes.
+;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance, year, day of year, and cumulative day number 
+;   to a netcdf4 formatted file. CF-1.5 metadata conventions are used in defining global and variable name attributes. 
+;   Missing values are defined as -99.0, by default.
+;   This function is called from the main routine, nrl_2_tsi.pro.
 ; 
 ; INPUTS
-;   data  - structure of Model TSI Irradiance and Time [TODO: update to include whatever time variables we include: time, year, doy, etc.)
-;   
+;   data  - structure of Model TSI data containing 'year', 'doy' (day of year), 'day_number' (cumulative since Jan 1, 1978), and 'tsi'
+;   file  - file name for output file containing netCDF4 formatted data 
+;      
 ; OUTPUTS
-;   time       = Calendar date (ISO 8601 compliant, in the form <date>T<time>Z or[yyyy]-[MM]-[DD]T[hh]:[mm]:[ss])
-;   year       = self-explanatory
-;   doy        = Day of Year
-;   day_number = Cumulative Day Number from Jan. 1, 1978
-;   tsi        = Modeled Daily Total Solar Irradiance (Watts/m**2)
-
+;
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -35,16 +35,17 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/08/2014 Initial Version prepared for NCDC
+;   04/23/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_tsi_model_to_netcdf, data, file
+;   write_tsi_model_to_netcdf, data, file, missing_value
 ;
 ;@***** 
-function write_tsi_model_to_netcdf, data, file, missing_value
+function write_tsi_model_to_netcdf, data, file
 
-  ; Define missing value and replace NaNs in the data with it.
-  if (n_elements(missing_value) eq 0) then missing_value = -99.0
+  ; Define missing value and replace NaNs in the modeled data with it.
+  ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
+  missing_value = -99.0
   tsi = replace_nan_with_value(data.tsi, missing_value)
 
   ; Create NetCDF file for writing output
