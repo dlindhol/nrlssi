@@ -41,9 +41,9 @@
 ;   get_tsi_model_coeffs
 ;
 ;@***** 
-function get_tsi_model_coeffs
+function get_tsi_model_coeffs, file
 
-  openr,1,'data/tsi_mod_mr2_13Feb13.txt'
+  openr,1,file
   line=''
   while not eof(1) do begin
     readf,1,line

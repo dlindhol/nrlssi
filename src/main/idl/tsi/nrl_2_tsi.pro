@@ -57,10 +57,12 @@
 ;   nrl_2_tsi,infile
 ;
 ;@***** 
-PRO nrl_2_tsi,infile
+PRO nrl_2_tsi,infile,outfile
+  ; Define default output file if not provided by the user.
+  if (n_elements(outfile) eq 0) then outfile = 'nrl_tsi.nc'
 
   ; Get the multiple linear regression coefficients for the TSI model
-  coeffs = get_tsi_model_coeffs()
+  coeffs = get_tsi_model_coeffs(infile)
   
   ; Get the facular brightening and sunspot blocking functions for the TSI model
   regression_data = get_tsi_model_functions(infile)
@@ -69,6 +71,6 @@ PRO nrl_2_tsi,infile
   model = compute_tsi_model(coeffs, regression_data)
   
   ; Save the model results to NetCDF
-  status = write_tsi_model_to_netcdf(model, 'nrl_tsi.nc')
+  status = write_tsi_model_to_netcdf(model, outfile)
 
 end

@@ -41,10 +41,15 @@
 ;   write_tsi_model_to_netcdf, data, file
 ;
 ;@***** 
-function write_tsi_model_to_netcdf, data, file
+function write_tsi_model_to_netcdf, data, file, missing_value
+
+  ; Define missing value and replace NaNs in the data with it.
+  if (n_elements(missing_value) eq 0) then missing_value = -99.0
+  tsi = replace_nan_with_value(data.tsi, missing_value)
 
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
+  ;TODO: handle error: NCDF_CREATE: Unable to create the file, /data/tmp/nrltsi.nc. (NC_ERROR=-35)
   
   ; Add global attributes
   NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.5"
@@ -59,7 +64,7 @@ function write_tsi_model_to_netcdf, data, file
   NCDF_ATTPUT, id, xid, 'long_name', 'Daily Total Solar Irradiance (Watt/ m**2)'
   NCDF_ATTPUT, id, xid, 'standard_name', 'toa_incoming_shortwave_flux'
   NCDF_ATTPUT, id, xid, 'units', 'W/m2'
-  NCDF_ATTPUT, id, xid, 'missing_value', -99.0
+  NCDF_ATTPUT, id, xid, 'missing_value', missing_value
 
   ; Define the time variable
   rid = NCDF_VARDEF(id, 'time', [tid], /LONG)
@@ -71,7 +76,7 @@ function write_tsi_model_to_netcdf, data, file
   
   ; Input data:
   NCDF_VARPUT, id, rid, data.day_number - 1 ;day_number starts at 1
-  NCDF_VARPUT, id, xid, data.tsi
+  NCDF_VARPUT, id, xid, tsi
   
   ; Close the NetCDF file.
   NCDF_CLOSE, id 
