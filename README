@@ -52,7 +52,11 @@ SSB_USAF_2011_Apr12.txt
 NRLSSI_spectrum_parameters.txt
   Used by ssi processing
 
-  
+MOD4_SOL_V0009_w1.sav
+  UARS UV model coefficients for calcuating UV spectrum
+  Used by ssi processing
+
+
 ----
 docs:
 
