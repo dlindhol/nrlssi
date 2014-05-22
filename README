@@ -47,7 +47,11 @@ solar_regions_reports_2010-processed.txt
 SSB_USAF_2010_Apr12.txt
 SSB_USAF_2011_Apr12.txt  
   Output files of sunspot blocking from calc_spotindex_Apr12 that Judith gave us to validate our runs.
-  
+
+
+NRLSSI_spectrum_parameters.txt
+  Used by ssi processing
+
   
 ----
 docs:
