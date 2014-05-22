@@ -351,7 +351,6 @@ ran calc_spotindex for 2012 -> /data/NRLSSI/SSB_USAF_2012_Doug_v0.txt
 start refactoring...
 
 --
-no data for 120310
 
 lots of missing days for 2006-2010, must have been quiet?
 
@@ -369,7 +368,6 @@ what does J's code do about missing area:
 11030101 1640 S18W08 A           10243 AXX  1  1     0301 1.1 0301 1.4 001 3HOLL
 RAMY measures 20 for that group that day
 
-
 ++try limited list of stations
 
 ++duplication test:
@@ -377,11 +375,40 @@ tries all purmutations of obs for a given day matching station, mu, area, and gr
   sets area to -888 for duplicate record
   if area = -888, skips adding it to the ssb accumulation
 
-++issue with year/file boundary? 1993 data at end of 92 file
+++issue with year/file boundary? 1993 data at end of 92 file...
 
 ++stddev with 1 elmnt -> NaN
+J's code: convoluted way to say the above, but with -999
 
-+++is it safe to assume that each station has only one set of obs per day?
+++is it safe to assume that each station has only one set of obs per day?
 the set for each appear to have the same time, is that always the case?
+
+
+======
+LaTiS:
+justify wc diffs
+  256726   513452 10654799 /data/tmp/usaf_mwl.csv
+  272542  3280352 20810553 /sorce_data/NRLSSI/usaf_solar-region-reports_1981-2013.txt
+15,817 fewer samples
+no indication that iterative reader skipped any due to failure to parse
++make sure their files got appended ok, just used cat, end of line and end of file issues
+
++1992 data file has alternating blank lines
+  31602  203477 1295682 /sorce_data/NRLSSI/usaf_solar-region-reports_1992.txt
+  15801 blank lines 
+that leaves 16 fewer lines
++funky last lines for data files for years: 92,93,95,97-09
+
+note: stripping out excess, the new csv is ~1/6 the size
+
+2007 file has blank line after 11070331 1614
+++botched time at 1107011510930
+J's code would handle it since she only parses date
+
++++duplicates
+1231	N	24	E	59	9292	-999	LEAR
+1231	N	22	E	73	9292	-999	LEAR
+1231	N	24	E	62	9292	-999	MWIL
+1231	N	23	E	84	9292	-999	MWIL
 
 -

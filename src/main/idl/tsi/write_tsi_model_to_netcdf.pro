@@ -1,28 +1,28 @@
-;@***h* TSI_FCDR/compute_tsi_model.pro
+;@***h* TSI_FCDR/write_tsi_model_to_netcdf.pro
 ; 
 ; NAME
 ;   write_tsi_model_to_netcdf.pro
 ;
 ; PURPOSE
-;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance to a netcdf4 file.
-;   This function is called from the main routine, nrl_2_tsi.pro.
+;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance, year, day of year, and cumulative day number 
+;   to a netcdf4 file. This function is called from the main routine, nrl_2_tsi.pro.
 ;
 ; DESCRIPTION
-;   This routine is passed a data array of Model TSI irradiance ('data'). It creates a netCDF4 formatted file
-;   for data output. CF-1.5 metadata conventions are used in defining global and variable name attributes.
+;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance, year, day of year, and cumulative day number 
+;   to a netcdf4 formatted file. CF-1.5 metadata conventions are used in defining global and variable name attributes. 
+;   Missing values are defined as -99.0, by default.
+;   This function is called from the main routine, nrl_2_tsi.pro.
 ; 
 ; INPUTS
-;   data  - structure of Model TSI Irradiance and Time [TODO: update to include whatever time variables we include: time, year, doy, etc.)
-;   
+;   data  - structure of Model TSI data containing 'year', 'doy' (day of year), 'day_number' (cumulative since Jan 1, 1978), and 'tsi'
+;   file  - file name for output file containing netCDF4 formatted data 
+;      
 ; OUTPUTS
-;   time       = Calendar date (ISO 8601 compliant, in the form <date>T<time>Z or[yyyy]-[MM]-[DD]T[hh]:[mm]:[ss])
-;   year       = self-explanatory
-;   doy        = Day of Year
-;   day_number = Cumulative Day Number from Jan. 1, 1978
-;   tsi        = Modeled Daily Total Solar Irradiance (Watts/m**2)
-
+;
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -35,19 +35,22 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/08/2014 Initial Version prepared for NCDC
+;   04/23/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_tsi_model_to_netcdf, data, file
+;   write_tsi_model_to_netcdf, data, file, missing_value
 ;
 ;@***** 
 function write_tsi_model_to_netcdf, data, file
 
+  ; Define missing value and replace NaNs in the modeled data with it.
+  ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
+  missing_value = -99.0
+  tsi = replace_nan_with_value(data.tsi, missing_value)
+
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
-  
-  ; Fill the file with default values
-  ;NCDF_CONTROL, id, /FILL
+  ;TODO: handle error: NCDF_CREATE: Unable to create the file, /data/tmp/nrltsi.nc. (NC_ERROR=-35)
   
   ; Add global attributes
   NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.5"
@@ -55,45 +58,30 @@ function write_tsi_model_to_netcdf, data, file
   NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics"
   
   ; Define dimensions
-  tid = NCDF_DIMDEF(id, 'T', /UNLIMITED) ;time
+  tid = NCDF_DIMDEF(id, 'time', /UNLIMITED) ;time
   
-  ; Define variables and attributes
+  ; Define TSI variable and attributes
   xid = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
   NCDF_ATTPUT, id, xid, 'long_name', 'Daily Total Solar Irradiance (Watt/ m**2)'
-  NCDF_ATTPUT, id, xid, 'standard_name', 'daily_TSI'
+  NCDF_ATTPUT, id, xid, 'standard_name', 'toa_incoming_shortwave_flux'
   NCDF_ATTPUT, id, xid, 'units', 'W/m2'
-  
-  pid = NCDF_VARDEF(id, 'Year', [tid], /FLOAT)
-  NCDF_ATTPUT, id, pid, 'long_name', 'Year'
-  NCDF_ATTPUT, id, pid, 'standard_name', 'year'
-  NCDF_ATTPUT, id, pid, 'units','yr'
-  
-  qid = NCDF_VARDEF(id, 'DOY', [tid], /FLOAT)
-  NCDF_ATTPUT, id, qid, 'long_name', 'Day of Year'
-  NCDF_ATTPUT, id, qid, 'standard_name', 'day_of_year'
-  
-  rid = NCDF_VARDEF(id, 'Day_Number', [tid], /FLOAT)
-  NCDF_ATTPUT, id, rid, 'long_name', 'Cumulative Day Number From 1 Jan 1978'
-  NCDF_ATTPUT, id, rid, 'standard_name','cum_day_number_from_1_Jan_1978'
+  NCDF_ATTPUT, id, xid, 'missing_value', missing_value
+
+  ; Define the time variable
+  rid = NCDF_VARDEF(id, 'time', [tid], /LONG)
+  NCDF_ATTPUT, id, rid, 'long_name', 'Days Since 1 Jan 1978'
   NCDF_ATTPUT, id, rid, 'units','days since 1978-1-1 0:0:0'
   
-  ;TODO: is year/time correct, how to do fill_value, missing_value, and/or valid_range
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
   
   ; Input data:
-  NCDF_VARPUT, id, pid, data.year
-  NCDF_VARPUT, id, qid, data.doy
-  NCDF_VARPUT, id, rid, data.day_number
-  NCDF_VARPUT, id, xid, data.tsi
-  
-  ; Read the data back out:
-  ;NCDF_VARGET, id, xid, output_data
-  ;NCDF_VARGET, id, rid, time
+  NCDF_VARPUT, id, rid, data.day_number - 1 ;day_number starts at 1
+  NCDF_VARPUT, id, xid, tsi
   
   ; Close the NetCDF file.
   NCDF_CLOSE, id 
   
-  ;TODO: return status
-  return, 1
+  ;TODO: error status
+  return, 0
 end
