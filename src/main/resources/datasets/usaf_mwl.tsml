@@ -6,8 +6,8 @@
              substring="2,13;14,15;15,17;17,18;18,20;33,38;48,52;76,80" />
     
     <index/>
-    <time name="time" type="text" units="yyMMdd HHmm" length="11"/>
-    <!--time name="time" type="text" units="yyMMdd" length="6"/-->
+    <time type="text" units="yyMMdd HHmm" length="11"/>
+    <!--time type="text" units="yyMMdd" length="6"/-->
     <text name="lathem" />
     <real name="lat"/>
     <text name="lonhem" />
