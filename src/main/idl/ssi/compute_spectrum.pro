@@ -1,3 +1,43 @@
+;@***h* TSI_FCDR/compute_spectrum.pro
+; 
+; NAME
+;   compute_spectrum.pro
+;
+; PURPOSE
+;   The compute_spectrum.pro function computes modeled solar spectral irradiance  
+;   specific to the NRLSSI-2 model.
+;
+; DESCRIPTION
+;   
+;   
+; INPUTS
+;   None
+;
+; OUTPUTS
+
+;    
+; AUTHOR
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;
+; COPYRIGHT 
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   06/02/2014 Initial Version prepared for NCDC
+; 
+; USAGE
+;   compute_spectrum, px, ps, spectrum_params, uv_params
+;
+;@***** 
 function compute_spectrum, px, ps, spectrum_params, uv_params
   ; px and ps are the corresponding input facular brightening and sunspot darking proxies
 

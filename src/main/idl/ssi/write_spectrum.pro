@@ -1,3 +1,50 @@
+;@***h* TSI_FCDR/write_spectrum.pro
+; 
+; NAME
+;   write_spectrum.pro
+;
+; PURPOSE
+;   The write_spectrum.pro function extracts a structure of SSI model parameters 
+;   specific to the NRLSSI-2 model.
+;
+; DESCRIPTION
+;   This routine returns a structure containing SSI model spectral parameters to the main routine, calc_nrlssi.pro.
+;   The spectral parameters are contained in IDL save files 'MOD4_SOL_V0009_w1.sav'.
+;   
+; INPUTS
+;   None
+;
+; OUTPUTS
+;   structure ('params') containing SSI model spectral parameters:
+;   psuvfactor =
+;   uvwl =
+;   uvfregressd = 
+;   refuvf = 
+;   refps =  
+;   refpx = 
+;    
+; AUTHOR
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;
+; COPYRIGHT 
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   06/02/2014 Initial Version prepared for NCDC
+; 
+; USAGE
+;   write_spectrum, yr, mn, dy, spectrum
+;
+;@***** 
 function write_spectrum, yr, mn, dy, spectrum
 
 
