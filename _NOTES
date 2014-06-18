@@ -411,4 +411,10 @@ J's code would handle it since she only parses date
 1231	N	24	E	62	9292	-999	MWIL
 1231	N	23	E	84	9292	-999	MWIL
 
+----
+additional sunspot data sources:
+ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SUNSPOT_REGIONS/
+http://fenyi.solarobs.unideb.hu/DPD/
+
+
 -
