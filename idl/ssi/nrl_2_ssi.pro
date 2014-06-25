@@ -1,7 +1,7 @@
-;@***h* TSI_FCDR/calc_nrlssi.pro
+;@***h* TSI_FCDR/nrl_2_ssi.pro
 ; 
 ; NAME
-;   calc_nrlssi.pro
+;   nrl_2_ssi.pro
 ;
 ; PURPOSE
 ;   The calc_nrlssi.pro procedure computes daily Model Spectral Solar Irradiance using the Judith Lean (Naval Research Laboratory)
@@ -42,10 +42,10 @@
 ;   04/23/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   calc_nrlssi
+;   nrl_2_ssi
 ;
 ;@***** 
-pro calc_nrlssi
+pro nrl_2_ssi
   ;for 1 Jan 2003
   dy=1
   mn=1
