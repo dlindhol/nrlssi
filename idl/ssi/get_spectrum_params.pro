@@ -50,14 +50,23 @@
 ;   None
 ;
 ; OUTPUTS
-;   structure ('params') containing SSI model spectral parameters:
-;   excess0 = 
-;   adjspot = 
+;   structure ('params') containing spectral parameters that are needed to construct modeled solar spectral irradiance:
+;   excess0 = The negative of the spectrum-weighted integral of the wavelength-dependent bolometric intensity sunspot contrast and equal to 0.3235 
+;             (i.e. sunspot contrast is defined as a positive change in irradiance) 
+;             [Allen, C. W., 1981, Astrophysical Quantities (3d ed.; London, Athlone].
+;   adjspot = Correction factor used to make the integrated sunspot energy change match that determined separately for total solar irradiance.
+;             Equal to 0.99011639.
 ;   pxqs = the value of PX, the facular index (i.e. the Mg II index), for the quiet Sun.  It is essentially, but not exactly, the minimum
 ;          value of PX given the Mg II index on the NOAA scale, and can be used interchangeably with PX0, the value of PX for quiet Sun conditions.
 ;          It is needed because there is a non-zero minimum of the Mg II index during solar minimum.
-;   pxmin = 
-;   pxmax = 
+;   pxmin = Value of bolometric facular brightening function during solar minimum and equal to 0.2636038.
+;   pxmax = Value of bolometric facular brightening function during solar maximum and equal to 0.28338173.
+;   psmin = Value of bolometric sunspot blocking function during solar minimum and equal to 12.6918.
+;   psmax = Value of bolometric sunspot blocking function during solar maximum and equal to 739.522.
+;   wl = Wavelength bin centers, in 1 nm increments from to 199.5 nm to 99999.5 nm
+;   irrqs = Adopted value of the Quiet Sun spectral irradiance (units = W m-2 nm-1)
+;   ssy = The sunspot contrast at a given wavelength [direct from Y. Unruh solar spectral irradiance model]. 
+;   fac = The facular intensity contrast at wavelength, 'k'. 
 ;
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
