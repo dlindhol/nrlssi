@@ -66,7 +66,9 @@ function get_uv_spectrum_params
 ;  wl,inst,instrument,ver,sdlim,weight,
 ;  cuvfpxps,cuvfpxpsd,scontrast,uvfregress,uvfregressd,
 ;  refuvf,refps,refpx,quvf,qps,qpx,coefres,coefresd
-;
+;;;  c = coefficient
+;;; 'd' at the end is detrended
+
 ; NOTE that refpx in this sav file is on the MgSEC scale
 ;
 ; E.G.  uvfregress(10,311)      ; regression coeffs with px and ps
@@ -99,4 +101,8 @@ function get_uv_spectrum_params
   
   return, params
   
+  ; refuvf = :
+  ; refps = reference ps spectrum (detrened)
+  ; refpx = reference px spectrum (detrended)
+  ;uvrefrefressd = regression of detrended
 end

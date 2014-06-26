@@ -62,7 +62,10 @@ function write_ssi_model_to_ascii, yr, mn, dy, spectrum
   if(dy ge 10) then flnout=flnout+string(dy,'(i2)')+'.txt'
   openw,1,flnout
   printf,1,systime(0)
-  txt='Absolute irradiance scale is PMOD (multiply by 0.9965 for TIM scale)'
+  txt='Absolute irradiance scale is PMOD (multiply by 0.9965 for TIM scale)' 
+  ;**this will go away. Initially began with established tsi, but when you add you it doesn't match, so Judith originally scaled to PMOD to 
+  ;1365 and TIM is 1361. We will use WHI reference spectrum, do calcs, then integrate to match TIM quiet sun value.
+  ;ToDo:Add Absolute irradiance scale is TIM with quiet Sun of 1361.
   printf,1,txt
   printf,1,$
     'Spectral irradiance on following wavelength (nm) grid centers'
