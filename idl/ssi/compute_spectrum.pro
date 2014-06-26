@@ -4,17 +4,40 @@
 ;   compute_spectrum.pro
 ;
 ; PURPOSE
-;   The compute_spectrum.pro function computes modeled solar spectral irradiance  
-;   specific to the NRLSSI-2 model.
+;   The compute_spectrum.pro function computes modeled Solar Spectral Irradiance (SSI) from the SSI
+;   model coefficients (there are separate coefficients for wavelengths below 400 nm compared to wavelengths
+;   longer than 400 nm) and the SSI model regression data (sunspot blocking and facular brightening).
+;   This function is called from the main routine, nrl_2_ssi.pro.
 ;
 ; DESCRIPTION
 ;   
+;   This routine computes the modeled solar spectral irradiance at some given time (dy, mn, yr) 
+;   for a given value of px and ps.  The spectral changes at a particular wavelength (wl) are determined
+;   as follows [citation]:
+;   deltaps(wl)=irrqs(wl)*ps/1.e6/excess0*(1-ssy(wl))*adjspot
+;   deltapx(wl)=(px-px0)*fac(wl)
+;   Irradiance(wl)=irrqs(wl)-deltaps(wl)+deltapx(wl)
 ;   
+;   
+;   The wavelength (midpoint and delta wavelength grid) and irradiance are returned as a structure 'spectrum'
+;   to the main routine, nrl_2_ssi.pro. 
+
+  ;
 ; INPUTS
-;   None
+;   px = photometric facular brightening (px) function   
+;   ps = photometric sunspot blocking function (ps)
+;   spectrum_params = a structure of SSI model coefficients specific to wavelengths > 400 nm
+;                     (wl, irrqs, ssy, fac, pxmin, psmin, pxqs, excess0, adjspot)
+;   uv_params = a structure of SSI model coefficients specific to wavelengths < 400 nm
+;               (psuvfactor, csecft, uvwl, uvfregressd, refuvf, refps, refpx)     
 ;
 ; OUTPUTS
-
+;   spectrum = a structure containing the variables 'wavelength' and 'irradiance'
+;   Wavelength is a 2-dimensional array containing the midpoint and delta wavelength grid as follows:
+;   1 nm from 120 to 750
+;   5 nm from 750 to 5000
+;   10 nm from 5000 to 10000
+;   50 nm from 10000 to 100000
 ;    
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
@@ -39,7 +62,6 @@
 ;
 ;@***** 
 function compute_spectrum, px, ps, spectrum_params, uv_params
-  ; px and ps are the corresponding input facular brightening and sunspot darking proxies
 
   wl      = spectrum_params.wl
   irrqs   = spectrum_params.irrqs
@@ -59,26 +81,16 @@ function compute_spectrum, px, ps, spectrum_params, uv_params
   refps       = uv_params.refps
   refpx       = uv_params.refpx
   
-  ; for a given value of px and ps, at some given time (dy, mn, yr), determine
-  ; the spectral changes at a particular wavelength (wl) as follows
-  ; deltaps(wl)=irrqs(wl)*ps/1.e6/excess0*(1-ssy(wl))*adjspot
-  ; deltapx(wl)=(px-px0)*fac(wl)
-  ; Flux(wl)=irrqs(wl)-deltaps(wl)+deltapx(wl)
-  ;
-  ; the wavelength grid is as follows:
-  ; 1 nm from 120 to 750
-  ; 5 nm from 750 to 5000
-  ; 10 nm from 5000 to 10000
-  ; 50 nm from 10000 to 100000
-
+  
+  ; number of wavelength bins
   nband1=750-120
   nband2=(5000-750)/5
   nband3=(10000-5000)/10
   nband4=(100000-10000)/50
   nband=nband1+nband2+nband3+nband4
-  specqs=dblarr(nband)                   ;solar cycle minimum -quiet sun- spectrum
-  specwl=fltarr(nband,2)                  ;midpint wavelength of band
-  ;                                        and delta wavelength band
+  specqs=dblarr(nband)         ;solar cycle minimum -quiet sun- spectrum
+  specwl=fltarr(nband,2)       ;midpint wavelength of band and delta wavelength band
+ 
   ; set up the wavelength bins
   for m=0,nband1-1 do begin
     wav1=120.+m
@@ -161,17 +173,11 @@ function compute_spectrum, px, ps, spectrum_params, uv_params
   ;--------------------------------------------------------------------
   calcspec:
   ;
-  ; for a given value of px and ps determine
-  ; the spectral changes on the wl grid as follows
-  ; deltaps(wl)=irrqs(wl)*ps/1.e6/excess0*(1-ssy(wl))*adjspot
-  ; deltapx(wl)=(px-pxqs)*fac(wl)
-  ; Flux(wl)=irrqs(wl)-deltaps(wl)+deltapx(wl)
-  ;
-  specirrad=dblarr(nband)-99
+  specirrad=dblarr(nband)-99 ;why the subtraction?
   ; use specqs=dblarr(nband) calculated above for monthly spectra
   ; use specwl=fltarr(nband,2) calculated above for monthly spectra
   ;
-  ; calculate the UV spectrum for (valid) input px and ps values
+  ; calculate the UV spectrum for (valid) input px and ps values ;? what determines valid px/ps values?
   ; use px on MgSEC scale
   ;
   rcuv=dblarr(311)
