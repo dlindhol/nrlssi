@@ -13,9 +13,11 @@
 ;   This function is called from the main routine, nrl_2_ssi.pro.
 ;   
 ; INPUTS
-;   yr
-;   mn
-;   dy
+;   yr = year
+;   mn = month
+;   dy = day
+;   Note: yr, mn, and dy are used here to create output file name 
+;   (ToDO: define by time range instead. This will require indexing spectrum by time as well).
 ;   spectrum = a structure containing solar spectral irradiance and wavelength (midpoint and delta wavelength grid)
 ;
 ; OUTPUTS
