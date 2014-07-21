@@ -43,7 +43,7 @@
 ;   get_sunspot_data,year
 ;
 ;@***** 
-function parse_line, line
+function parse_line_orig, line
 
   ;Fail on short lines, e.g. strange character at end of file
   if (strlen(line) lt 80) then return, -1  ;TODO: log warning?
@@ -90,6 +90,7 @@ function parse_line, line
   else begin
     area = 0.0
     print, 'WARNING: No area define. Using 0. ' + line
+;TODO: set quality flag
   endelse
   
   ;Station name
@@ -109,10 +110,65 @@ function parse_line, line
 end
 
 ;-----------------------------------------------------------------------------
+;Parse csv output from LaTiS
+function parse_line, line
+
+  vars = strsplit(line, ',', /EXTRACT)
+  
+  ;Parse the yymmdd date as Julian Date
+  jd = yymmdd2jd(vars[0])
+  ;Note, if we only read date (00Z), jd will be x.5 which idl will round up when binning to jdn.
+  ;  Thus the resulting JDN will be noon on the appropriate UTC day.
+  ;TODO: test the assumption that it will always round up, precision concerns
+  ;TODO: use time also, is it ever missing?
+  
+  ;Parse the latitude, get sign from hemisphere
+  ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
+  lat = float(vars[2])
+  lathem = vars[1]
+  if (lathem eq 'S') then lat = -lat
+  
+  ;Parse the longitude, get sign from hemisphere
+  ;TODO: deal with missing?  if(along eq '  ') then along=' 0', will get format error otherwise
+  lon = float(vars[4])
+  lonhem = vars[3]
+  if(lonhem eq 'E') then lon = -lon
+  ;east is negative!? doesn't really matter
+  
+    ;Parse sunspot area
+;TODO: deal with missing?  if(iarea eq '    ') then iarea='-888'
+  ;  skip record?
+  ;  just count of parse error, catch and return -1?
+  ;  invalidate all obs from that station for that day? since we need accumulation of all ss groups?
+  ;  note some records have area = 0, assume 0 for missing?
+  ;  compare obs from other stations
+  area = float(vars[6])
+;  if area eq -999 then begin
+;    area = 0.0
+;    print, 'WARNING: No area define. Using 0. ' + line
+;TODO: set quality flag
+;  endif
+  
+  ;Station name
+  station = vars[7]
+  
+  ;Create result structure
+  result = {   $
+    jd:jd,     $
+    lat:lat,   $
+    lon:lon,   $
+    area:area, $
+    station:station  $
+  }
+  
+  return, result
+end
+
+;-----------------------------------------------------------------------------
 ;
 ;Read sunspot data from the NGDC usaf_mwl web site.
 ;e.g. http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/usaf_solar-region-reports_2012.txt
-function get_sunspot_data, year
+function get_sunspot_data_ORIG, year
 
   url_path = 'stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/usaf_solar-region-reports_' + strtrim(year,2) + '.txt'
 
@@ -180,3 +236,37 @@ function get_sunspot_data_from_local_file, year
   return, records.toArray()
      
 end
+
+;-----------------------------------------------------------------------------
+; Get data from LaTiS.
+function get_sunspot_data, ymd1, ymd2
+
+  ;Make LaTiS request for csv
+  ;TODO: try json, have to write to file first?
+  netUrl = OBJ_NEW('IDLnetUrl')
+  netUrl->SetProperty, URL_HOST  = 'localhost' ;'lisird-dev'
+  netUrl->SetProperty, URL_PORT  = 8080
+  netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_mwl.csv'
+  netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + ymd2
+  lines = netURL->Get(/string_array)
+  ;buffer = netURL->Get(/buffer)
+  OBJ_DESTROY, netUrl
+  
+  ;Make list to hold results
+  records = List()
+  
+  ;Iterate through each line and parse into a data record
+  ;Skip header, start at 1
+  for i = 1, n_elements(lines)-1 do begin
+    ;This will return -1 if the line is not a valid data record.
+    struct = parse_line(lines[i])
+;TODO: look for duplicate records
+    ;Add valid data to the results list.
+    if (size(struct, /type) eq 8) then records.add, struct
+  endfor
+  
+  ;Return results as an array of structures.
+  return, records.toArray()
+
+end
+

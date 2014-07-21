@@ -59,7 +59,7 @@
 ;
 ;Set uv keyword to use the uv algorithm
 function get_ssb_by_station, sunspot_data, stations, uv=uv
-
+;TODO: factor out station logic
   ;Group by station
   station_data = group_structures_by_tag(sunspot_data, 'station')
   ; station -> (jd, lat, lon, area, station)
@@ -83,10 +83,11 @@ function get_ssb_by_station, sunspot_data, stations, uv=uv
       lat = s.lat - get_solar_latitude(s.jd)  ;apply B0 lat correction
       lon = s.lon
       area = s.area
+;TODO: flag if area is missing
       
       ;Compute the sunspot blocking for each sample.
-      if keyword_set(uv) then ssb += compute_sunspot_blocking_uv(area, lat, lon) $
-      else ssb += compute_sunspot_blocking(area, lat, lon)
+      if keyword_set(uv) then ssb += compute_sunspot_blocking_from_area_uv(area, lat, lon) $
+      else ssb += compute_sunspot_blocking_from_area(area, lat, lon)
     endfor
     
     ;add accumulated ssb for this station to the result

@@ -1,4 +1,4 @@
-function compute_sunspot_blocking, area, lat, lon
+function compute_sunspot_blocking_from_area, area, lat, lon
 
   ;Shortcut if area is 0
   if (area eq 0) then return, 0
