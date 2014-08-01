@@ -55,7 +55,7 @@
 ;
 ;@***** 
 pro process_sunspot_blocking, ymd1, ymd2
-  ;ymd2 is NOT inclusive, it represents midnight - the start of the given day.
+  ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
   
   ;Process just one day if ymd2 is not provided.
@@ -66,21 +66,8 @@ pro process_sunspot_blocking, ymd1, ymd2
   ;if stations not defined, use whatever is in the data
 
   version='Doug_v2'
-  ;TODO: take any time range here, day resolution
-  ;  get_sunspot_data by day
-  ;    use LaTiS
-  ;    sort by time instead of ss group number (deal with year wrap)
-  ;    select by station? or do here in idl code?
-  ;    time -> (stn -> (lat, lon, area)) ?  but would need "or" selection for multiple stations?
-  ;      or time -> (stn1, stn2, stn3,...), where stn is nested tuple  (lat, lon, area), use projection
-  ;    maybe just settle for time sorted: jd -> (lat, lon, area, station) and manage stn selection here
-  ;  add quality flags
-  ;  check for duplicate raecords
-  ;  varify one obs per day assumption
-  ;  
   
   ;Use this as a fill value when there is no valid data.
-;TODO: consider using NaN?
   missing_value = -999
   
   ;Get sunspot data for the given time range.
@@ -91,19 +78,19 @@ pro process_sunspot_blocking, ymd1, ymd2
   
   ;Group by Julian Day number
   ; jdn -> (jd, lat, lon, area, station)
-  daily_sunspot_data = group_by_day(sunspot_data)
+  daily_sunspot_data = group_by_day(sunspot_data)  ;TODO: check jd rounding
   
   ;Convert start and stop dates to Julian Day Number (integer).
-;TODO: test: handling leap year, .5 day offset, binning by utc day
+  ;TODO: test: handling leap year, .5 day offset, binning by utc day
   jd_start = iso_date2jdn(ymd1)
-  jd_stop  = iso_date2jdn(ymd2)
+  jd_stop  = iso_date2jdn(ymd2) - 1 ;end time not inclusive
   
-  ;Define Hash to hold results with JDN as key.
+  ;Define Hash to hold final daily averaged results with JDN as key.
   sunspot_blocking_data = Hash()
   
-  ;Define struct to hold daily ssb results
+  ;Define struct to hold final daily averaged results
   ;TODO: put in define file?
-  ssb_struct = {sunspot_blocking,  $
+  sunspot_blocking_struct = {sunspot_blocking,  $
     jdn:0l,   $
     ssbt:0.0, dssbt:0.0,   $
     ssbuv:0.0, dssbuv:0.0,  $
@@ -112,43 +99,59 @@ pro process_sunspot_blocking, ymd1, ymd2
   
   ;Iterate over days.
   for jdn = jd_start, jd_stop do begin
-    ssb_struct.jdn = jdn
+    sunspot_blocking_struct.jdn = jdn
     
+    ;Process data if we have any for this day
     if daily_sunspot_data.hasKey(jdn) then begin
       ;Get the sunspot data for this day
       ssdata = daily_sunspot_data[jdn]
-      ; (jd, lat, lon, area, station)
+      ; i -> (jd, lat, lon, area, station)
       
-      ;TODO: consider factoring out processing by day
-  
-      ;Compute the daily accumulated ssb for each station.
-      ;  station -> ssb
- ;TODO: optional stations list
-      ssbt_by_station  = get_ssb_by_station(ssdata)
-      ssbuv_by_station = get_ssb_by_station(ssdata, /uv)
+      ;Adjust latitude
+      ;TODO: use time of day to get more accurate solar latitude?
+      B0 = get_solar_latitude(jdn)
+      lat = ssdata.lat - B0
       
-      ;Average the results from each station
-;TODO: consider missing data (NaN?), 0 or 1 sample
+      ;Compute the total and uv sunspot blocking contribution for each sample
+      ssbt  = compute_sunspot_blocking(ssdata.area, lat, ssdata.lon) ;array
+      ssbuv = compute_sunspot_blocking_uv(ssdata.area, lat, ssdata.lon) ;array
+      
+      ;If the resulting value is NaN (from missing area), set to 0 and set quality flag
+      imissing = where(~ FINITE(ssbt), nmissing)
+      if nmissing gt 0 then begin
+        sunspot_blocking_struct.quality_flag = 1 ;TODO: consider bit mask for multiple flags
+        ssbt[imissing] = 0.0
+        ssbuv[imissing] = 0.0
+      endif
+      
+      ;Group data by station and sum ssb from contributing sunspot groups.
+      ;Hash: station -> ssb
+      ssbt_by_station  = group_and_sum(ssdata.station, ssbt)
+      ssbuv_by_station = group_and_sum(ssdata.station, ssbuv)
+      
+      ;Average the results from all stations
+      ;TODO: weighted avg time? instead of assume all obs at noon
+      ;IDL can't do mean ... on List so convert to array
       ssbt_list = ssbt_by_station.values()
       ssbt_array = ssbt_list.toArray()
-      ssb_struct.ssbt  = mean(ssbt_array)
-      ssb_struct.dssbt = stddev(ssbt_array)
+      sunspot_blocking_struct.ssbt  = mean(ssbt_array)
+      sunspot_blocking_struct.dssbt = stddev(ssbt_array)
       
       ssbuv_list = ssbuv_by_station.values()
       ssbuv_array = ssbuv_list.toArray()
-      ssb_struct.ssbuv  = mean(ssbuv_array)
-      ssb_struct.dssbuv = stddev(ssbuv_array)
+      sunspot_blocking_struct.ssbuv  = mean(ssbuv_array)
+      sunspot_blocking_struct.dssbuv = stddev(ssbuv_array)
     endif else begin
       ;no data for this day, fill with missing value
       print, 'WARNING: No data produced for date (yymmdd) ' + strtrim(jd2yymmdd(jdn),2)
-      ssb_struct.ssbt   = missing_value
-      ssb_struct.dssbt  = missing_value
-      ssb_struct.ssbuv  = missing_value
-      ssb_struct.dssbuv = missing_value
+      sunspot_blocking_struct.ssbt   = missing_value
+      sunspot_blocking_struct.dssbt  = missing_value
+      sunspot_blocking_struct.ssbuv  = missing_value
+      sunspot_blocking_struct.dssbuv = missing_value
     endelse
     
     ;Add structure to result hash for this day.
-    sunspot_blocking_data[jdn] = ssb_struct
+    sunspot_blocking_data[jdn] = sunspot_blocking_struct
   endfor
   
   ;Write the results.
