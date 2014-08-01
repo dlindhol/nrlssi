@@ -80,10 +80,12 @@ function get_ssb_by_station, sunspot_data, stations, uv=uv
     ssb = 0.0
     for i = 0, n_elements(ssdata)-1 do begin
       s = ssdata[i]
-      lat = s.lat - get_solar_latitude(s.jd)  ;apply B0 lat correction
+      lat = s.lat - get_solar_latitude(s.jd)  ;apply B0 lat correction ;TODO: avoid calling for every iteration? but using time of observation, not just day
       lon = s.lon
       area = s.area
-;TODO: flag if area is missing
+;TODO: flag if area is missing, no place for it in curernt return type
+;note, previously set missing area to 0, now NaN - ssb is then NaN but we want it assuming 0 for missing
+;TODO: look for duplicate records
       
       ;Compute the sunspot blocking for each sample.
       if keyword_set(uv) then ssb += compute_sunspot_blocking_from_area_uv(area, lat, lon) $
