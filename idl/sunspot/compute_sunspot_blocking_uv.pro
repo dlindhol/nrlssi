@@ -1,7 +1,5 @@
-function compute_sunspot_blocking_from_area_uv, area, lat, lon
-
-  ;Shortcut if area is 0
-  if (area eq 0) then return, 0
+function compute_sunspot_blocking_uv, area, lat, lon
+  ;works with arrays
 
   params = get_sunspot_blocking_parameters()
   

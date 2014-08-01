@@ -1,7 +1,5 @@
-function compute_sunspot_blocking_from_area, area, lat, lon
-
-  ;Shortcut if area is 0
-  if (area eq 0) then return, 0
+function compute_sunspot_blocking, area, lat, lon
+  ;works with arrays
   
   mu = cos(lat*!pi/180.0) * cos(lon*!pi/180.0)
   
