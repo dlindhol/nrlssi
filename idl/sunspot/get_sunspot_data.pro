@@ -79,7 +79,7 @@ function parse_line_orig, line
   ;noaa=strmid(dumi,33,5)
   
   ;Parse sunspot area
-;TODO: deal with missing?  if(iarea eq '    ') then iarea='-888'
+  ;TODO: deal with missing?  if(iarea eq '    ') then iarea='-888'
   ;  skip record?
   ;  just count of parse error, catch and return -1?
   ;  invalidate all obs from that station for that day? since we need accumulation of all ss groups?
@@ -90,7 +90,7 @@ function parse_line_orig, line
   else begin
     area = 0.0
     print, 'WARNING: No area define. Using 0. ' + line
-;TODO: set quality flag
+    ;TODO: set quality flag
   endelse
   
   ;Station name
@@ -135,19 +135,9 @@ function parse_line, line
   if(lonhem eq 'E') then lon = -lon
   ;east is negative!? doesn't really matter
   
-    ;Parse sunspot area
-;TODO: deal with missing?  if(iarea eq '    ') then iarea='-888'
-  ;  skip record?
-  ;  just count of parse error, catch and return -1?
-  ;  invalidate all obs from that station for that day? since we need accumulation of all ss groups?
-  ;  note some records have area = 0, assume 0 for missing?
-  ;  compare obs from other stations
+  ;Parse sunspot area, LaTiS will have replaced missing values with NaN
+  ;We'll add a flag for it when we compute the average area.
   area = float(vars[6])
-;  if area eq -999 then begin
-;    area = 0.0
-;    print, 'WARNING: No area define. Using 0. ' + line
-;TODO: set quality flag
-;  endif
   
   ;Station name
   station = vars[7]
@@ -188,7 +178,6 @@ function get_sunspot_data_ORIG, year
   for i = 0, n_elements(lines)-1 do begin
     ;This will return -1 if the line is not a valid data record.
     struct = parse_line(lines[i])
-;TODO: look for duplicate records
     ;Add valid data to the results list.
     if (size(struct, /type) eq 8) then records.add, struct
   endfor
@@ -223,7 +212,6 @@ function get_sunspot_data_from_local_file, year
     ;Create a data structure from each line.
     ;This will return -1 if the line is not a valid data record.
     struct = parse_line(line)
-;TODO: look for duplicate records
     ;Add valid data to the results list.
     if (size(struct, /type) eq 8) then records.add, struct
     
@@ -240,6 +228,8 @@ end
 ;-----------------------------------------------------------------------------
 ; Get data from LaTiS.
 function get_sunspot_data, ymd1, ymd2
+  ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
+  ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
 
   ;Make LaTiS request for csv
   ;TODO: try json, have to write to file first?
@@ -260,7 +250,6 @@ function get_sunspot_data, ymd1, ymd2
   for i = 1, n_elements(lines)-1 do begin
     ;This will return -1 if the line is not a valid data record.
     struct = parse_line(lines[i])
-;TODO: look for duplicate records
     ;Add valid data to the results list.
     if (size(struct, /type) eq 8) then records.add, struct
   endfor
