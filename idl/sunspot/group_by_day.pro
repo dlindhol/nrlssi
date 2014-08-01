@@ -52,8 +52,11 @@ function group_by_day, structures
   
   for i = 0, n_elements(structures)-1 do begin
     jdn = round(structures[i].jd)
-    if result.hasKey(jdn) then result[jdn].add, structures[i]  $
-    else result[jdn] = List(structures[i])
+    ;if result.hasKey(jdn) then result[jdn].add, structures[i]  $
+    ;else result[jdn] = List(structures[i])
+    ;Lists aren't well supported so make Arrays :-(
+    if result.hasKey(jdn) then result[jdn] = [temporary(result[jdn]), structures[i]]  $
+    else result[jdn] = [structures[i]]
   endfor
 
   return, result
