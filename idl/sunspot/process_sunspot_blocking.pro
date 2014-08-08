@@ -131,10 +131,9 @@ pro process_sunspot_blocking, ymd1, ymd2, desired_stations
       ;IDL can't do mean ... on List so convert to array
     
     ;TODO: deal with only one sample, stddev of array of one is NaN
-     ; nstn = ssbt_by_station.count() ;number of stations going into the average
+      ; nstn = ssbt_by_station.count() ;number of stations going into the average
       ;TODO: record how many stations went into avg
-    ;good enough but lots of "Floating divide by 0"
-    ;2009-10-22  0.00       NaN      0.00       NaN   1  - only one record and it had missing area
+      ;good enough but lots of "Floating divide by 0" illegal operand
     
       ssbt_list = ssbt_by_station.values()
       ssbt_array = ssbt_list.toArray()
