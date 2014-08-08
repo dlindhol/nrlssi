@@ -405,11 +405,17 @@ note: stripping out excess, the new csv is ~1/6 the size
 ++botched time at 1107011510930
 J's code would handle it since she only parses date
 
-+++duplicates
++duplicates: usaf_solar-region-reports_2000.txt
 1231	N	24	E	59	9292	-999	LEAR
 1231	N	22	E	73	9292	-999	LEAR
 1231	N	24	E	62	9292	-999	MWIL
 1231	N	23	E	84	9292	-999	MWIL
+No: these use A/B after group number
+*So group alone isn't sufficient
+
+BOUL 820701 - some samples with no area
+
+++dups of 1992 data in 1994 file
 
 ----
 additional sunspot data sources:
