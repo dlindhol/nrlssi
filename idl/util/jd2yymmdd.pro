@@ -1,6 +1,7 @@
 function jd2yymmdd, jd
 ;TODO: consider Jan 1 2000
 ;TODO: deal with dates outside 1950 - 2050
+;TODO: pad yy for 2000-2009
 
   caldat, jd, mon, day, year
 
