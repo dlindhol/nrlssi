@@ -54,7 +54,7 @@
 ;   process_sunspot_blocking,year
 ;
 ;@***** 
-pro process_sunspot_blocking, ymd1, ymd2
+pro process_sunspot_blocking, ymd1, ymd2, desired_stations
   ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
   
@@ -65,10 +65,10 @@ pro process_sunspot_blocking, ymd1, ymd2
   ;stations = List('LEAR','CULG','SVTO','RAMY','BOUL','MWIL','HOLL','PALE','MANI','ATHN')
   ;if stations not defined, use whatever is in the data
 
-  version='Doug_v2'
+  version='v0.3'
   
   ;Use this as a fill value when there is no valid data.
-  missing_value = -999
+  missing_value = !Values.F_NAN ;-999
   
   ;Get sunspot data for the given time range.
   ;Array of structures, one element per line.
@@ -88,17 +88,18 @@ pro process_sunspot_blocking, ymd1, ymd2
   ;Define Hash to hold final daily averaged results with JDN as key.
   sunspot_blocking_data = Hash()
   
-  ;Define struct to hold final daily averaged results
-  ;TODO: put in define file?
-  sunspot_blocking_struct = {sunspot_blocking,  $
-    jdn:0l,   $
-    ssbt:0.0, dssbt:0.0,   $
-    ssbuv:0.0, dssbuv:0.0,  $
-    quality_flag:0  $
-  }
-  
   ;Iterate over days.
   for jdn = jd_start, jd_stop do begin
+    ;Define struct to hold final daily averaged results
+    ;Reset data values each time.
+    sunspot_blocking_struct = {sunspot_blocking,  $
+      jdn:0l,   $
+      ssbt:0.0, dssbt:0.0,   $
+      ssbuv:0.0, dssbuv:0.0,  $
+      quality_flag:0  $
+    }
+    
+    ;Set Julian Day Number
     sunspot_blocking_struct.jdn = jdn
     
     ;Process data if we have any for this day
@@ -116,34 +117,37 @@ pro process_sunspot_blocking, ymd1, ymd2
       ssbt  = compute_sunspot_blocking(ssdata.area, lat, ssdata.lon) ;array
       ssbuv = compute_sunspot_blocking_uv(ssdata.area, lat, ssdata.lon) ;array
       
-      ;If the resulting value is NaN (from missing area), set to 0 and set quality flag
+      ;If the resulting value is NaN (from missing area) set quality flag
       imissing = where(~ FINITE(ssbt), nmissing)
-      if nmissing gt 0 then begin
-        sunspot_blocking_struct.quality_flag = 1 ;TODO: consider bit mask for multiple flags
-        ssbt[imissing] = 0.0
-        ssbuv[imissing] = 0.0
-      endif
+      if nmissing gt 0 then sunspot_blocking_struct.quality_flag = 1 ;TODO: consider bit mask for multiple flags
       
       ;Group data by station and sum ssb from contributing sunspot groups.
-      ;Hash: station -> ssb
+      ;Hash: station -> ssb  with NaNs where area was missing
       ssbt_by_station  = group_and_sum(ssdata.station, ssbt)
       ssbuv_by_station = group_and_sum(ssdata.station, ssbuv)
       
-      ;Average the results from all stations
+      ;Average the results from all stations, drop NaNs
       ;TODO: weighted avg time? instead of assume all obs at noon
       ;IDL can't do mean ... on List so convert to array
+    
+    ;TODO: deal with only one sample, stddev of array of one is NaN
+     ; nstn = ssbt_by_station.count() ;number of stations going into the average
+      ;TODO: record how many stations went into avg
+    ;good enough but lots of "Floating divide by 0"
+    ;2009-10-22  0.00       NaN      0.00       NaN   1  - only one record and it had missing area
+    
       ssbt_list = ssbt_by_station.values()
       ssbt_array = ssbt_list.toArray()
-      sunspot_blocking_struct.ssbt  = mean(ssbt_array)
-      sunspot_blocking_struct.dssbt = stddev(ssbt_array)
+      sunspot_blocking_struct.ssbt  = mean(ssbt_array, /NaN)
+      sunspot_blocking_struct.dssbt = stddev(ssbt_array, /NaN)
       
       ssbuv_list = ssbuv_by_station.values()
       ssbuv_array = ssbuv_list.toArray()
-      sunspot_blocking_struct.ssbuv  = mean(ssbuv_array)
-      sunspot_blocking_struct.dssbuv = stddev(ssbuv_array)
+      sunspot_blocking_struct.ssbuv  = mean(ssbuv_array, /NaN)
+      sunspot_blocking_struct.dssbuv = stddev(ssbuv_array, /NaN)
     endif else begin
       ;no data for this day, fill with missing value
-      print, 'WARNING: No data produced for date (yymmdd) ' + strtrim(jd2yymmdd(jdn),2)
+      ;print, 'WARNING: No data produced for date: ' + strtrim(jd2iso_date(jdn),2)
       sunspot_blocking_struct.ssbt   = missing_value
       sunspot_blocking_struct.dssbt  = missing_value
       sunspot_blocking_struct.ssbuv  = missing_value
