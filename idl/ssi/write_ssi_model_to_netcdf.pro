@@ -78,12 +78,12 @@ function write_ssi_model_to_netcdf, yr, mn, dy, spectrum
   NCDF_ATTPUT, id, yid, 'long_name', 'Integrated Solar Spectral Irradiance (Watt/m**2)'
   NCDF_ATTPUT, id, yid, 'units', 'W/m2'
   NCDF_ATTPUT, id, yid, 'missing_value', missing_value  
-;  w1id = NCDF_VARDEF(id,'Central Wavelength',[t1id], /FLOAT)
-;  NCDF_ATTPUT, id, w1id, 'long_name', 'Wavelength grid center'
-;  NCDF_ATTPUT, id, w1id, 'units', 'nm'
-;  w2id = NCDF_VARDEF(id,'Wavelength Bands',[t1id], /FLOAT)
-;  NCDF_ATTPUT, id, w2id, 'long_name', 'Wavelength bands. Centered on Central Wavelength'
-;  NCDF_ATTPUT, id, w2id, 'units', 'nm'  
+  w1id = NCDF_VARDEF(id,'Central Wavelength',[t1id], /FLOAT)
+  NCDF_ATTPUT, id, w1id, 'long_name', 'Wavelength grid center'
+  NCDF_ATTPUT, id, w1id, 'units', 'nm'
+  w2id = NCDF_VARDEF(id,'Wavelength Bands',[t1id], /FLOAT)
+  NCDF_ATTPUT, id, w2id, 'long_name', 'Wavelength bands. Centered on Central Wavelength'
+  NCDF_ATTPUT, id, w2id, 'units', 'nm'  
  
   ; Define the time/date variables
   ryid = NCDF_VARDEF(id, 'year', [t2id], /LONG)
@@ -100,8 +100,8 @@ function write_ssi_model_to_netcdf, yr, mn, dy, spectrum
   NCDF_VARPUT, id, ryid, yr 
   NCDF_VARPUT, id, rmid, mn
   NCDF_VARPUT, id, rdid, dy
-;  NCDF_VARPUT, id, w1id, specwl_center
-;  NCDF_VARPUT, id, w2id, specwl_band
+  NCDF_VARPUT, id, w1id, specwl_center
+  NCDF_VARPUT, id, w2id, specwl_band
   NCDF_VARPUT, id, xid, specirrad
   NCDF_VARPUT, id, yid, totspec
   

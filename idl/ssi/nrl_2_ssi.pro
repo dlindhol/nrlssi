@@ -71,6 +71,8 @@ pro nrl_2_ssi
   
   spectrum = compute_spectrum(px, ps, spectrum_params, uv_params)
   
-  status = write_spectrum(yr, mn, dy, spectrum)
+  ;status = write_ssi_model_to_ascii(yr, mn, dy, spectrum)
+  
+  status = write_ssi_model_to_netcdf(yr, mn, dy, spectrum)
 
 end

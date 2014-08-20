@@ -51,7 +51,7 @@ function write_ssi_model_to_ascii, yr, mn, dy, spectrum
   nband = n_elements(specwl[*,0])
   
   specirrad = spectrum.irradiance
-  totspec = total(specirrad*specwl(*,1))/1000.
+  totspec = total(specirrad*specwl(*,1))/1000. ;'Watts per m2'
   
   
   close,1
@@ -77,6 +77,8 @@ function write_ssi_model_to_ascii, yr, mn, dy, spectrum
     print,specwl(a1:a2,0)
     printf,1,format=fmt,specwl(a1:a2,0)
   endfor
+  ;help,specwl
+  ;stop
   printf,1,'with the following wavelength bands (nm) centered on above wls'
   for m=0,(nband-1)/5. do begin
     a1=m*5
