@@ -5,14 +5,19 @@
 ;
 ; PURPOSE
 ;   The get_spectrum_params.pro function extracts a structure of SSI model parameters 
-;   specific to the NRLSSI-2 model.
+;   specific to the NRLSSI2 model.
 ;
 ; DESCRIPTION
-;   This routine returns a structure containing SSI model spectral parameters to the main routine, calc_nrlssi.pro.
+;   This routine returns a structure containing SSI model spectral parameters to the main routine, nrl_2_ssi.pro.
 ;   The spectral parameters, for wavelengths spanning 200 nm to  100000 nm are contained in the file 'NRLSSI_spectrum_parameters.txt'.
 ;   The spectral parameters are used to compute the spectral residual intensity contrast of sunspot blocking (reduction in irradiance, 'deltaps') 
 ;   and facular brightening (increase in irradiance, 'deltapx') relative to the assumed quiet Sun irradiance ('irrqs'), as a 
-;   function of wavelength ('k') according to the following formulae, valid for wavelengths above 400 nm. 
+;   function of wavelength ('k') according to the following formulae, valid for wavelengths up to 400 nm (UARS SOLSTICE, the data set the multiple linear
+;   regression coefficients were derived against, did not make measurements above 400 nm). 
+;   
+;   These parameters are not updated operationally. They are considered "constant", but subject to update.  
+;   The updates would not occur more frequently than every several years.  Once new, extended (in time) observations are available,
+;   updated values for these parameters will be determined from multiple linear regression technique to the observations. 
 ;   
 ;   deltaps=irrqs(k)*ps/1.e6/excess0*(1-ssy(k))*adjspot 
 ;   deltapx(k)=(px-px0)*fac(k)
@@ -32,7 +37,8 @@
 ;   deltaps = The change (in energy units) due to sunspot blocking determined directly from directly measured sunspot characteristics       
 ;   
 ;   px      = Bolometric facular brightening function, derived from the Mg II index.
-;   px0     = 
+;   px0     = The facular brightening function of the baseline Quiet Sun. Establishes a small difference between solar minimum conditions and
+;             the adopted Quiet Sun value.
 ;   pxqs    = Value of bolometric facular brightening function for the adopted quiet Sun, and equal to 0.26311135. It is needed
 ;             because there is a non-zero minimum of the Mg index during solar minimum. It is slightly less than that of pxmin. 
 ;             Interchangeable with px0.
