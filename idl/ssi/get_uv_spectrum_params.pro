@@ -5,21 +5,21 @@
 ;
 ; PURPOSE
 ;   The get_uv_spectrum_params.pro function extracts a structure of SSI model parameters 
-;   specific to the NRLSSI-2 model.
+;   specific to the NRLSSI2 model, for the ultraviolet region of the electromagnetic spectrum.
 ;
 ; DESCRIPTION
-;   This routine returns a structure containing SSI model spectral parameters to the main routine, calc_nrlssi.pro.
+;   This routine returns a structure containing SSI model spectral parameters to the main routine, nrl_2_ssi.pro.
 ;   The spectral parameters, for wavelengths spanning 115 nm to  425 nm are contained in the file 'MOD4_SOL_V0009_w1.sav'.
 ;   The spectral parameters are used to compute the spectral residual intensity contrast of sunspot blocking (reduction in irradiance) 
 ;   and facular brightening (increase in irradiance) relative to the assumed quiet Sun irradiance, as a function of wavelength for
-;   wavelengths below 400 nm.
+;   wavelengths below 400 nm corresponding to the spectral range where UARS SOLSTICE measured.
 ;   
 ; INPUTS
 ;   None
 ;
 ; OUTPUTS
 ;   structure ('params') containing SSI model spectral parameters:
-;   psuvfactor =
+;   psuvfactor = The conversion from bolometric (spectrally integrated) sunspot blocking to ultraviolet sunspot blocking.
 ;   uvwl =
 ;   uvfregressd = 
 ;   refuvf = 
@@ -42,7 +42,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   06/02/2014 Initial Version prepared for NCDC
+;   08/20/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   get_uv_spectrum_params
@@ -54,7 +54,7 @@ function get_uv_spectrum_params
   psuvfactor=1.31284
   ; this converts from bolometric to UV sunspot blocking
   csecft=double([-1912.,7508.])
-  ; this converts from MgSEC scale to FT scale
+  ; this converts from MgSEC scale to FT (f10.7) scale. Reflects the fact that the parameters were computed by regression against a different index.
   ;
   ; restore model coefficients for calcuating UV spectrum from save files
   fn='data/MOD4_SOL_V0009_w1.sav'
