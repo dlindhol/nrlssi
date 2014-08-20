@@ -4,14 +4,14 @@
 ;   compute_spectrum.pro
 ;
 ; PURPOSE
-;   The compute_spectrum.pro function computes modeled Solar Spectral Irradiance (SSI) from the SSI
+;   The compute_spectrum.pro function computes modeled Solar Spectral Irradiance (SSI) from the NRLSSI2
 ;   model coefficients (there are separate coefficients for wavelengths below 400 nm compared to wavelengths
 ;   longer than 400 nm) and the SSI model regression data (sunspot blocking and facular brightening).
 ;   This function is called from the main routine, nrl_2_ssi.pro.
 ;
 ; DESCRIPTION
 ;   
-;   This routine computes the modeled solar spectral irradiance at some given time (dy, mn, yr) 
+;   This routine computes the modeled solar spectral irradiance at some user given time (dy, mn, yr) 
 ;   for a given value of px and ps.  The spectral changes at a particular wavelength (wl) are determined
 ;   as follows [citation]:
 ;   deltaps(wl)=irrqs(wl)*ps/1.e6/excess0*(1-ssy(wl))*adjspot
@@ -55,7 +55,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   06/02/2014 Initial Version prepared for NCDC
+;   08/20/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   compute_spectrum, px, ps, spectrum_params, uv_params
