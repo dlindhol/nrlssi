@@ -4,8 +4,8 @@
 ;   nrl_2_tsi.pro
 ;
 ; PURPOSE
-;   The nrl_2_tsi.pro procedure computes daily Model Total Solar Irradiance using the Judith Lean (Naval Research Laboratory)
-;   model and writes the output to NetCDF4 format.
+;   The nrl_2_tsi.pro procedure computes daily Model Total Solar Irradiance using the Judith Lean 
+;   (Naval Research Laboratory) NRLTSI2 model and writes the output to NetCDF4 format.
 ;
 ; DESCRIPTION
 ;   The nrl_2_tsi.pro procedure is the main driver routine that computes the Model Total Solar Irradiance 
