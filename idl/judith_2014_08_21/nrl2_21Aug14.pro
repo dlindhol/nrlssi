@@ -12,7 +12,8 @@ mg=0.1612		; on GOME scale
 ; restore model parameters
 ;
 modver='18Aug14'
-fn='~/models/NRLSSI2/NRL2_model_parameters_'+modver+'.sav'
+;fn='~/models/NRLSSI2/NRL2_model_parameters_'+modver+'.sav'
+fn='~/git/nrlssi/data/judith_2014_08_21/NRL2_model_parameters_'+modver+'.sav'
 ; in this save file are the following...
 ; tquiet
 ; iquiet
