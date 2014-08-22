@@ -46,7 +46,7 @@ function write_tsi_model_to_netcdf, data, file
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
-  tsi = replace_nan_with_value(data.tsi, missing_value)
+  tsi = replace_nan_with_value(data.totirrad, missing_value)
 
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file

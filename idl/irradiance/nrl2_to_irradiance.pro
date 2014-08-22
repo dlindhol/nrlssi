@@ -121,9 +121,9 @@ pro nrl2_to_irradiance
   
   nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
  
-  outfile = '~/fit/nrlssi/data/judith_2014_08_21/nrl2_tsi.nc'
-  stop
-  status = write_tsi_model_to_netcdf(nrl2_tsi, outfile, year, month, day)
+  outfile = '~/fit/nrlssi/data/judith_2014_08_21/tsi_day.nc' ;this is temporary - replace with routine to generate filename
+  ;stop
+  ;status = write_tsi_model_to_netcdf(nrl2_tsi, outfile, year, month, day) ;need to replace with ymd1, ymd2 and assign new time variable attribute in netcdf4 format.
   
   print,systime(0),mg,sb,nrl2_tsi.totirrad,ssi.nrl2tot,nrl2_ssi.nrl2binsum
   stop
