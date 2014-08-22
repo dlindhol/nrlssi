@@ -1,9 +1,47 @@
-function get_solar_latitude, jd
-;TODO: compute using JEAN MEEUS, ASTRONOMICAL ALGORITHMS
+function get_solar_latitude_from_file, jd
+  ;One value for each day of the year. Assumes it's the same every year.
+  file = 'data/betasun2.dat'
+  
+  ;Store data in a Hash: MMdd -> B0
+  data = Hash()
+  ;TODO: store in memory so we don't have to reload for each call
+  
+  ;open data file
+  close,5
+  openr,5,file
+  line = ''
+  readf,5,line ;skip one line header
+  
+  ;parse each record
+  while ~ eof(5) do begin
+    readf,5,line 
+    ss = strsplit(line, /extract)
+    tmp_mmdd = ss[0]
+    tmp_B0 = float(ss[1])
+    data[tmp_mmdd] = tmp_B0
+  endwhile
+  
+  ;Get month and day for the desired day
+  mmdd = jd2mmdd(jd)
+  ;Get the desired value out of the hash
+  B0 = data[mmdd]
+  
+  return, B0
+end
+
+
+function get_solar_latitude_from_routine, jd
+;TODO: use more portable routine
+;compute using JEAN MEEUS, ASTRONOMICAL ALGORITHMS
 ;/data_systems/tools/knapp/idl/astronomy/helios.pro
   helios, jd, carr, lat, lon, p, diam, dist
   return, lat
+end
 
+
+function get_solar_latitude, jd
+  lat = get_solar_latitude_from_file(jd)
+  return, lat
 end
 
 ;  ; XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
