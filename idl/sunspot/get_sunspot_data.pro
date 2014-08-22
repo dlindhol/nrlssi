@@ -235,7 +235,7 @@ function get_sunspot_data, ymd1, ymd2
   ;Make LaTiS request for csv
   ;TODO: try json, have to write to file first?
   netUrl = OBJ_NEW('IDLnetUrl')
-  netUrl->SetProperty, URL_HOST  = 'lisird-dev' ;'localhost'
+  netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
   netUrl->SetProperty, URL_PORT  = 8080
   netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_mwl.csv'
   netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + ymd2
