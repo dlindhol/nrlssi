@@ -41,7 +41,7 @@
 ;   write_tsi_model_to_netcdf, data, file, missing_value
 ;
 ;@***** 
-function write_tsi_model_to_netcdf, data, file
+function write_tsi_model_to_netcdf2, data, file
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0

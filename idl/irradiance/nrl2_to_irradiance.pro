@@ -4,8 +4,8 @@
 ;   nrl2_to_irradiance.pro
 ;
 ; PURPOSE
-;   The nrl2_to_irradiance.pro procedure computes daily Model Total Solar Irradiance and Solar Spectral Irradiance using the Judith Lean
-;   (Naval Research Laboratory) NRL2 model and writes the output to NetCDF4 format.
+;   The nrl2_to_irradiance.pro procedure is the driver routine to compute daily Model Total Solar Irradiance and 
+;   Solar Spectral Irradiance using the Judith Lean (Naval Research Laboratory) NRL2 model and write the output to NetCDF4 format.
 ;
 ; DESCRIPTION
 ;   The nrl2_to_irradiance.pro procedure is the main driver routine that computes the Model Total Solar Irradiance (TSI)
@@ -45,6 +45,36 @@
 ;   e coefficients provide small adjustments to ensure that 1) the numerical integral over wavelength of the solar spectral irradiance is 
 ;   equal to the total solar irradiance, 2) the numerical integral over wavelength of the time-dependent SSI irradiance variations from
 ;   faculae and sunspots is equal to the time-dependent TSI irradiance variations from the faculae and sunspots. 
+;   
+;   Additional explanation of coefficients used to model solar spectral irradiance: 
+;   A relationship of solar spectral irradiance variability to sunspot darkening and facular brightening determined using observations of 
+;   solar rotational modulation: instrumental trends are smaller over the (much) shorter rotational times scales than during the solar cycle. 
+;   For each 1 nm bin, the observed spectral irradiance and the facular brightening and sunspot darkening indices are detrended by 
+;   subtracting 81-day running means. Multiple linear regression is then used to determine the relationships of the detrended time series:
+;   
+;   I_detrend_mod(k,t) = I_mod(k,t) - I_smooth(k,t)
+;                      = c(k) + d_F_detrend(k) * [F(t) - F_smooth(t)] + d_S_detrend(k) * [S(t) - S_smooth(t)]
+;                      
+;   Variable Definitions:
+;   I_mod(k,t) = the spectral (k) and time (t) dependecies of the modeled spectral irradiance, I_mod.
+;   I_smooth(k,t) = the spectral and time dependences of the smoothed (i.e. after subtracting 81-day running mean) from observed spectral irradiance.
+;   F_smooth(t) = the time dependency of the smoothed (i.e. after subtracting 81-day running mean) from observed facular brightening index, F(t).
+;   S_smooth(t) = as above, but for the observed sunspot darkening index, S(t).
+;   
+;   The range of facular variability in the detrended time series is smaller than during the solar cycle which causes the coefficients
+;   of models developed from detrended time series to differ from those developed from non-detrended observations. To address this, total
+;   solar irradiance observations are used to numerically determine ratios of coefficients obtained from multiple regression using direct observations,
+;   with those obtained from multiple regression of detrended observations. Using a second model of TIM observations (using detrended observations) 
+;   was determined and the ratios of the coefficients for the two approaches were used to adjust the coefficients for spectral irradiance variations.
+;   
+;   For wavelengths > 295 nm, where both sunspots and faculae modulate spectral and total irradiance, 
+;   the d coefficients, d_F and d_S are estimated as:
+;   d_F(k) = d_F_detrend(k) * [b_F / b_F_detrend]
+;   d_S(k) = d_S_detrend(k) * [b_S / b_S_detrend]
+;   
+;   For wavelengths < 295 nm, where faculae dominate irradiance variability (d_S(k) ~ 0), the adjustments for 
+;   the coefficients are estimated using the Ca K time series, a facular index independent of Mg II index, and a proxy for UV
+;   spectral irradiance variability.
 ;   
 ;   Reference(s):
 ;   Reference describing the solar irradiance variability due to linear combinations of sunspot darkening
