@@ -54,27 +54,29 @@
 ;   process_sunspot_blocking,year
 ;
 ;@***** 
-pro process_sunspot_blocking, ymd1, ymd2, desired_stations
+pro process_sunspot_blocking, ymd1, ymd2, stations=stations
   ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
   
   ;Process just one day if ymd2 is not provided.
   if n_elements(ymd2) eq 0 then ymd2 = ymd1
   
-  ;TODO: optional stations arg to limit to one station, or array
-  ;stations = List('LEAR','CULG','SVTO','RAMY','BOUL','MWIL','HOLL','PALE','MANI','ATHN')
-  ;if stations not defined, use whatever is in the data
+  ;Optional stations arg to limit the set of stations.
+  ;If stations not defined, use whatever is in the data.
+  ;stations = ['LEAR','CULG','SVTO','RAMY','BOUL','MWIL','HOLL','PALE','MANI','ATHN']
 
   version='v0.3'
   
   ;Use this as a fill value when there is no valid data.
-  missing_value = !Values.F_NAN ;-999
+  fill_value = !Values.F_NAN ;-999
   
   ;Get sunspot data for the given time range.
   ;Array of structures, one element per line.
   ;  struct = {jd:0.0, lat:0.0, lon:0.0, area:0.0, station:''}
   ;  index -> (jd, lat, lon, area, station)
   sunspot_data = get_sunspot_data(ymd1, ymd2)
+  ;TODO: apply stations constraint when requesting data. 
+  ;      Would require separate query for each station = slow.
   
   ;Group by Julian Day number
   ; jdn -> (jd, lat, lon, area, station)
@@ -147,10 +149,10 @@ pro process_sunspot_blocking, ymd1, ymd2, desired_stations
     endif else begin
       ;no data for this day, fill with missing value
       ;print, 'WARNING: No data produced for date: ' + strtrim(jd2iso_date(jdn),2)
-      sunspot_blocking_struct.ssbt   = missing_value
-      sunspot_blocking_struct.dssbt  = missing_value
-      sunspot_blocking_struct.ssbuv  = missing_value
-      sunspot_blocking_struct.dssbuv = missing_value
+      sunspot_blocking_struct.ssbt   = fill_value
+      sunspot_blocking_struct.dssbt  = fill_value
+      sunspot_blocking_struct.ssbuv  = fill_value
+      sunspot_blocking_struct.dssbuv = fill_value
     endelse
     
     ;Add structure to result hash for this day.
