@@ -160,7 +160,8 @@ pro process_sunspot_blocking, ymd1, ymd2, stations=stations
   endfor
   
   ;Write the results.
-  file = '/data/NRLSSI/sunspot_blocking_' + ymd1 +'_'+ ymd2 +'_'+ version +'.txt'
+  ;file = '/data/NRLSSI/sunspot_blocking_' + ymd1 +'_'+ ymd2 +'_'+ version +'.txt'
+  file = '~/data/sunspot_blocking_' + ymd1 +'_'+ ymd2 +'_'+ version +'.txt'
   write_sunspot_blocking_data, sunspot_blocking_data, file
   
 end
