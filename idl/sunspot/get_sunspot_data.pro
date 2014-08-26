@@ -115,12 +115,8 @@ function parse_line, line
 
   vars = strsplit(line, ',', /EXTRACT)
   
-  ;Parse the yymmdd date as Julian Date
-  jd = yymmdd2jd(vars[0])
-  ;Note, if we only read date (00Z), jd will be x.5 which idl will round up when binning to jdn.
-  ;  Thus the resulting JDN will be noon on the appropriate UTC day.
-  ;TODO: test the assumption that it will always round up, precision concerns
-  ;TODO: use time also, is it ever missing?
+  ;Parse the yymmdd date as Modified Julian Date
+  mjd = yymmdd2mjd(vars[0])
   
   ;Parse the latitude, get sign from hemisphere
   ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
@@ -144,7 +140,7 @@ function parse_line, line
   
   ;Create result structure
   result = {   $
-    jd:jd,     $
+    mjd:mjd,   $
     lat:lat,   $
     lon:lon,   $
     area:area, $
@@ -264,6 +260,6 @@ end
 ;-----------------------------------------------------------------------------
 ; Use this routine to get USAF sunspot region data.
 function get_sunspot_data, ymd1, ymd2
-  data = get_sunspot_data_from_latis, ymd1, ymd2
+  data = get_sunspot_data_from_latis(ymd1, ymd2)
   return, data
 end

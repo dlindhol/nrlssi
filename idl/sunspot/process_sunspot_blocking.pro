@@ -54,7 +54,7 @@
 ;   process_sunspot_blocking,year
 ;
 ;@***** 
-pro process_sunspot_blocking, ymd1, ymd2, stations=stations
+function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=output_dir
   ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
   
@@ -72,47 +72,46 @@ pro process_sunspot_blocking, ymd1, ymd2, stations=stations
   
   ;Get sunspot data for the given time range.
   ;Array of structures, one element per line.
-  ;  struct = {jd:0.0, lat:0.0, lon:0.0, area:0.0, station:''}
-  ;  index -> (jd, lat, lon, area, station)
+  ;  struct = {mjd:0.0, lat:0.0, lon:0.0, area:0.0, station:''}
+  ;  index -> (mjd, lat, lon, area, station)
   sunspot_data = get_sunspot_data(ymd1, ymd2)
   ;TODO: apply stations constraint when requesting data. 
   ;      Would require separate query for each station = slow.
   
-  ;Group by Julian Day number
-  ; jdn -> (jd, lat, lon, area, station)
-  daily_sunspot_data = group_by_day(sunspot_data)  ;TODO: check jd rounding
+  ;Group by Modified Julian Day Number (MJD rounded down)
+  ; mjdn -> (mjd, lat, lon, area, station)
+  daily_sunspot_data = group_by_day(sunspot_data)
+
+  ;Convert start and stop dates to Modified Julian Day Number (integer).
+  mjd_start = iso_date2mjdn(ymd1)
+  mjd_stop  = iso_date2mjdn(ymd2) - 1 ;end time not inclusive
   
-  ;Convert start and stop dates to Julian Day Number (integer).
-  ;TODO: test: handling leap year, .5 day offset, binning by utc day
-  jd_start = iso_date2jdn(ymd1)
-  jd_stop  = iso_date2jdn(ymd2) - 1 ;end time not inclusive
-  
-  ;Define Hash to hold final daily averaged results with JDN as key.
+  ;Define Hash to hold final daily averaged results with MJDN as key.
   sunspot_blocking_data = Hash()
   
   ;Iterate over days.
-  for jdn = jd_start, jd_stop do begin
+  for mjdn = mjd_start, mjd_stop do begin
     ;Define struct to hold final daily averaged results
     ;Reset data values each time.
     sunspot_blocking_struct = {sunspot_blocking,  $
-      jdn:0l,   $
+      mjdn:0l,   $
       ssbt:0.0, dssbt:0.0,   $
       ssbuv:0.0, dssbuv:0.0,  $
       quality_flag:0  $
     }
     
-    ;Set Julian Day Number
-    sunspot_blocking_struct.jdn = jdn
+    ;Set Modified Julian Day Number
+    sunspot_blocking_struct.mjdn = mjdn
     
     ;Process data if we have any for this day
-    if daily_sunspot_data.hasKey(jdn) then begin
+    if daily_sunspot_data.hasKey(mjdn) then begin
       ;Get the sunspot data for this day
-      ssdata = daily_sunspot_data[jdn]
-      ; i -> (jd, lat, lon, area, station)
+      ssdata = daily_sunspot_data[mjdn]
+      ; i -> (mjd, lat, lon, area, station)
       
       ;Adjust latitude
       ;TODO: use time of day to get more accurate solar latitude?
-      B0 = get_solar_latitude(jdn)
+      B0 = get_solar_latitude(mjdn + 2400000.5) ;convert to Julian Date
       lat = ssdata.lat - B0
       
       ;Compute the total and uv sunspot blocking contribution for each sample
@@ -148,7 +147,6 @@ pro process_sunspot_blocking, ymd1, ymd2, stations=stations
       sunspot_blocking_struct.dssbuv = stddev(ssbuv_array, /NaN)
     endif else begin
       ;no data for this day, fill with missing value
-      ;print, 'WARNING: No data produced for date: ' + strtrim(jd2iso_date(jdn),2)
       sunspot_blocking_struct.ssbt   = fill_value
       sunspot_blocking_struct.dssbt  = fill_value
       sunspot_blocking_struct.ssbuv  = fill_value
@@ -156,12 +154,14 @@ pro process_sunspot_blocking, ymd1, ymd2, stations=stations
     endelse
     
     ;Add structure to result hash for this day.
-    sunspot_blocking_data[jdn] = sunspot_blocking_struct
+    sunspot_blocking_data[mjdn] = sunspot_blocking_struct
   endfor
   
-  ;Write the results.
-  ;file = '/data/NRLSSI/sunspot_blocking_' + ymd1 +'_'+ ymd2 +'_'+ version +'.txt'
-  file = '~/data/sunspot_blocking_' + ymd1 +'_'+ ymd2 +'_'+ version +'.txt'
-  write_sunspot_blocking_data, sunspot_blocking_data, file
+  ;Write the results if output_dir is specified
+  if n_elements(output_dir) eq 1 then begin
+    file = output_dir + '/sunspot_blocking_' + ymd1 +'_'+ ymd2 +'_'+ version +'.txt'
+    write_sunspot_blocking_data, sunspot_blocking_data, file
+  endif
   
+  return, sunspot_blocking_data
 end
