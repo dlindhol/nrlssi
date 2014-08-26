@@ -227,7 +227,7 @@ end
 
 ;-----------------------------------------------------------------------------
 ; Get data from LaTiS.
-function get_sunspot_data, ymd1, ymd2
+function get_sunspot_data_from_latis, ymd1, ymd2
   ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
   ;TODO: make time range inclusive? need to add day to ymd2 since LaTiS takes that as midnight
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
@@ -260,3 +260,10 @@ function get_sunspot_data, ymd1, ymd2
 
 end
 
+
+;-----------------------------------------------------------------------------
+; Use this routine to get USAF sunspot region data.
+function get_sunspot_data, ymd1, ymd2
+  data = get_sunspot_data_from_latis, ymd1, ymd2
+  return, data
+end
