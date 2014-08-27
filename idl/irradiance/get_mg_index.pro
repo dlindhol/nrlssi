@@ -3,9 +3,6 @@ function get_mg_index_from_latis, ymd1, ymd2
   ;If neither time is specified, return the entire dataset.
   ;If only the first time is specified, return only that day.
   
-  ;Note: Source data have time stored as Julian Day Number (noon).
-  
-  
   ;construct the query string for the time constraints
   has_t1 = n_elements(ymd1) eq 1
   has_t2 = n_elements(ymd2) eq 1
@@ -16,7 +13,7 @@ function get_mg_index_from_latis, ymd1, ymd2
   ;read the data from LaTiS as a 2D JSON array
   ;TODO: catch errors
   netUrl = OBJ_NEW('IDLnetUrl')
-  netUrl->SetProperty, URL_HOST  = 'localhost' ;'lisird-dev.lasp.colorado.edu' ;'localhost'
+  netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
   netUrl->SetProperty, URL_PORT  = 8080
   netURL->SetProperty, URL_PATH  = 'lisird3/latis/nrlssi_mg_index.jsona'
   netURL->SetProperty, URL_QUERY = query
