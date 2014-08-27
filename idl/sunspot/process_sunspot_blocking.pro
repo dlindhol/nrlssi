@@ -84,24 +84,28 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
 
   ;Convert start and stop dates to Modified Julian Day Number (integer).
   mjd_start = iso_date2mjdn(ymd1)
-  mjd_stop  = iso_date2mjdn(ymd2) - 1 ;end time not inclusive
+  mjd_stop  = iso_date2mjdn(ymd2) - 1 ;end time from get_sunspot_data not inclusive
   
-  ;Define Hash to hold final daily averaged results with MJDN as key.
-  sunspot_blocking_data = Hash()
+  ;Number of time samples (days)
+  n = mjd_stop - mjd_start + 1
+  
+  ;Define struct to hold final daily averaged results
+  sunspot_blocking_struct = {sunspot_blocking,  $
+    mjdn:0l,   $
+    ssbt:0.0, dssbt:0.0,   $
+    ssbuv:0.0, dssbuv:0.0,  $
+    quality_flag:0  $
+  }
+    
+  ;Define array of structures to hold final daily averaged results for each day.
+  sunspot_blocking_data = replicate(sunspot_blocking_struct, n)
   
   ;Iterate over days.
-  for mjdn = mjd_start, mjd_stop do begin
-    ;Define struct to hold final daily averaged results
-    ;Reset data values each time.
-    sunspot_blocking_struct = {sunspot_blocking,  $
-      mjdn:0l,   $
-      ssbt:0.0, dssbt:0.0,   $
-      ssbuv:0.0, dssbuv:0.0,  $
-      quality_flag:0  $
-    }
+  for i = 0, n-1 do begin
+    mjdn = i + mjd_start
     
     ;Set Modified Julian Day Number
-    sunspot_blocking_struct.mjdn = mjdn
+    sunspot_blocking_data[i].mjdn = mjdn
     
     ;Process data if we have any for this day
     if daily_sunspot_data.hasKey(mjdn) then begin
@@ -120,7 +124,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
       
       ;If the resulting value is NaN (from missing area) set quality flag
       imissing = where(~ FINITE(ssbt), nmissing)
-      if nmissing gt 0 then sunspot_blocking_struct.quality_flag = 1 ;TODO: consider bit mask for multiple flags
+      if nmissing gt 0 then sunspot_blocking_data[i].quality_flag = 1 ;TODO: consider bit mask for multiple flags
       
       ;Group data by station and sum ssb from contributing sunspot groups.
       ;Hash: station -> ssb  with NaNs where area was missing
@@ -138,24 +142,22 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
     
       ssbt_list = ssbt_by_station.values()
       ssbt_array = ssbt_list.toArray()
-      sunspot_blocking_struct.ssbt  = mean(ssbt_array, /NaN)
-      sunspot_blocking_struct.dssbt = stddev(ssbt_array, /NaN)
+      sunspot_blocking_data[i].ssbt  = mean(ssbt_array, /NaN)
+      sunspot_blocking_data[i].dssbt = stddev(ssbt_array, /NaN)
       
       ssbuv_list = ssbuv_by_station.values()
       ssbuv_array = ssbuv_list.toArray()
-      sunspot_blocking_struct.ssbuv  = mean(ssbuv_array, /NaN)
-      sunspot_blocking_struct.dssbuv = stddev(ssbuv_array, /NaN)
+      sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array, /NaN)
+      sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array, /NaN)
     endif else begin
       ;no data for this day, fill with missing value
-      sunspot_blocking_struct.ssbt   = fill_value
-      sunspot_blocking_struct.dssbt  = fill_value
-      sunspot_blocking_struct.ssbuv  = fill_value
-      sunspot_blocking_struct.dssbuv = fill_value
+      sunspot_blocking_data[i].ssbt   = fill_value
+      sunspot_blocking_data[i].dssbt  = fill_value
+      sunspot_blocking_data[i].ssbuv  = fill_value
+      sunspot_blocking_data[i].dssbuv = fill_value
     endelse
     
-    ;Add structure to result hash for this day.
-    sunspot_blocking_data[mjdn] = sunspot_blocking_struct
-  endfor
+  endfor  
   
   ;Write the results if output_dir is specified
   if n_elements(output_dir) eq 1 then begin
