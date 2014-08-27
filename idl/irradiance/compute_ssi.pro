@@ -78,8 +78,9 @@
 ;      in Evolving Solar Physics and the Climates of Earth and Space, Karel Schrijver and George Siscoe (Eds), Cambridge Univ. Press, 2010.
 ;   Reference describing the extension of the model to include the extreme ultraviolet spectrum and the empirical capability to specify 
 ;   entire solar spectral irradiance and its variability from 1 to 100,000 nm:
-;      Lean, J. L., J. T. Emmert, J. M. Picone, and R. R. Meier, Global and regional trends in ionospheric total electron content, 
-;      J. Geophys. Res., 116, A00H04, doi:10.1029/2010JA016378.
+;      Lean, J. L., T. N. Woods, F. G. Eparvier, R. R. Meier, D. J. Strickland, J. T. Correira, and J. S. Evans,
+;      Solar Extreme Ultraviolet Irradiance: Present, Past, and Future, J. Geophys. Res., 116, A001102, 
+;      doi:10.1029/2010JA015901, 2011.
 ;      
 ; INPUTS
 ;   sb           - sunspot darkening indice
