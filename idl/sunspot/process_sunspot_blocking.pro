@@ -122,9 +122,9 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
       if nmissing gt 0 then sunspot_blocking_data[i].quality_flag = 1 ;TODO: consider bit mask for multiple flags
       
       ;Group data by station and sum ssb from contributing sunspot groups.
-      ;Hash: station -> ssb  with NaNs where area was missing
-      ssbt_by_station  = group_and_sum(ssdata.station, ssbt)
-      ssbuv_by_station = group_and_sum(ssdata.station, ssbuv)
+      ;Hash: station -> ssb  with NaNs where area was missing replaced with 0
+      ssbt_by_station  = group_and_sum(ssdata.station, ssbt, /nan_as_zero)
+      ssbuv_by_station = group_and_sum(ssdata.station, ssbuv, /nan_as_zero)
       
       ;Average the results from all stations, drop NaNs
       ;TODO: weighted avg time? instead of assume all obs at noon
