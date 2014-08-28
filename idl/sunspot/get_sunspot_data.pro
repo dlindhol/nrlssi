@@ -243,6 +243,7 @@ function get_sunspot_data_from_latis, ymd1, ymd2
   records = List()
   
   ;Iterate through each line and parse into a data record
+  ;TODO: use json?
   ;Skip header, start at 1
   for i = 1, n_elements(lines)-1 do begin
     ;This will return -1 if the line is not a valid data record.
@@ -259,7 +260,20 @@ end
 
 ;-----------------------------------------------------------------------------
 ; Use this routine to get USAF sunspot region data.
-function get_sunspot_data, ymd1, ymd2
+function get_sunspot_data, ymd1, ymd2, stations=stations
   data = get_sunspot_data_from_latis(ymd1, ymd2)
+  
+  ;Keep only requested stations
+  if n_elements(stations) gt 0 then begin
+    list = List() ;keep a list of records with station in stations
+    for i=0, n_elements(data)-1 do begin
+      station = data[i].station
+      w = where(stations eq station, n)
+      if n eq 1 then list.add, data[i]
+    endfor
+    
+    data = list.toArray()
+  endif
+  
   return, data
 end

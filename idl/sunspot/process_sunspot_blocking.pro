@@ -58,14 +58,11 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
   
+  ;use a development version to help keep track of data output
+  version='v0.4'
+  
   ;Process just one day if ymd2 is not provided.
   if n_elements(ymd2) eq 0 then ymd2 = ymd1
-  
-  ;Optional stations arg to limit the set of stations.
-  ;If stations not defined, use whatever is in the data.
-  ;stations = ['LEAR','CULG','SVTO','RAMY','BOUL','MWIL','HOLL','PALE','MANI','ATHN']
-
-  version='v0.3'
   
   ;Use this as a fill value when there is no valid data.
   fill_value = !Values.F_NAN ;-999
@@ -74,9 +71,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   ;Array of structures, one element per line.
   ;  struct = {mjd:0.0, lat:0.0, lon:0.0, area:0.0, station:''}
   ;  index -> (mjd, lat, lon, area, station)
-  sunspot_data = get_sunspot_data(ymd1, ymd2)
-  ;TODO: apply stations constraint when requesting data. 
-  ;      Would require separate query for each station = slow.
+  sunspot_data = get_sunspot_data(ymd1, ymd2, stations=stations)
   
   ;Group by Modified Julian Day Number (MJD rounded down)
   ; mjdn -> (mjd, lat, lon, area, station)
