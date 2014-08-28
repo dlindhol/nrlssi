@@ -50,7 +50,7 @@ function replace_nan_with_value, data, value
   result = float(data)
   
   ;Get the indices of the NaNs. Note, we can't use equality tests for NaNs.
-  index = where (~ FINITE(data), count)
+  index = where (FINITE(data, /nan), count)
   
   ;Replace.
   ;Note, do the 'count' test, otherwise no matches means index will be -1 
