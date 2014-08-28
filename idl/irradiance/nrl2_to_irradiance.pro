@@ -164,6 +164,7 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
     ssi = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
     nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
   
+    ; TODO Add bandcenters and bandwidths and nband to data structure
     struct = {nrl2,                $
       mjd:    mjd_start + i,       $
       tsi:    nrl2_tsi.totirrad,   $
@@ -176,7 +177,16 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   
   ;Convert data List to array
   data = data_list.toArray()
-   
+  
+  ;Example, convert modified julian date to iso string
+  print, mjd2iso_date(data[0].mjd)
+  
+  ;Example, plot spectral irradiance
+  plot,spectral_bins.bandcenter,data.ssi
+  
+  ;QA output
+  print,data.tsi,data.ssitot
+  
   ;Write the results if output_dir is specified
   ;TODO: Consider writing each time sample as we compute it. Data may be too large for memory?
   if n_elements(output_dir) eq 1 then begin
