@@ -127,37 +127,64 @@
 ;
 ;@*****
 
-pro nrl2_to_irradiance
-
+function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ; pro to calculate nrltsi2 and nrlssi2 using saved parameters
-
-  ; test day is 1 Jan 2003
-  day=1
-  month=1
-  year=2003
-  sb=79.76      ; from NOAA WDC sunspot regions
-  mg=0.1612   ; on GOME scale
-  ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   
   modver='18Aug14'
   fn='~/git/nrlssi/data/judith_2014_08_21/NRL2_model_parameters_'+modver+'.sav'
+  ;TODO: get this from function parameter?
   
-  model_params = get_model_params(fn) ; restore model parameters
+  ;Convert start and stop dates to Modified Julian Day Number (integer).
+  mjd_start = iso_date2mjdn(ymd1)
+  mjd_stop  = iso_date2mjdn(ymd2) - 1 ;end time not inclusive
   
-  spectral_bins = get_spectral_bins() ; set up wavelength bands for summing 1 nm spectrum
+  ;Number of time samples (days)
+  n = mjd_stop - mjd_start + 1
   
-  nrl2_tsi = compute_tsi(sb ,mg ,model_params) ;calculate TSI for given sb and mg
+  ;Restore model parameters
+  model_params = get_model_params(fn)
   
-  ssi = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
+  ;Set up wavelength bands for summing 1 nm spectrum
+  spectral_bins = get_spectral_bins() 
   
-  nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
- 
-  outfile = '~/fit/nrlssi/data/judith_2014_08_21/tsi_day.nc' ;this is temporary - replace with routine to generate filename
-  ;stop
-  ;status = write_tsi_model_to_netcdf(nrl2_tsi, outfile, year, month, day) ;need to replace with ymd1, ymd2 and assign new time variable attribute in netcdf4 format.
+  ;Get input data
+  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2) ;sunspot blocking data
+  mg_index = get_mg_index(ymd1, ymd2) ;MgII index data
+
+  ;Make list to accumulate results
+  data_list = List()
   
-  print,systime(0),mg,sb,nrl2_tsi.totirrad,ssi.nrl2tot,nrl2_ssi.nrl2binsum
-  stop
+  ;Iterate over days.
+  ;TODO: consider passing complete arrays of data to these routines
+  for i = 0, n-1 do begin
+    sb = sunspot_blocking[i].ssbt
+    mg = mg_index[i].index
+    
+    nrl2_tsi = compute_tsi(sb ,mg ,model_params) ;calculate TSI for given sb and mg
+    ssi = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
+    nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
   
+    struct = {nrl2,                $
+      mjd:    mjd_start + i,       $
+      tsi:    nrl2_tsi.totirrad,   $
+      ssi:    nrl2_ssi.nrl2bin,    $
+      ssitot: nrl2_ssi.nrl2binsum  $
+    }
+    
+    data_list.add, struct
+  endfor
+  
+  ;Convert data List to array
+  data = data_list.toArray()
+   
+  ;Write the results if output_dir is specified
+  ;TODO: Consider writing each time sample as we compute it. Data may be too large for memory?
+  if n_elements(output_dir) eq 1 then begin
+    file = output_dir + '/nrl2_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.sav'
+    save, file=file, data
+    ;TODO: status = write_nrl2_data(data, file)
+  endif
+  
+  return, data
 end
 
