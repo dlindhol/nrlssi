@@ -23,6 +23,7 @@
 ; NOTE: nedd to run 2010 with both old old file and new Denig file
 ; so as to catch all data - then make composite SSB file by hand
 ;
+
 rd=1
 print,'Read in data, calculate sunspot blocking, write files  ....0'
 print,'Plots ....1'
@@ -64,15 +65,15 @@ print,' Finished reading BETASUN with ',kl,' data points'
 startyear=1982
 ;startyear=2013
 ;endyear=2013
-startyear=2012
-endyear=2012
+startyear=2000
+endyear=2000
 ;
 ; cycle through years from startyear (=1982) to endyear
 for iyear=startyear,endyear do begin
   if(iyear le 1999) then yy=iyear-1900
   if(iyear ge 2000) then yy=iyear-2000
   ;
-  infile0='/Users/hofmann/Documents/FCDR_Solar/'
+  infile0='data/judith_2014_08_21/'
   if(iyear lt 2000) then $
     infile='usaf_mwl.'+string(yy,'$(i2)')
   if((iyear ge 2000) and (iyear le 2004)) then $
@@ -89,6 +90,10 @@ for iyear=startyear,endyear do begin
   if(iyear eq 2013) then $
     infile=infile0+'solar_regions_reports_20'+string(yy,'$(i2)')+$
     'ytd-processed.txt'
+  if(iyear eq 2000) then $
+    infile=infile0+'usaf_solar-region-reports_200'+string(yy,'$(i1)')+$
+    '.txt'
+    
   ;
   ; to check the values in Bill Denig's file - read the data from the end of
   ;  2010 from this file - to compare with existing 2010 file
@@ -99,7 +104,7 @@ for iyear=startyear,endyear do begin
   ;
   ;outfile='/home/lean/data/solaractivity/spotindex/SSB_USAF_'+$
   ;   string(iyear,'$(i4)')+'_'+ver+'.txt'
-  outfile='/Users/hofmann/Documents/FCDR_Solar/SSB_USAF_'+$
+  outfile='test/odele_SSB_USAF_'+$
     string(iyear,'$(i4)')+'_'+ver+'.txt'
   ;
   print,' Year is',iyear
@@ -162,6 +167,7 @@ for iyear=startyear,endyear do begin
   cl320=[0.88,0.03]
   ; where I/I0=1.-cl320(0)-cl320(1)+cl320(0)*mu+cl320(1)*mu*mu
   ;
+  
   ;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   ;	Open files for reading in data and writing results
   ;
@@ -246,7 +252,7 @@ for iyear=startyear,endyear do begin
   on_ioerror,cont702
   ; read a dumi variable and extract the relevant data - different from Fortran
   readf,1,dumi
-  print,dumi
+  ;print,dumi
   IC=strmid(dumi,0,2)
   my=fix(strmid(dumi,2,2))
   mm=fix(strmid(dumi,4,2))
@@ -270,6 +276,7 @@ for iyear=startyear,endyear do begin
   pc=strmid(dumi,40,1)
   cmpct=strmid(dumi,41,1)
   numspot=strmid(dumi,43,2)
+
   ; check for no spots
   if(numspot eq '  ') then numspot=' 0'
   numspot=fix(numspot)
@@ -292,7 +299,7 @@ for iyear=startyear,endyear do begin
   AQU=strmid(dumi,75,1)
   STATION=strmid(dumi,76,4)
   ; print,'test 1'
-  ;
+ 
   mdate=my*10000.+mm*100.+md
   ; print,dumi
   ; print,mdate,' ',mut,' ',lathem,xlat,' ',longhem,along,' ',wils,$
@@ -315,12 +322,13 @@ for iyear=startyear,endyear do begin
   ;
   ; NOTE *** KANDILLI not yet included in the average ** as of DEC 96
   ;
-  if(js eq 0) then print,' Ivalid station ',station
+  if(js eq 0) then print,' Invalid station ',station
   if(js eq 0) then print,dumi
-  ;
+
   ; now put the regions into the area and alat arrays for each day
   for i=0,ndays-1 do begin
-    ; print,i,mdate,idate(i)
+     ;print,i,mdate,idate(i)
+     
     if(mdate ne idate(i)) then goto, cont701
     if(iarea eq -888.) then goto,cont701
     numobs(i)=numobs(i)+1
@@ -365,6 +373,7 @@ for iyear=startyear,endyear do begin
   ;     CALCULATE THE SUNSPOT BLOCKING FUNCTION FOR EACH OF THE EIGHT STATIONS
   ;	ON EACH DAY, THEN AVERAGE
   ;
+
   for i=0,ndays-1 do begin
     num=numobs(i)
     if(num eq 0) then goto, cont611
@@ -385,29 +394,44 @@ for iyear=startyear,endyear do begin
           if(area(m,i) ne area(n,i)) then goto, cont603
           if(group(m,i) ne group(n,i)) then goto, cont603
           idupl=idupl+1
-          ;	   set duplicate data to -888 (i.e., no data) IF M NE N
-          if(m ne n) then area(m,i)=-888.0
+          ;	set duplicate data to -888 (i.e., no data) IF M NE N
+          if(m ne n) then begin
+            ;print,i,n,k,m,area(m,i),area(n,i)
+            area(m,i)=-888.0
+            ;stop
+          endif
           cont603:
-        endfor
+        endfor ;end loop over m=0,num-1
         if(idupl ge 2) then print,' idupl=',idupl
         if(idupl ge 2) then print,idate(i),n,istn(n,i),amu(n,i),area(n,i),group(n,i)
         ;
         ;
         ; *** CALCULATE SUNSPOT BLOCKING HERE ***
         ; bypass duplicate record
-        if(area(n,i) eq -888.) then goto,cont601
+        
+        if(area(n,i) eq -888.) then begin
+;          print,i,n,k, group(n,i)
+;          stop
+          goto,cont601
+        endif
         ; bolometric:
         sb=amu(n,i)*(3*amu(n,i)+2)/2.*area(n,i)*(0.2231+0.0244*alog10(area(n,i)))
         ; print for checking ...861221 has duplicate record
         ; if(idate(i) eq 861221) then print,i,n,amu(n,i),area(n,i),sb
         ssblock(k,i)=ssblock(k,i)+sb
+;        if i eq 78 and k eq 2 then begin
+;        ;print for checking...
+;        ;  print,i,n,k,m
+;          print, i,n,area(n,i),group(n,i),sb,ssblock(k,i)
+;          stop
+;        endif
         ; UV at 320 nm:
         ctl=1.-cl320(0)-cl320(1)+cl320(0)*amu(n,i)+cl320(1)*amu(n,i)*amu(n,i)
         sbuv=5.0*amu(n,i)*ctl/2.*area(n,i)*(0.2231+0.0244*alog10(area(n,i)))
         ssbuv(k,i)=ssbuv(k,i)+sbuv*excess320/excess
         cont601:
-      endfor
-    endfor
+      endfor ;end loop over k=0,9
+    endfor ;end loop over n=0,num-1
     goto,cont612
     ;
     cont611:
