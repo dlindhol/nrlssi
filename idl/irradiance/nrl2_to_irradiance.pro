@@ -182,7 +182,7 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   print, mjd2iso_date(data[0].mjd)
   
   ;Example, plot spectral irradiance
-  plot,spectral_bins.bandcenter,data.ssi
+  plot,spectral_bins.bandcenter,data.ssi,/xlog
   
   ;QA output
   print,data.tsi,data.ssitot
