@@ -182,10 +182,10 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   print, mjd2iso_date(data[0].mjd)
   
   ;Example, plot spectral irradiance
-  plot,spectral_bins.bandcenter,data.ssi,/xlog
+  plot,spectral_bins[0].bandcenter,data[0].ssi,/xlog
   
   ;QA output
-  print,data.tsi,data.ssitot
+  print,data[0].tsi,data[0].ssitot
   
   ;Write the results if output_dir is specified
   ;TODO: Consider writing each time sample as we compute it. Data may be too large for memory?
