@@ -178,14 +178,17 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;Convert data List to array
   data = data_list.toArray()
   
+  tsifile = 'tsi_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.nc' ;TODO create file name dynamically; include creation date
+  result = write_tsi_model_to_netcdf2(ymd1,ymd2,struct.mjd,nrl2_tsi,tsifile)
+  
   ;Example, convert modified julian date to iso string
-  print, mjd2iso_date(data[0].mjd)
+  ;print, mjd2iso_date(data[0].mjd)
   
   ;Example, plot spectral irradiance
-  plot,spectral_bins[0].bandcenter,data[0].ssi,/xlog
+  ;plot,spectral_bins[0].bandcenter,data[0].ssi,/xlog
   
   ;QA output
-  print,data[0].tsi,data[0].ssitot
+  ;print,data[0].tsi,data[0].ssitot
   
   ;Write the results if output_dir is specified
   ;TODO: Consider writing each time sample as we compute it. Data may be too large for memory?
