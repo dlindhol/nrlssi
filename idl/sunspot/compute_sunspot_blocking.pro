@@ -47,7 +47,7 @@
 ;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   process_sunspot_blocking,ymd1,ymd2,stations=stations,output_dir=output_dir
+;   compute_sunspot_blocking,area,lat,lon
 ;
 ;@***** 
 function compute_sunspot_blocking, area, lat, lon
