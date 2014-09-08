@@ -13,9 +13,12 @@
 ;   the main driver, nrl_2_irradiance.pro
 ;      
 ; INPUTS
-;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
-;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), 
-;                in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
+;   ymd1                - starting time range respective to midnight GMT of the given day, in 'yyyy-mm-dd' format
+;   ymd2                - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), in 'yyyy-mm-dd' format.
+;   stations = stations - Optional keyword to restrict sunspot darkening index to specified monitoring stations in the USAF white light network.
+;                         If omitted (default), all stations are included. Used for QA analysis.
+;   output_dir=output_dir - Optional keyword to specify directory path to store sunspot darkening index in a text file. If omitted (default), output
+;                           is not written to intermediate file. Used for QA analysis.             
 ;                  
 ; OUTPUTS
 ;     
