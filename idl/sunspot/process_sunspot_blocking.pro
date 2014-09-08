@@ -31,6 +31,9 @@
 ;                                     ('sunspot_blocking_YMD1_YMD2_VER.txt'), where time ranges specify start/end date of desired time range.
 ;                                     'VER' is a hardcoded development version value to help keep track of data output. Intermediate file
 ;                                     output used for QA analysis.
+;                                     
+;   Note**: Input time periods of YYYY-MM-DD format are internally converted to Modified Julian Date for these routines.
+;                                     
 ; INPUTS
 ;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
 ;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), 
