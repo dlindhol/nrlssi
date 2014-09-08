@@ -41,7 +41,7 @@
 ;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   process_sunspot_blocking,ymd1,ymd2,stations=stations,output_dir=output_dir
+;   group_and_sum,keys,values,nan_as_zero=nan_as_zero
 ;
 ;@***** 
 ;Group the data into a hash by the keys with each value being 
