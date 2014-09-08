@@ -38,7 +38,6 @@
 ;
 ;@***** 
 
-;Return the given unix time (seconds since 1970-01-01) as a Julian Day Number.
 function unix2jdn, unix_time
   jd_at_1970 = 2440587.5d ;1970-01-01T00:00:00Z
   unix_days = unix_time / 86400.0d
