@@ -14,9 +14,8 @@
 ;   define the facular brightening index).
 ;      
 ; INPUTS
-;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
-;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), 
-;                in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
+;   ymd1       - starting time range respective to midnight GMT of the given day, in 'yyyy-mm-dd' format.
+;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), in 'yyyy-mm-dd' format.
 ;                  
 ; OUTPUTS
 ;   result - a structure containing the following variables:
