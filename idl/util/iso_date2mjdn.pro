@@ -34,7 +34,7 @@
 ;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   group_by_day,structures
+;   iso_date2mjdn,ymd
 ;
 ;@***** 
 function iso_date2mjdn, ymd

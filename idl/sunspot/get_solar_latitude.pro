@@ -1,3 +1,47 @@
+;@***h* SOLAR_IRRADIANCE_FCDR/get_solar_latitude.pro
+; 
+; NAME
+;   get_solar_latitude.pro
+;
+; PURPOSE
+;   Obtains solar latitude from a generic file (betasun2.dat), or computation (JEAN MEEUS, ASTRONOMICAL ALGORITHMS;
+;   /data_systems/tools/knapp/idl/astronomy/helios.pro), for a specified date.
+;
+; DESCRIPTION
+;   Obtains the ecliptic plane correction, B0, for the given day. The B0 factor is used to correct the
+;   heliocentric latitude of the sunspot grouping, 'lat' for an approximate +/- 7 degree annual 
+;   change in the ecliptic plane (the angle between the perpendicular of the line from the 
+;   earth center to the center of the Sun) and the angle of rotation of the Sun. The B0 correction is an 
+;   area projection (cosine weighting). 
+;   The corrected solar latitude = latitude - B0
+; INPUTS
+;   jd - Modified Julian Date 
+;   
+; OUTPUTS
+;   B0 - the ecliptic plane correction 
+;
+; AUTHOR
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;     
+; COPYRIGHT 
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   09/08/2014 Initial Version prepared for NCDC
+; 
+; USAGE
+;   get_solar_latitude,jd
+;
+;@***** 
 function get_solar_latitude_from_file, jd
   ;One value for each day of the year. Assumes it's the same every year.
   file = 'data/betasun2.dat'

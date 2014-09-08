@@ -16,11 +16,11 @@
 ;                          By default, all stations are used in computing the sunspot darkening index.
 ;   group_by_day.pro     - group the USAF white light data by Julian date: jdn -> (jd, lat, lon, area, station)
 ;                          Stored in structure, 'daily_sunspot_data'
-;   get_solar_latitutude.pro - Obtains the solar latitude, B0, for the given day. The B0 factor is used to correct the
+;   get_solar_latitutude.pro - Obtains the ecliptic plane correction, B0, for the given day. The B0 factor is used to correct the
 ;                              heliocentric latitude of the sunspot grouping, 'lat' for an approximate +/- 7 degree annual 
 ;                              change in the ecliptic plane (the angle between the perpendicular of the line from the 
 ;                              earth center to the center of the Sun) and the angle of rotation of the Sun. The B0 correction is an 
-;                              area projection (cosine weighting). 
+;                              area projection (cosine weighting). The corrected solar latitude = latitude - B0
 ;   compute_sunspot_blocking.pro -  The delta change (reduction) in irradiance computed from the latitude/longitude and
 ;                                   sunspot area computed from the individual measurements of sunspot area for daily recorded
 ;                                   sunspot grouping(s) of a particular station.
