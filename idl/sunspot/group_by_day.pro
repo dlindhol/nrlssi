@@ -1,31 +1,31 @@
-;@***h* TSI_FCDR/group_by_day.pro
+;@***h* SOLAR_IRRADIANCE_FCDR/group_by_day.pro
 ; 
 ; NAME
 ;   group_by_day.pro
 ;
 ; PURPOSE
-;   Bins USAF white light sunspot data by UTC day. 
+;   Bins USAF white light sunspot data by day. 
 ;
 ; DESCRIPTION
-;   This routine is called from the main driver, process_sunspot_blocking.pro. 
-;   It takes the USAF white light sunspot data (binned by index) from get_sunspot_data.pro and bins the 
-;   data by UTC time. 
+;   This routine is called from process_sunspot_blocking.pro. It aquires USAF white light sunspot region data from a 
+;   NOAA/NGDC web repository and stores it in a structure, 'result', identified by index -> (jd, lat, lon, area, station)
 ;   
 ; INPUTS
-;   structures - Data structure containing (for each record in the USAF data):
-;                jd - Julian Date (converted from yymmdd) 
-;                lat - latitude of sunspot group
-;                lon - longitude of sunspot group
-;                area - sunspot area
-;                station - station name four digit year (i.e. 1978) (TODO: update to time range args)
+;   structures - A structure containing (for each record in the USAF data):
+;   jd - Modified Julian Date 
+;   lat - latitude of sunspot group
+;   lon - longitude of sunspot group
+;   area - recorded sunspot area
+;   station - station name 
 ;   
 ; OUTPUTS
-;   Returns a Hash where the key is the Julian Day Number and the value is a List of records for that day.  The list
-;   of records is defined above under the heading 'Inputs'. 
+;   Returns a Hash where the key is the Julian Day Number and the value is a List of records for that day.  
 ;
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
-;   
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;     
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
 ;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
@@ -37,7 +37,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/09/2014 Initial Version prepared for NCDC
+;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   group_by_day,structures

@@ -1,4 +1,4 @@
-;@***h* TSI_FCDR/process_sunspot_blocking.pro
+;@***h* SOLAR_IRRADIANCE_FCDR/process_sunspot_blocking.pro
 ; 
 ; NAME
 ;   process_sunspot_blocking.pro
@@ -8,8 +8,8 @@
 ;   White Light sunspot region data (obtained from a NOAA/NGDC web repository via ftp access- point of contact: Bill Denig).
 ;
 ; DESCRIPTION
-;   This routine computes the sunspot darkening index, which is passed by structure, 'sunspot_blocking_data', to the main driver routine.  
-;   This routine calls a series of subroutines with the names and purposes, summarized below:
+;   This routine computes the sunspot darkening index, which is passed by structure, 'sunspot_blocking_data', to the calling 
+;   function, 'get_sunspot_blocking'. This routine calls a series of subroutines with the names and purposes, summarized below:
 ;   get_sunspot_data.pro - aquire USAF white light sunspot region data from NOAA/NGDC web repository and store
 ;                          in a structure, 'sunspot_data', identified by index -> (jd, lat, lon, area, station)
 ;                          An optional keyword, 'stations', is used to restrict data to a user-defined particular station(s).
