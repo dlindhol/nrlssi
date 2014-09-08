@@ -94,10 +94,10 @@
 ;      doi:10.1029/2010JA015901, 2011.
 ;      
 ; INPUTS
-;   ymd1 - starting time range respective to midnight GMT of the given day, of the form 'yyyy-mm-dd'
-;   ymd2 - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), of the form 'yyyy-mm-dd'.
-;
-;infile - an ascii text columnar file containing model coefficients and adopted quiet Sun irradiance value
+;   ymd1       - starting time range respective to midnight GMT of the given day, of the form 'yyyy-mm-dd'
+;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), of the form 'yyyy-mm-dd'.
+;   output_dir - path to desired output directory. If left blank, the output file is placed in the current working directory with the 
+;                default title of 'nrl2_YMD1_YMD2_VER.sav'; using the time ranges above and a hard-coded "version" number.
 ;
 ; OUTPUTS
 ;   outfile - user provided output filename (default filename is 'nrl_tsi.nc') that contains a data structure of
@@ -123,7 +123,7 @@
 ;   08/22/2014 Initial Version prepared for NCDC
 ;
 ; USAGE
-;   nrl2_to_irradiance, ymd1, ymd2
+;   nrl2_to_irradiance, ymd1, ymd2,output_dir=output_dir
 ;
 ;@*****
 
