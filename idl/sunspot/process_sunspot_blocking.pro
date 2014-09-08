@@ -5,37 +5,54 @@
 ;
 ; PURPOSE
 ;   The process_sunspot_blocking.pro procedure computes the sunspot blocking function from U.S. Air Force
-;   White Light sunspot region data (obtained from a NOAA/NGDC web repository- point of contact: Bill Denig).
+;   White Light sunspot region data (obtained from a NOAA/NGDC web repository via ftp access- point of contact: Bill Denig).
 ;
 ; DESCRIPTION
-;   This routine is the main driver routine.  It calls a series of subroutines with the name/purpose:
+;   This routine computes the sunspot darkening index, which is passed by structure, 'sunspot_blocking_data', to the main driver routine.  
+;   This routine calls a series of subroutines with the names and purposes, summarized below:
 ;   get_sunspot_data.pro - aquire USAF white light sunspot region data from NOAA/NGDC web repository and store
-;                          in a structure identified by index -> (jd, lat, lon, area, station)
+;                          in a structure, 'sunspot_data', identified by index -> (jd, lat, lon, area, station)
+;                          An optional keyword, 'stations', is used to restrict data to a user-defined particular station(s).
+;                          By default, all stations are used in computing the sunspot darkening index.
 ;   group_by_day.pro     - group the USAF white light data by Julian date: jdn -> (jd, lat, lon, area, station)
-;   
-;   For each day of data, and for each sunspot measuring station, the (cosine-weighted) solar latitude, longitude, and 
-;   area of each sunspot grouping is recorded. The sunspot blocking for each grouping is 
-;   calculated (compute_sunspot_blocking.pro) and the total sunspot blocking function (total and uv) for each measuring 
-;   station is the sum of the sunspot blocking for the individual groupings.
-;   
-;   The daily mean and standard deviation for all available stations is stored for the total sunspot blocking 
-;   function (ssbt and dssbt) and for the uv sunspot blocking function (ssbuv and dssbuv).
-;   
-;   write_sunspot_blocking_data.pro - Outputs the mean and standard deviation daily sunspot blocking functions to ascii 
-;                                     file ('SSB_USAF_(start_date)-(stop_date)_(version).txt') with the format: 
-;                                     time (YYMMDD), ssbt, dssbt, ssbuv, dssbuv. 
-;                                     Missing data identified by -999
-;   
+;                          Stored in structure, 'daily_sunspot_data'
+;   get_solar_latitutude.pro - Obtains the solar latitude, B0, for the given day. The B0 factor is used to correct the
+;                              heliocentric latitude of the sunspot grouping, 'lat' for an approximate +/- 7 degree annual 
+;                              change in the ecliptic plane (the angle between the perpendicular of the line from the 
+;                              earth center to the center of the Sun) and the angle of rotation of the Sun. The B0 correction is an 
+;                              area projection (cosine weighting). 
+;   compute_sunspot_blocking.pro -  The delta change (reduction) in irradiance computed from the latitude/longitude and
+;                                   sunspot area computed from the individual measurements of sunspot area for daily recorded
+;                                   sunspot grouping(s) of a particular station.
+;   group_and_sum.pro - The total delta change in irradiance due to sunspots is the sum of the sunspot blocking over each measuring station. 
+;                       If a station is missing data for a particular sunspot grouping, a quality flag to indicate missing data is set.                                                      
+;   write_sunspot_blocking_data.pro - If optional 'output_dir' keyword is defined, the sunspot darkening index, and its standard deviation 
+;                                     of the is output to intermediate ascii file 
+;                                     ('sunspot_blocking_YMD1_YMD2_VER.txt'), where time ranges specify start/end date of desired time range.
+;                                     'VER' is a hardcoded development version value to help keep track of data output. Intermediate file
+;                                     output used for QA analysis.
 ; INPUTS
-;   year - four digit year (i.e. 1978) (TODO: update to time range args)
+;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
+;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), 
+;   stations = stations - Optional keyword to restrict sunspot darkening index to specified monitoring stations in the USAF white light network.
+;                         If omitted (default), all stations are included. Used for QA analysis.
+;   output_dir=output_dir - Optional keyword to specify directory path to store sunspot darkening index in a text file. If omitted (default), output
+;                           is not written to intermediate file. Used for QA analysis.  
 ;   
 ; OUTPUTS
-;   Outputs the mean and standard deviation daily sunspot blocking functions to ascii 
-;   file ('SSB_USAF_(start_date)-(stop_date)_(version).txt') with the format: 
-;   time (YYMMDD), ssbt, dssbt, ssbuv, dssbuv. 
+;   sunspot_blocking_struct - a structure containing the following variables:
+;   mjdn - the modified julian date (converted from YYYY-MM-DD format) 
+;   ssbt - the sunspot darkening index (a mean value of the reporting stations)
+;   dssbut - the standard deviation of the sunspot darkening index
+;   quality flag - a value of 0 or 1 (1 = missing data); Used for QA analysis.
+;
+;   if optional keyword 'output_dir' is defined, an intermediate text file of the naming convention, 'sunspot_blocking_YMD1_YMD2_VER.txt',
+;   contains the structure data listed above.  Used for QA monitoring. 
 ;
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -48,10 +65,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/09/2014 Initial Version prepared for NCDC
+;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   process_sunspot_blocking,year
+;   process_sunspot_blocking,ymd1,ymd2,stations=stations,output_dir=output_dir
 ;
 ;@***** 
 function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=output_dir
