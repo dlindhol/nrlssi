@@ -38,10 +38,10 @@
 ;   09/08/2014 Initial Version prepared for NCDC
 ;
 ; USAGE
-;   get_sunspot_blocking,ymd1,ymd2
+;   get_sunspot_blocking,ymd1,ymd2,stations=stations,output_dir=output_dir
 ;
 ;@*****
-function get_sunspot_blocking_from_routine, ymd1, ymd2
+function get_sunspot_blocking_from_routine, ymd1, ymd2,stations=stations,output_dir=output_dir
   ;invoke the sunspot blocking routine
   data = process_sunspot_blocking(ymd1, ymd2)
   return, data
