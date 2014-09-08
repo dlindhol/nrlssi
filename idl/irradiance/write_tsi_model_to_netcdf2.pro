@@ -4,18 +4,23 @@
 ;   write_tsi_model_to_netcdf.pro
 ;
 ; PURPOSE
-;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance, year, day of year, and cumulative day number 
-;   to a netcdf4 file. This function is called from the main routine, nrl_2_tsi.pro.
+;   The write_tsi_model_to_netcdf.pro function writes the date and Model Total Solar Irradiance
+;   to a netcdf4 file. This function is called from the main routine, nrl2_2_irradiance.pro.
 ;
 ; DESCRIPTION
 ;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance, year, day of year, and cumulative day number 
 ;   to a netcdf4 formatted file. CF-1.5 metadata conventions are used in defining global and variable name attributes. 
-;   Missing values are defined as -99.0, by default.
-;   This function is called from the main routine, nrl_2_tsi.pro.
+;   Missing values (NaN's or '0's) are defined as -99.0. TODO: check: do we have NaN output still?
+;   This function is called from the main routine, nrl2_2_irradiance.pro.
 ; 
 ; INPUTS
+;   ymd1  - starting time range (yyyy-mm-dd)
+;   ymd2  - ending time range (yyyy-mm-dd)
 ;   data  - structure of Model TSI data containing 'year', 'doy' (day of year), 'day_number' (cumulative since Jan 1, 1978), and 'tsi'
-;   file  - file name for output file containing netCDF4 formatted data 
+;   file  - file name for output file containing netCDF4 formatted data. The default
+;           file naming convention is tsi_YMD1_YMD2_VER.nc 
+;           
+;           ; UPDATE: Include "creation date in file naming convention"
 ;      
 ; OUTPUTS
 ;
@@ -35,13 +40,13 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/23/2014 Initial Version prepared for NCDC
+;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_tsi_model_to_netcdf, data, file, missing_value
-;
+;   write_tsi_model_to_netcdf, ymd1, ymd2, mjd, data, file
+;  
 ;@***** 
-function write_tsi_model_to_netcdf2, data, file
+function write_tsi_model_to_netcdf2, ymd1, ymd2, mjd, data, file
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
@@ -64,19 +69,26 @@ function write_tsi_model_to_netcdf2, data, file
   xid = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
   NCDF_ATTPUT, id, xid, 'long_name', 'Daily Total Solar Irradiance (Watt/ m**2)'
   NCDF_ATTPUT, id, xid, 'standard_name', 'toa_incoming_shortwave_flux'
-  NCDF_ATTPUT, id, xid, 'units', 'W/m2'
+  NCDF_ATTPUT, id, xid, 'units', 'W/m**2'
   NCDF_ATTPUT, id, xid, 'missing_value', missing_value
 
   ; Define the time variable
-  rid = NCDF_VARDEF(id, 'time', [tid], /LONG)
-  NCDF_ATTPUT, id, rid, 'long_name', 'Days Since 1 Jan 1978'
-  NCDF_ATTPUT, id, rid, 'units','days since 1978-1-1 0:0:0'
+  rid = NCDF_VARDEF(id, 'time', [tid], /STRING)
+  NCDF_ATTPUT, id, rid, 'long_name', 'Date'
+  NCDF_ATTPUT, id, rid, 'long_name','YYYY-MM-DD'
+  
+  ;Define start and end time variable
+  r1id = NCDF_VARDEF(id,'time_coverage_start',[1],/STRING)
+  r2id = NCDF_VARDEF(id,'time_coverage_end',[1],/STRING)
+ 
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
   
   ; Input data:
-  NCDF_VARPUT, id, rid, data.day_number - 1 ;day_number starts at 1
+  NCDF_VARPUT, id, rid, mjd2iso_date(mjd) ;date expressed according to ISO 8601 standards; YYYY-MM-DD
+  NCDF_VARPUT, id, r1id, ymd1 ;start date (YYYY-MM-DD)
+  NCDF_VARPUT, id, r2id, ymd2 ;end date (YYYY-MM-DD)
   NCDF_VARPUT, id, xid, tsi
   
   ; Close the NetCDF file.
