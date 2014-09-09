@@ -15,11 +15,12 @@
 ;   This function is called from the main routine, nrl2_2_irradiance.pro.
 ; 
 ; INPUTS
-;   ymd1  - starting time range (yyyy-mm-dd)
-;   ymd2  - ending time range (yyyy-mm-dd)
-;   data  - structure of Model SSI data containing date, ssi, wavelength grid (bin centers and ranges), and tsi
-;   file  - file name for output file containing netCDF4 formatted data. The default
-;           file naming convention is ssi_YMD1_YMD2_VER.nc 
+;   ymd1  - starting time  (yyyy-mm-dd)
+;   ymd2  - ending time  (yyyy-mm-dd)
+;   mjd   - array of dates covering time period (Modified Julian date)
+;   spectrum  - structure of Modeled Solar Spectral Irradiance (SSI) data containing date, ssi, wavelength grid (bin centers and ranges)
+;   tsi   - Modeled Total Solar Irradiance (TSI)
+;   file  - output file name. The default file naming convention is ssi_YMD1_YMD2_VER.nc 
 ;           
 ;           ; UPDATE: Include "creation date in file naming convention"
 ;      
@@ -44,10 +45,10 @@
 ;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_ssi_model_to_netcdf, ymd1, ymd2, mjd, data, file
+;   write_ssi_model_to_netcdf, ymd1, ymd2, mjd, spectrum, tsidata, file
 ;  
 ;@***** 
-function write_ssi_model_to_netcdf2, ymd1, ymd2, mjd, ssidata, tsidata, file
+function write_ssi_model_to_netcdf2, ymd1, ymd2, mjd, spectrum, tsidata, file
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
