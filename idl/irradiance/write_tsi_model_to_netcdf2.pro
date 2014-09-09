@@ -14,11 +14,11 @@
 ;   This function is called from the main routine, nrl2_2_irradiance.pro.
 ; 
 ; INPUTS
-;   ymd1  - starting time range (yyyy-mm-dd)
-;   ymd2  - ending time range (yyyy-mm-dd)
-;   data  - structure of Model TSI data containing 'year', 'doy' (day of year), 'day_number' (cumulative since Jan 1, 1978), and 'tsi'
-;   file  - file name for output file containing netCDF4 formatted data. The default
-;           file naming convention is tsi_YMD1_YMD2_VER.nc 
+;   ymd1  - starting time  (yyyy-mm-dd)
+;   ymd2  - ending time  (yyyy-mm-dd)
+;   mjd   - time period (in Modified Julian Day format)
+;   data  - Modeled Total Solar Irradiance
+;   file  - name for output file. The default file naming convention is tsi_YMD1_YMD2_VER.nc 
 ;           
 ;           ; UPDATE: Include "creation date in file naming convention"
 ;      
