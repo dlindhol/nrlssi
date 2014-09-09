@@ -178,8 +178,9 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;Convert data List to array
   data = data_list.toArray()
   
+  
   tsifile = 'tsi_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.nc' ;TODO create file name dynamically; include creation date
-  result = write_tsi_model_to_netcdf2(ymd1,ymd2,struct.mjd,nrl2_tsi,tsifile)
+  result = write_tsi_model_to_netcdf2(ymd1,ymd2,data.mjd,data.tsi,tsifile)
   
   ;Example, convert modified julian date to iso string
   ;print, mjd2iso_date(data[0].mjd)
