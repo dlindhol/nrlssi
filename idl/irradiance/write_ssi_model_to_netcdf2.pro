@@ -45,17 +45,17 @@
 ;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_ssi_model_to_netcdf, ymd1, ymd2, mjd, spectrum, tsidata, file
+;   write_ssi_model_to_netcdf, ymd1,ymd2,ymd3,algver,data,spectral_bins,ssifile_daily
 ;  
 ;@***** 
-function write_ssi_model_to_netcdf2, ymd1, ymd2, mjd, spectrum, tsidata, file
+function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,data,spectral_bins,file
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
-  ssi = replace_nan_with_value(tsidata, missing_value)
-  dates =  mjd2iso_date(mjd) ;ISO 8601 format for netcdf4 output. This is giving some funky output. Issue created in Git.
-  tsi = replace_nan_with_value(ssidata, missing_value)
+  ssi = replace_nan_with_value(data.ssi, missing_value)
+  dates =  mjd2iso_date(data.mjd) ;ISO 8601 format for netcdf4 output. This is giving some funky output. Issue created in Git.
+  tsi = replace_nan_with_value(data.tsi, missing_value)
   
   
   ; Create NetCDF file for writing output
@@ -70,7 +70,7 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, mjd, spectrum, tsidata, file
   NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CD Standard Name Table (v27, 28, November 2013)
   NCDF_ATTPUT, id, /GLOBAL, "Id", "Solar Irradiance FCDR"
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc"
-  NCDF_ATTPUT, id, /GLOBAL, "date_created",jd2iso_date(systime(/julian))
+  NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3
   NCDF_ATTPUT, id, /GLOBAL, "license","No constraints on data use."
   NCDF_ATTPUT, id, /GLOBAL, "summary", "This dataset contains spectral solar irradiance as a function of time and wavelength created with the Naval Research Laboratory model for spectral and total irradiance (version 2). Spectral solar irradiance is the wavelength-dependent energy input to the top of the Earth’s atmosphere, at a standard distance of one Astronomical Unit from the Sun. Its units are W per m2 per nm. Also included is the value of total (spectrally integrated) solar irradiance in units W per m2. The dataset is created by Judith Lean (Space Science Division, Naval Research Laboratory), Odele Coddington and Peter Pilewskie (Laboratory for Atmospheric and Space Science, University of Colorado).
   NCDF_ATTPUT, id, /GLOBAL, "keywords", "EARTH SCIENCE, ATMOSPHERE, ATMOSPHERIC RADIATION, INCOMING SOLAR RADIATION, SOLAR IRRADIANCE, SOLAR RADIATION, SOLAR FORCING, INSOLATION RECONSTRUCTION, SUN-EARTH INTERATIONS, CLIMATE INDICATORS, PALEOCLIMATE INDICATORS, SOLAR FLUX, SOLAR ENERGY, SOLAR ACTIVITY, SOLAR CYCLE"
@@ -78,10 +78,10 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, mjd, spectrum, tsidata, file
   NCDF_ATTPUT, id, /GLOBAL, "cdm_data_type","Point"
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ymd1
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2
-  NCDF_ATTPUT, id, /GLOBAL, "cdr_prgram", "NOAA Climate Data Record Program, FY 2014"
+  NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program, FY 2014"
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "solar spectral irradiance"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "????" ;***TODO
-  NCDF_ATTPUT, id, /GLOBAL, "product_version", "v0" ;***TODO; need to make this dynamic and match versioning in filename.
+  NCDF_ATTPUT, id, /GLOBAL, "product_version", algver
   NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TSIS"
   NCDF_ATTPUT, id, /GLOBAL, "sensor", "Spectral Irradiance Monitor (SIM)"
   NCDF_ATTPUT, id, /GLOBAL, "spatial_resolution", "N/A"
@@ -90,12 +90,11 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, mjd, spectrum, tsidata, file
   
   ; Define Dimensions
   tid = NCDF_DIMDEF(id, 'numpoints', /UNLIMITED) ;time series
-  lid = NCDF_DIMDEF(id, 'lambda',nbands) ;wavelengths
+  lid = NCDF_DIMDEF(id, 'numlambda',spectral_bins.nband) ;wavelengths
  
   ; Variable Attributes
-  x0id = NCDF_VARDEF(id, 'SSI', [tid], /FLOAT)
+  x0id = NCDF_VARDEF(id, 'SSI', [lid,tid], /FLOAT)
   NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Solar Spectral Irradiance (Watt/ m**2/ nm**1)'
-  ;NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
   NCDF_ATTPUT, id, x0id, 'units', 'W/m**2/nm**1'
   NCDF_ATTPUT, id, x0id, 'missing_value', missing_value
   NCDF_ATTPUT, id, x0id, 'valid_max',2.5; TODO, the maximum valid range for SSI
@@ -128,8 +127,8 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, mjd, spectrum, tsidata, file
   NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards; 
   NCDF_VARPUT, id, x1id, tsi
   NCDF_VARPUT, id, x0id, ssi
-  NCDF_VARPUT, id, t0id, specwl_center
-  NCDF_VARPUT, id, t1id, specwl_band
+  NCDF_VARPUT, id, t0id, spectral_bins.bandcenter
+  NCDF_VARPUT, id, t1id, spectral_bins.bandwidth
   
   ; Close the NetCDF file.
   NCDF_CLOSE, id 
