@@ -128,12 +128,16 @@
 ;@*****
 
 function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
-  ; pro to calculate nrltsi2 and nrlssi2 using saved parameters
-  
+
+  algver = 'V001' ; get from function parameter?
+  algrev = 'R00' ; get from function parameter?
   modver='18Aug14'
   fn='~/git/nrlssi/data/judith_2014_08_21/NRL2_model_parameters_'+modver+'.sav'
   ;TODO: get this from function parameter?
-  
+ 
+  ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
+  ymd3 = jd2iso_date(systime(/julian)) 
+   
   ;Convert start and stop dates to Modified Julian Day Number (integer).
   mjd_start = iso_date2mjdn(ymd1)
   mjd_stop  = iso_date2mjdn(ymd2) - 1 ;end time not inclusive
@@ -178,10 +182,16 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;Convert data List to array
   data = data_list.toArray()
   
+  ;Make output file name(s), dynamically
+  ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
+  ;ToDO, modify creation date to have form 'DDMMMYY', ex. '09Sep14'
+  tsifile_daily = 'tsi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ ymd3 +'.nc' 
+  ssifile_daily = 'ssi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ ymd3 +'.nc' 
   
-  tsifile = 'tsi_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.nc' ;TODO create file name dynamically; include creation date
-  result = write_tsi_model_to_netcdf2(ymd1,ymd2,data.mjd,data.tsi,tsifile)
-  
+  ;Write the results to output in netCDF4 format
+  result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,data,tsifile_daily)
+  result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,data,spectral_bins,ssifile_daily)
+ 
   ;Example, convert modified julian date to iso string
   ;print, mjd2iso_date(data[0].mjd)
   
