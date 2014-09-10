@@ -43,16 +43,16 @@
 ;   09/08/2014 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_tsi_model_to_netcdf, ymd1, ymd2, mjd, data, file
+;   write_tsi_model_to_netcdf, ymd1, ymd2, ymd3, algver, data, file
 ;  
 ;@***** 
-function write_tsi_model_to_netcdf2, ymd1, ymd2, mjd, data, file
+function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,data, file
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
-  tsi = replace_nan_with_value(data, missing_value)
-  dates =  mjd2iso_date(mjd) ;ISO 8601 format for netcdf4 output. This is giving some funky output. Issue created in Git.
+  tsi = replace_nan_with_value(data.tsi, missing_value)
+  dates =  mjd2iso_date(data.mjd) ;ISO 8601 format for netcdf4 output. This is giving some funky output. Issue created in Git.
   
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
@@ -66,7 +66,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, mjd, data, file
   NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CD Standard Name Table (v27, 28, November 2013)
   NCDF_ATTPUT, id, /GLOBAL, "Id", "Solar Irradiance FCDR"
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc"
-  NCDF_ATTPUT, id, /GLOBAL, "date_created",jd2iso_date(systime(/julian))
+  NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3
   NCDF_ATTPUT, id, /GLOBAL, "license","No constraints on data use."
   NCDF_ATTPUT, id, /GLOBAL, "summary", "This dataset contains total irradiance as a function of time created with the Naval Research Laboratory model for spectral and total irradiance (version 2). Total solar irradiance is the total, spectrally integrated energy input to the top of the Earth’s atmosphere, at a standard distance of one Astronomical Unit from the Sun. Its units are W per m2. The dataset is created by Judith Lean (Space Science Division, Naval Research Laboratory), Odele Coddington and Peter Pilewskie (Laboratory for Atmospheric and Space Science, University of Colorado).
   NCDF_ATTPUT, id, /GLOBAL, "keywords", "EARTH SCIENCE, ATMOSPHERE, ATMOSPHERIC RADIATION, INCOMING SOLAR RADIATION, SOLAR IRRADIANCE, SOLAR RADIATION, SOLAR FORCING, INSOLATION RECONSTRUCTION, SUN-EARTH INTERATIONS, CLIMATE INDICATORS, PALEOCLIMATE INDICATORS, SOLAR FLUX, SOLAR ENERGY, SOLAR ACTIVITY, SOLAR CYCLE"
@@ -74,10 +74,10 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, mjd, data, file
   NCDF_ATTPUT, id, /GLOBAL, "cdm_data_type","Point"
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ymd1
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2
-  NCDF_ATTPUT, id, /GLOBAL, "cdr_prgram", "NOAA Climate Data Record Program, FY 2014"
+  NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program, FY 2014"
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "total solar irradiance"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "????" ;***TODO
-  NCDF_ATTPUT, id, /GLOBAL, "product_version", "v0" ;***TODO; need to make this dynamic and match versioning in filename.
+  NCDF_ATTPUT, id, /GLOBAL, "product_version", algver
   NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TSIS"
   NCDF_ATTPUT, id, /GLOBAL, "sensor", "Total Irradiance Monitor (TIM)"
   NCDF_ATTPUT, id, /GLOBAL, "spatial_resolution", "N/A"
