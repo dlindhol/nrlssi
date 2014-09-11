@@ -56,10 +56,10 @@ function group_and_sum, keys, values, nan_as_zero=nan_as_zero
     key = keys[i]
     value = values[i]
     ;if keyword_set(nan_as_zero) and finite(value, /nan) then value = 0
-    if finite(value) then begin ;new oc (only include finite values in the group and sum)
+    if finite(value) then begin ;added (only include finite values in the group and sum)
       if result.hasKey(key) then result[key] += value  $
       else result[key] = value
-    endif ;new oc
+    endif ;end of new 
   endfor
 
   return, result
