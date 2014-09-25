@@ -167,10 +167,13 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
     nrl2_tsi = compute_tsi(sb ,mg ,model_params) ;calculate TSI for given sb and mg
     ssi = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
     nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
-  
+    
+    iso_time = mjd2iso_date(mjd_start+i)
+    
     ; TODO Add bandcenters and bandwidths and nband to data structure
     struct = {nrl2,                $
       mjd:    mjd_start + i,       $
+      iso:    iso_time,             $
       tsi:    nrl2_tsi.totirrad,   $
       ssi:    nrl2_ssi.nrl2bin,    $
       ssitot: nrl2_ssi.nrl2binsum  $
@@ -204,11 +207,11 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   
   ;Write the results if output_dir is specified
   ;TODO: Consider writing each time sample as we compute it. Data may be too large for memory?
-  if n_elements(output_dir) eq 1 then begin
-    file = output_dir + '/nrl2_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.sav'
-    save, file=file, data
-    ;TODO: status = write_nrl2_data(data, file)
-  endif
+  ;if n_elements(output_dir) eq 1 then begin
+  ;  file = output_dir + '/nrl2_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.sav'
+  ;  save, file=file, data
+  ;  ;TODO: status = write_nrl2_data(data, file)
+  ;endif
   
   return, data
 end
