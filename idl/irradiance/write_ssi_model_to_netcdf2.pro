@@ -100,11 +100,11 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,data,spectral_bins,fi
   NCDF_ATTPUT, id, x0id, 'valid_max',2.5; TODO, the maximum valid range for SSI
   NCDF_ATTPUT, id, x0id, 'valid_min',0.0 ;
   
-  t0id = NCDF_VARDEF(id,'Central Wavelength',[lid], /FLOAT)
+  t0id = NCDF_VARDEF(id,'Central_Wavelength',[lid], /FLOAT)
   NCDF_ATTPUT, id, t0id, 'long_name', 'Wavelength grid center'
   NCDF_ATTPUT, id, t0id, 'units', 'nm'
 
-  t1id = NCDF_VARDEF(id,'Wavelength Bands',[lid], /FLOAT)
+  t1id = NCDF_VARDEF(id,'Wavelength_Bands',[lid], /FLOAT)
   NCDF_ATTPUT, id, t1id, 'long_name', 'Wavelength bands. Centered on Central Wavelength'
   NCDF_ATTPUT, id, t1id, 'units', 'nm'  
  
