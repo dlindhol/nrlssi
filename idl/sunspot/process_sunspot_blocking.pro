@@ -143,7 +143,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
       
       ;Group data by station and sum ssb from contributing sunspot groups.
       ;Hash: station -> ssb  with NaNs where area was missing replaced with 0
-      ssbt_by_station  = group_and_sum(ssdata.station, ssbt, /nan_as_zero)
+      ssbt_by_station  = group_and_sum(ssdata.station, ssbt);, /nan_as_zero)
       ssbuv_by_station = group_and_sum(ssdata.station, ssbuv, /nan_as_zero)
       
       ;Average the results from all stations, drop NaNs
