@@ -52,7 +52,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,data, file
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
   tsi = replace_nan_with_value(data.tsi, missing_value)
-  dates =  mjd2iso_date(data.mjd) ;ISO 8601 format for netcdf4 output. This is giving some funky output. Issue created in Git.
+  dates =  data.iso 
   
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
