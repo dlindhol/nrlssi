@@ -85,7 +85,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,data, file
   NCDF_ATTPUT, id, /GLOBAL, "contributor_role", "Principal Investigator and originator of total and spectral solar irradiance model, Principal Investigator ensuring overall integrity of the data product, Co-Investigator and Point-of-Contact and translated research-grade code to operational routine with FCDR output data being written out in NetCDF-4"
   
   ; Define Dimensions
-  tid = NCDF_DIMDEF(id, 'numpoints', /UNLIMITED) ;time series
+  tid = NCDF_DIMDEF(id, 'nday', /UNLIMITED) ;time series
   
   ; Variable Attributes
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
