@@ -1,4 +1,37 @@
 
+function time_utils_ut::test_mjd2iso_date
+  compile_opt strictarr
+  
+  mjd = 56778
+  ymd = mjd2iso_date(mjd)
+  
+  assert, '2014-05-01' eq ymd
+
+  return, 1
+end
+
+function time_utils_ut::test_mjd2iso_yyyymm
+  compile_opt strictarr
+  
+  mjd = 56778
+  ym = mjd2iso_yyyymm(mjd)
+  
+  assert, '2014-05' eq ym
+
+  return, 1
+end
+
+function time_utils_ut::test_mjd2iso_yyyy
+  compile_opt strictarr
+  
+  mjd = 56778
+  y = mjd2iso_yyyy(mjd)
+  
+  assert, '2014' eq y
+
+  return, 1
+end
+
 function time_utils_ut::test_iso_to_dmy
   compile_opt strictarr
   
