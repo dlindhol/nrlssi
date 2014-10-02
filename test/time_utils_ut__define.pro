@@ -1,4 +1,14 @@
 
+function time_utils_ut::test_iso_to_dmy
+  compile_opt strictarr
+  
+  dmy = iso_date2ddMonyy('2000-01-01')
+  
+  assert, '01Jan00' eq dmy
+
+  return, 1
+end
+
 function time_utils_ut::test_mjd_iso_conversion_leap_year
   compile_opt strictarr
   
