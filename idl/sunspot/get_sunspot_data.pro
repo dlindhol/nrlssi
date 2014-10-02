@@ -224,17 +224,21 @@ end
 ;-----------------------------------------------------------------------------
 ; Get data from LaTiS.
 function get_sunspot_data_from_latis, ymd1, ymd2
-  ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
-  ;TODO: make time range inclusive? need to add day to ymd2 since LaTiS takes that as midnight
+  ;ymd2 is inclusive. 
+  ;Since a datetime without time is typically interpreted as midnight (time = 00:00)
+  ;we will manage the addition of one day internal to these algorithms.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
 
+  ;LaTiS assume that yyyy-MM-dd is midnight of that date so we need to add a 
+  ;day to make the request inclusive.
+  end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
+
   ;Make LaTiS request for csv
-  ;TODO: try json, have to write to file first?
   netUrl = OBJ_NEW('IDLnetUrl')
   netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
   netUrl->SetProperty, URL_PORT  = 8080
   netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_mwl.csv'
-  netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + ymd2
+  netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + end_date
   lines = netURL->Get(/string_array)
   ;buffer = netURL->Get(/buffer)
   OBJ_DESTROY, netUrl

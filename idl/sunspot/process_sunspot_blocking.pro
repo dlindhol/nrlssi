@@ -75,11 +75,13 @@
 ;
 ;@***** 
 function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=output_dir
-  ;ymd2 is NOT inclusive, it represents midnight GMT - the start of the given day.
+  ;ymd2 is inclusive. 
+  ;Since a datetime without time is typically interpreted as midnight (time = 00:00)
+  ;we will manage the addition of one day internal to these algorithms.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
   
   ;use a development version to help keep track of data output
-  version='v0.4'
+  version='v0.5'
   
   ;Process just one day if ymd2 is not provided.
   if n_elements(ymd2) eq 0 then ymd2 = ymd1
@@ -99,7 +101,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
 
   ;Convert start and stop dates to Modified Julian Day Number (integer).
   mjd_start = iso_date2mjdn(ymd1)
-  mjd_stop  = iso_date2mjdn(ymd2) - 1 ;end time from get_sunspot_data not inclusive
+  mjd_stop  = iso_date2mjdn(ymd2)
   
   ;Number of time samples (days)
   n = mjd_stop - mjd_start + 1
