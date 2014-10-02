@@ -186,11 +186,11 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   data = data_list.toArray()
   
   ;Make output file name(s), dynamically
+  creation_date = iso_date2ddMonyy(ymd3)
   ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
-  ;ToDO, modify creation date to have form 'DDMMMYY', ex. '09Sep14'
   ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired?
-  tsifile_daily = 'tsi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ ymd3 +'.nc' 
-  ssifile_daily = 'ssi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ ymd3 +'.nc' 
+  tsifile_daily = 'tsi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
+  ssifile_daily = 'ssi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
   
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
   result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,data,tsifile_daily)
