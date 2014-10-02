@@ -136,11 +136,11 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;TODO: get this from function parameter?
  
   ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
-  ymd3 = jd2iso_date(systime(/julian)) 
+  ymd3 = jd2iso_date(systime(/julian, /utc)) 
    
   ;Convert start and stop dates to Modified Julian Day Number (integer).
   mjd_start = iso_date2mjdn(ymd1)
-  mjd_stop  = iso_date2mjdn(ymd2) - 1 ;end time not inclusive
+  mjd_stop  = iso_date2mjdn(ymd2)
   
   ;Number of time samples (days)
   n = mjd_stop - mjd_start + 1
