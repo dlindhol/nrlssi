@@ -45,14 +45,18 @@
 ;
 ;@*****
 function get_mg_index_from_latis, ymd1, ymd2
-  ;ymd: yyyy-mm-dd
+  ;ymd: yyyy-mm-dd, ymd2 is inclusive
   ;If neither time is specified, return the entire dataset.
   ;If only the first time is specified, return only that day.
+    
+  ;LaTiS assume that yyyy-MM-dd is midnight of that date so we need to add a 
+  ;day to make the request inclusive.
+  end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
   
   ;construct the query string for the time constraints
   has_t1 = n_elements(ymd1) eq 1
   has_t2 = n_elements(ymd2) eq 1
-  if has_t1 and has_t2 then query = '&time>=' + ymd1 + '&time<' + ymd2   $
+  if has_t1 and has_t2 then query = '&time>=' + ymd1 + '&time<' + end_date   $
   else if has_t1 and not has_t2 then query = '&time=' + ymd1  $  ;add 12 since composite_mg_index since it uses JD (noon) + 'T12:00:00'  $ 
   else query = ''
 
@@ -100,7 +104,7 @@ end
 
 
 function get_mg_index, ymd1, ymd2
-  ;ymd: yyyy-mm-dd
+  ;ymd: yyyy-mm-dd, ymd2 is inclusive
   ;If neither time is specified, return the entire dataset.
   ;If only the first time is specified, return only that day.
   return, get_mg_index_from_latis(ymd1, ymd2)
