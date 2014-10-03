@@ -131,6 +131,9 @@ function parse_line, line
   if(lonhem eq 'E') then lon = -lon
   ;east is negative!? doesn't really matter
   
+  ;Parse the sunspot group number
+  group = fix(vars[5])
+  
   ;Parse sunspot area, LaTiS will have replaced missing values with NaN
   ;We'll add a flag for it when we compute the average area.
   area = float(vars[6])
@@ -139,11 +142,12 @@ function parse_line, line
   station = vars[7]
   
   ;Create result structure
-  result = {   $
-    mjd:mjd,   $
-    lat:lat,   $
-    lon:lon,   $
-    area:area, $
+  result = {       $
+    mjd:mjd,       $
+    lat:lat,       $
+    lon:lon,       $
+    group:group,   $
+    area:area,     $
     station:station  $
   }
   
