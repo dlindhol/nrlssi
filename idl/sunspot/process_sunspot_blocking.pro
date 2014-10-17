@@ -81,100 +81,139 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
   
   ;use a development version to help keep track of data output
-  version='v0.5'
+  version='v0.10'
   
   ;Process just one day if ymd2 is not provided.
   if n_elements(ymd2) eq 0 then ymd2 = ymd1
   
-  ;Use this as a fill value when there is no valid data.
-  fill_value = !Values.F_NAN ;-999
-  
   ;Get sunspot data for the given time range.
-  ;Array of structures, one element per line.
-  ;  struct = {mjd:0.0, lat:0.0, lon:0.0, area:0.0, station:''}
-  ;  index -> (mjd, lat, lon, area, station)
+  ;Array of structures, one element per sunspot group observation.
+  ;  struct = {mjd:0.0, lat:0.0, lon:0.0, group:0, area:0.0, station:''}
   sunspot_data = get_sunspot_data(ymd1, ymd2, stations=stations)
   
-  ;Group by Modified Julian Day Number (MJD rounded down)
-  ; mjdn -> (mjd, lat, lon, area, station)
+  ;Group by Modified Julian Day Number (MJD rounded down).
+  ;Note, the original mjd in the structure will maintain the time component
+  ;but we are assuming that each sunspot group is observed only once per day per station.
+  ;Our duplicate record detection should find any exceptions.
+  ; mjdn -> (mjd, lat, lon, group, area, station)
   daily_sunspot_data = group_by_day(sunspot_data)
 
-  ;Convert start and stop dates to Modified Julian Day Number (integer).
+  ;Convert start and stop dates to Modified Julian Day Number (integer)
+  ;to simplify internal time management.
   mjd_start = iso_date2mjdn(ymd1)
   mjd_stop  = iso_date2mjdn(ymd2)
   
   ;Number of time samples (days)
   n = mjd_stop - mjd_start + 1
   
-  ;Define struct to hold final daily averaged results
+  ;Define the structure to hold a final daily averaged result.
   sunspot_blocking_struct = {sunspot_blocking,  $
-    mjdn:0l,   $
+    mjdn:0l,  $
     ssbt:0.0, dssbt:0.0,   $
     ssbuv:0.0, dssbuv:0.0,  $
     quality_flag:0  $
   }
     
-  ;Define array of structures to hold final daily averaged results for each day.
+  ;Define array of structures to hold final daily averaged results for all day.
   sunspot_blocking_data = replicate(sunspot_blocking_struct, n)
   
   ;Iterate over days.
   for i = 0, n-1 do begin
+    ;Modified Julian Day Number for this day.
     mjdn = i + mjd_start
     
-    ;Set Modified Julian Day Number
+    ;Set Modified Julian Day Number in the result.
     sunspot_blocking_data[i].mjdn = mjdn
+    
+    ;Initialize quality flag bits.
+    MISSING_AREA_BIT = 0
+    DUPLICATE_BIT = 0
     
     ;Process data if we have any for this day
     if daily_sunspot_data.hasKey(mjdn) then begin
-      ;Get the sunspot data for this day
+      ;Get the sunspot data for this day: array of structures
       ssdata = daily_sunspot_data[mjdn]
-      ; i -> (mjd, lat, lon, area, station)
+      ; i -> (mjd, lat, lon, group, area, station)
+      
+      ;Make a Hash mapping station name to an array of observations by that station.
+      ;Note, this is one day's worth of data.
+      ; station -> (i -> (mjd, lat, lon, group, area, station))
+      ssdata_by_station = group_by_tag(ssdata, 'station')
+      
+      ;TODO: sanity check that all times (mjd) are the same for a given station
+      
+      ;Remove duplicate records. Set a flag if any were found.
+      ssdata_by_station = remove_duplicate_records(ssdata_by_station, ndup)
+      if ndup ne 0 then DUPLICATE_BIT = 1
       
       ;Adjust latitude
       ;TODO: use time of day to get more accurate solar latitude?
-      B0 = get_solar_latitude(mjdn + 2400000.5) ;convert to Julian Date
-      lat = ssdata.lat - B0
+      B0 = get_solar_latitude(mjdn + 2400000.5) ;uses Julian Date
+      ;lat = ssdata.lat - B0
       
-      ;Compute the total and uv sunspot blocking contribution for each sample
-      ssbt  = compute_sunspot_blocking(ssdata.area, lat, ssdata.lon) ;array
-      ssbuv = compute_sunspot_blocking_uv(ssdata.area, lat, ssdata.lon) ;array
+      ;Create Hash to hold sum of all sunspot group contribution to blocking for each station.
+      ssbt_by_station  = Hash()
+      ssbuv_by_station = Hash()
       
-      ;If the resulting value is NaN (from missing area) set quality flag
-      imissing = where(~ FINITE(ssbt), nmissing)
-      if nmissing gt 0 then sunspot_blocking_data[i].quality_flag = 1 ;TODO: consider bit mask for multiple flags
+      ;Compute the total and uv sunspot blocking contribution for each record/observation/sunspot group.
+      ;Records with missing area will result in a ssb of NaN.
+      ;Compute sums for each station. Treat missing areas as zero but set a flag.
+      ;This is still grouped by station in a Hash. 
+      ;  station -> ssb
+      foreach records, ssdata_by_station, station do begin
+        ;Note, these are all arrays, one element per record
+        area = records.area
+        lat  = records.lat - B0
+        lon  = records.lon
+        ssbt  = compute_sunspot_blocking(area, lat, lon)
+        ssbuv = compute_sunspot_blocking_uv(area, lat, lon)
+ 
+        ;TODO: also compute total area for each station?
+
+        ;Handle missing values.
+        ;If any of the records had a missing area, assume it is zero and set a flag
+        ;Note, if ssbt has a missing value, so will ssbuv.
+        imissing = where(~ FINITE(ssbt), nmissing)
+        ;Drop any station with all values missing (e.g. MWIL) but don't set the flag since it doesn't affect the data
+        if nmissing eq n_elements(ssbt) then begin
+          print, 'WARNING: All areas missing on day ' + mjd2iso_date(mjdn) + ' for station: ' + station
+          continue ;skip to the next station
+        endif else if nmissing gt 0 then MISSING_AREA_BIT = 1  ;set flag
+       
+        ;Sum the total ssb contribution from all the sunspot groups observed by this station on this day.
+        ;Missing values will be treated as 0. A quality flag is set above.
+        ssbt_by_station[station]  = total(ssbt,  /NaN) ;treat NaNs as 0
+        ssbuv_by_station[station] = total(ssbuv, /NaN) ;treat NaNs as 0
+      endforeach
       
-      ;Group data by station and sum ssb from contributing sunspot groups.
-      ;Hash: station -> ssb  with NaNs where area was missing replaced with 0
-      ssbt_by_station  = group_and_sum(ssdata.station, ssbt);, /nan_as_zero)
-      ssbuv_by_station = group_and_sum(ssdata.station, ssbuv, /nan_as_zero)
-      
-      ;Average the results from all stations, drop NaNs
-      ;TODO: weighted avg time? instead of assume all obs at noon
+      ;Average the results from all stations.
       ;IDL can't do mean ... on List so convert to array
-    
-    ;TODO: deal with only one sample, stddev of array of one is NaN
+      ;TODO: deal with only one sample, stddev of array of one is NaN
       ; nstn = ssbt_by_station.count() ;number of stations going into the average
-      ;TODO: record how many stations went into avg
-      ;good enough but lots of "Floating divide by 0" illegal operand
-    
+      ;TODO: record how many stations went into avg?
       ssbt_list = ssbt_by_station.values()
       ssbt_array = ssbt_list.toArray()
-      sunspot_blocking_data[i].ssbt  = mean(ssbt_array, /NaN)
-      sunspot_blocking_data[i].dssbt = stddev(ssbt_array, /NaN)
+      sunspot_blocking_data[i].ssbt  = mean(ssbt_array)
+      sunspot_blocking_data[i].dssbt = stddev(ssbt_array)
       
       ssbuv_list = ssbuv_by_station.values()
       ssbuv_array = ssbuv_list.toArray()
-      sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array, /NaN)
-      sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array, /NaN)
+      sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array)
+      sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array)
+      
+      ;Compute the quality flag based on the bits set above.
+      sunspot_blocking_data[i].quality_flag = MISSING_AREA_BIT + 2 * DUPLICATE_BIT
+      
     endif else begin
-      ;no data for this day, fill with missing value
-      sunspot_blocking_data[i].ssbt   = fill_value
-      sunspot_blocking_data[i].dssbt  = fill_value
-      sunspot_blocking_data[i].ssbuv  = fill_value
-      sunspot_blocking_data[i].dssbuv = fill_value
+      ;no data for this day, assume no sunspots thus ssb = 0
+      print, 'WARNING: No sunspot records found for day ' + mjd2iso_date(mjdn)
+      sunspot_blocking_data[i].ssbt   = 0.0
+      sunspot_blocking_data[i].dssbt  = 0.0
+      sunspot_blocking_data[i].ssbuv  = 0.0
+      sunspot_blocking_data[i].dssbuv = 0.0
     endelse
     
-  endfor  
+  endfor  ;loop over days
   
   ;Write the results if output_dir is specified
   if n_elements(output_dir) eq 1 then begin
