@@ -12,8 +12,7 @@ function make_sunspot_record_hash_code, record
   lon = record.lon
   
   ;Compute a (hopefully) unique value from the parameters
-  ;getting false duplicates! hc = group + area * 3 + lat * 5 + lon * 7
-  hc = group + area * 13 + lat * 23 + lon * 31
+  hc = group * 1009 + area * 1013 + lat * 1019 + lon * 1021
 
   return, hc
 end
