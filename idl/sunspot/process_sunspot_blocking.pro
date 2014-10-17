@@ -187,30 +187,30 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
       endforeach
       
       ;Average the results from all stations.
-      ;IDL can't do mean ... on List so convert to array
-      ;TODO: deal with only one sample, stddev of array of one is NaN
-      ; nstn = ssbt_by_station.count() ;number of stations going into the average
       ;TODO: record how many stations went into avg?
-      ssbt_list = ssbt_by_station.values()
-      ssbt_array = ssbt_list.toArray()
-      sunspot_blocking_data[i].ssbt  = mean(ssbt_array)
-      sunspot_blocking_data[i].dssbt = stddev(ssbt_array)
+      station_count = ssbt_by_station.count()
+      if station_count eq 0 then begin
+        ;e.g. 1981-12-03 has only MWIL all with missing area
+        print, 'WARNING: No sunspot records with valid areas found for day ' + mjd2iso_date(mjdn)
+      endif else begin
+        ;TODO: deal with only one sample, stddev of array of one is NaN
+        ssbt_list = ssbt_by_station.values()
+        ssbt_array = ssbt_list.toArray() ;IDL can't do mean ... on List so convert to array
+        sunspot_blocking_data[i].ssbt  = mean(ssbt_array)
+        sunspot_blocking_data[i].dssbt = stddev(ssbt_array)
       
-      ssbuv_list = ssbuv_by_station.values()
-      ssbuv_array = ssbuv_list.toArray()
-      sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array)
-      sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array)
+        ssbuv_list = ssbuv_by_station.values()
+        ssbuv_array = ssbuv_list.toArray() ;IDL can't do mean ... on List so convert to array
+        sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array)
+        sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array)
+      endelse
       
       ;Compute the quality flag based on the bits set above.
       sunspot_blocking_data[i].quality_flag = MISSING_AREA_BIT + 2 * DUPLICATE_BIT
       
     endif else begin
-      ;no data for this day, assume no sunspots thus ssb = 0
+      ;no data for this day, assume no sunspots thus ssb = 0 (as initialized above)
       print, 'WARNING: No sunspot records found for day ' + mjd2iso_date(mjdn)
-      sunspot_blocking_data[i].ssbt   = 0.0
-      sunspot_blocking_data[i].dssbt  = 0.0
-      sunspot_blocking_data[i].ssbuv  = 0.0
-      sunspot_blocking_data[i].dssbuv = 0.0
     endelse
     
   endfor  ;loop over days
