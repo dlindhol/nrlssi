@@ -57,7 +57,7 @@ function get_mg_index_from_latis, ymd1, ymd2
   has_t1 = n_elements(ymd1) eq 1
   has_t2 = n_elements(ymd2) eq 1
   if has_t1 and has_t2 then query = '&time>=' + ymd1 + '&time<' + end_date   $
-  else if has_t1 and not has_t2 then query = '&time=' + ymd1  $  ;add 12 since composite_mg_index since it uses JD (noon) + 'T12:00:00'  $ 
+  else if has_t1 and not has_t2 then query = '&time=' + ymd1  $ ;TODO: probably won't match exactly
   else query = ''
 
   ;read the data from LaTiS as a 2D JSON array
@@ -65,7 +65,8 @@ function get_mg_index_from_latis, ymd1, ymd2
   netUrl = OBJ_NEW('IDLnetUrl')
   netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
   netUrl->SetProperty, URL_PORT  = 8080
-  netURL->SetProperty, URL_PATH  = 'lisird3/latis/nrlssi_mg_index.jsona'
+  ;netURL->SetProperty, URL_PATH  = 'lisird3/latis/nrlssi_mg_index.jsona'
+  netURL->SetProperty, URL_PATH  = 'lisird3/latis/bremen_composite_mg_index.jsona'
   netURL->SetProperty, URL_QUERY = query
   lines = netURL->Get(/string_array) ;TODO: check for empty results
   OBJ_DESTROY, netUrl
