@@ -44,7 +44,12 @@ function mjd2iso_yyyy, mjd
   
   format = '(I4)'
   
-  return, string(format=format, year)
+  ;support array of dates
+  n = n_elements(mjd)
+  result = strarr(n)
+  for i = 0, n-1 do result[i] = string(format=format, year[i])
+  
+  return, result
   
 end
 

@@ -43,8 +43,13 @@ function mjd2iso_yyyymm, mjd
   caldat, jd, mon, day, year
   
   format = '(I4,"-",I02)'
+    
+  ;support array of dates
+  n = n_elements(mjd)
+  result = strarr(n)
+  for i = 0, n-1 do result[i] = string(format=format, year[i], mon[i])
   
-  return, string(format=format, year, mon)
+  return, result
   
 end
 

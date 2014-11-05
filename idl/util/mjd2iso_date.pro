@@ -44,7 +44,12 @@ function mjd2iso_date, mjd
   
   format = '(I4,"-",I02,"-",I02)'
   
-  return, string(format=format, year, mon, day)
+  ;support array of dates
+  n = n_elements(mjd)
+  result = strarr(n)
+  for i = 0, n-1 do result[i] = string(format=format, year[i], mon[i], day[i])
+  
+  return, result
   
 end
 
