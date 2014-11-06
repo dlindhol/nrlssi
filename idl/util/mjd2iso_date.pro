@@ -49,6 +49,9 @@ function mjd2iso_date, mjd
   result = strarr(n)
   for i = 0, n-1 do result[i] = string(format=format, year[i], mon[i], day[i])
   
+  ;client code is complaining about an array of one
+  if n eq 1 then result = result[0]
+  
   return, result
   
 end
