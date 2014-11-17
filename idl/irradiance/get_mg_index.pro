@@ -52,7 +52,7 @@ function get_mg_index_from_latis, ymd1, ymd2
   has_t1 = n_elements(ymd1) eq 1
   has_t2 = n_elements(ymd2) eq 1
   
-  ;LaTiS assume that yyyy-MM-dd is midnight of that date so we need to add a 
+  ;LaTiS assumes that yyyy-MM-dd is midnight of that date so we need to add a 
   ;day to make the request inclusive.
   if has_t2 then end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
   
@@ -83,7 +83,7 @@ function get_mg_index_from_latis, ymd1, ymd2
   
   ;define the data structure
   struct = {mg_index,   $
-    jdn: 0l,     $
+    mjd: 0l,     $
     index: 0.0  $
   }
   
@@ -96,7 +96,7 @@ function get_mg_index_from_latis, ymd1, ymd2
   ;fill the data structures
   for i = 0, n-1 do begin
     sample = data[i]
-    result[i].jdn = unix2jdn(double(sample[0])/1000.0) ;convert unix time (ms) to julian day number
+    result[i].mjd = unix2mjd(double(sample[0])/1000.0) ;convert unix time (ms) to Modified Julian Date
     result[i].index = sample[1]
   endfor
   
