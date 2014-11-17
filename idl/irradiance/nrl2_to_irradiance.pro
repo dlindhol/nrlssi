@@ -154,6 +154,11 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;Get input data
   sunspot_blocking = get_sunspot_blocking(ymd1, ymd2) ;sunspot blocking data
   mg_index = get_mg_index(ymd1, ymd2) ;MgII index data
+  
+  ;Create a Hash for each input dataset mapping MJD (assumed to be integer, i.e. midnight) to the appropriate record.
+  ;Note, Hash values will be arrays but should have only one element: the data record for that day.
+  sunspot_blocking_by_day = group_by_tag(sunspot_blocking, 'MJDN')
+  mg_index_by_day = group_by_tag(mg_index, 'MJD')
 
   ;Make list to accumulate results
   data_list = List()
@@ -161,19 +166,29 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;Iterate over days.
   ;TODO: consider passing complete arrays of data to these routines
   for i = 0, n-1 do begin
-    sb = sunspot_blocking[i].ssbt
-    mg = mg_index[i].index
+    mjd = mjd_start + i
+    
+    ;sb = sunspot_blocking[i].ssbt
+    ;mg = mg_index[i].index
+    sb = sunspot_blocking_by_day[mjd].ssbt
+    mg = mg_index_by_day[mjd].index
+    
+    ;sanity check that we have one record per day
+    if ((n_elements(sb) ne 1) or (n_elements(mg) ne 1)) then begin
+      print, 'WARNING: Invalid input data for day ' + mjd2iso_date(mjd)
+      continue  ;skip this day
+    endif
     
     nrl2_tsi = compute_tsi(sb ,mg ,model_params) ;calculate TSI for given sb and mg
     ssi = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
     nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
     
-    iso_time = mjd2iso_date(mjd_start+i)
+    iso_time = mjd2iso_date(mjd)
     
     ; TODO Add bandcenters and bandwidths and nband to data structure
     struct = {nrl2,                $
-      mjd:    mjd_start + i,       $
-      iso:    iso_time,             $
+      mjd:    mjd,                 $
+      iso:    iso_time,            $
       tsi:    nrl2_tsi.totirrad,   $
       ssi:    nrl2_ssi.nrl2bin,    $
       ssitot: nrl2_ssi.nrl2binsum  $
