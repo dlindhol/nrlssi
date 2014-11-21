@@ -68,7 +68,7 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, /GLOBAL, "title", "Daily SSI calculated using NRL2 solar irradiance model. Includes spectrally integrated (total) TSI value"
   NCDF_ATTPUT, id, /GLOBAL, "source", "nrl2_to_irradiance.pro"
   NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics"
-  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CF Standard Name Table v27)
+  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CF Standard Name Table v27"
   NCDF_ATTPUT, id, /GLOBAL, "id", file
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc"
   NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3
