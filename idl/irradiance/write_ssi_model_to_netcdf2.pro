@@ -52,7 +52,7 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
-  missing_value = -99
+  missing_value = -99.0
   ssi = replace_nan_with_value(data.ssi, missing_value)
   dates =  data.iso 
   tsi = replace_nan_with_value(data.tsi, missing_value)
@@ -102,7 +102,7 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Solar Spectral Irradiance (Watt/ m**2/ nm**1)'
   NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_incoming_shortwave_flux_per_unit_wavelength'
   NCDF_ATTPUT, id, x0id, 'units', 'W m-2 nm-1'
-  NCDF_ATTPUT, id, x0id, '_FillValue', missing_value
+  NCDF_ATTPUT, id, x0id, 'missing_value', missing_value
 
   
   t0id = NCDF_VARDEF(id,'wavelength',[lid], /FLOAT) 
@@ -111,29 +111,28 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, t0id, 'standard_name','radiation_wavelength'
 
   t1id = NCDF_VARDEF(id,'Wavelength_Band_Width',[lid], /FLOAT) ;cell-based metadata (ask NCDC how to do this?)
-  NCDF_ATTPUT, id, t1id, 'long_name', 'Wavelength band width. Centered on Central Wavelength.'
+  NCDF_ATTPUT, id, t1id, 'long_name', 'Wavelength band width. Centered on wavelength.'
   NCDF_ATTPUT, id, t1id, 'units', 'nm'  
  
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
   NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Total Solar Irradiance (Watt/ m**2)'
   NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
-  NCDF_ATTPUT, id, x1id, '_FillValue', missing_value
-
-  
+  NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
+ 
   x2id = NCDF_VARDEF(id, 'iso_time', [tid], /STRING) 
-  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date/time (YYYY-MM-DD) format'; ask NCDC what reference day they like? Include iso_time as another variable?
+  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date/time (YYYY-MM-DD) string'
   
-  
-  x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT) ;Fix! This must be an integer or float with a reference time.
-  NCDF_ATTPUT, id, x3id, 'long_name',''
+  x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT) ;Fix! This must be an integer or float with a reference time.; ask NCDC what reference day they like? Include iso_time as another variable?
+  NCDF_ATTPUT, id, x3id, 'long_name','days since 1858-11-17 00:00:00.0'
   NCDF_ATTPUT, id, x2id, 'standard_name','time'
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
   
   ; Input data:
-  NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards; 
+  NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
+  NCDF_VARPUT, id, x3id, data.mjd ;CF-compliant time variable
   NCDF_VARPUT, id, x1id, tsi
   NCDF_VARPUT, id, x0id, ssi
   NCDF_VARPUT, id, t0id, spectral_bins.bandcenter
