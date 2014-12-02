@@ -63,7 +63,8 @@ function compute_sunspot_blocking, area, lat, lon
     mu = mu[index]
   endif else index = findgen(n_elements(area)) ;all indices
   
-  ssb[index] =  mu * (3*mu + 2)/2.0 * area * (0.2231 + 0.0244 * alog10(area))
+  ;ssb[index] =  mu * (3*mu + 2)/2.0 * area * (0.2231 + 0.0244 * alog10(area)) ;with area-dependent contrast adjustment
+  ssb[index] =  mu * (3*mu + 2)/2.0 * area ; without area-dependent contrast adjustment
   
   return, ssb
   
