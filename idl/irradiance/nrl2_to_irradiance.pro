@@ -129,10 +129,10 @@
 
 function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
 
-  algver = 'V001' ; get from function parameter?
-  algrev = 'R00' ; get from function parameter?
-  modver='8Sep14'
-  fn='~/git/nrlssi/data/judith_2014_09_08/NRL2_model_parameters20_'+modver+'.sav'
+  algver = 'V01' ; get from function parameter?
+  algrev = 'R0' ; get from function parameter?
+  modver='21Nov14'
+  fn='~/git/nrlssi/data/judith_2014_11_21/NRL2_model_parameters_AIndC_20_'+modver+'.sav'
   ;TODO: get this from function parameter?
  
   ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
