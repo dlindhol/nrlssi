@@ -129,10 +129,10 @@
 
 function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
 
-  algver = 'V001' ; get from function parameter?
-  algrev = 'R00' ; get from function parameter?
-  modver='8Sep14'
-  fn='~/git/nrlssi/data/judith_2014_09_08/NRL2_model_parameters20_'+modver+'.sav'
+  algver = 'V01' ; get from function parameter?
+  algrev = 'R0' ; get from function parameter?
+  modver='21Nov14'
+  fn='~/git/nrlssi/data/judith_2014_11_21/NRL2_model_parameters_AIndC_20_'+modver+'.sav'
   ;TODO: get this from function parameter?
  
   ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
@@ -208,8 +208,8 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ssifile_daily = 'ssi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
   
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
-  result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,data,tsifile_daily)
-  result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,data,spectral_bins,ssifile_daily)
+  result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,tsifile_daily)
+  result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,ssifile_daily)
  
   ;Example, convert modified julian date to iso string
   ;print, mjd2iso_date(data[0].mjd)
