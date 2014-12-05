@@ -109,8 +109,8 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   ;Define the structure to hold a final daily averaged result.
   sunspot_blocking_struct = {sunspot_blocking,  $
     mjdn:0l,  $
-    ssbt:0.0, dssbt:0.0,   $
-    ssbuv:0.0, dssbuv:0.0,  $
+    ssbt:0.0d, dssbt:0.0d,   $
+    ssbuv:0.0d, dssbuv:0.0d,  $
     quality_flag:0  $
   }
     
@@ -196,13 +196,13 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
         ;TODO: deal with only one sample, stddev of array of one is NaN
         ssbt_list = ssbt_by_station.values()
         ssbt_array = ssbt_list.toArray() ;IDL can't do mean ... on List so convert to array
-        sunspot_blocking_data[i].ssbt  = mean(ssbt_array)
-        sunspot_blocking_data[i].dssbt = stddev(ssbt_array)
+        sunspot_blocking_data[i].ssbt  = mean(ssbt_array, /double)
+        sunspot_blocking_data[i].dssbt = stddev(ssbt_array, /double)
       
         ssbuv_list = ssbuv_by_station.values()
         ssbuv_array = ssbuv_list.toArray() ;IDL can't do mean ... on List so convert to array
-        sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array)
-        sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array)
+        sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array, /double)
+        sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array, /double)
       endelse
       
       ;Compute the quality flag based on the bits set above.

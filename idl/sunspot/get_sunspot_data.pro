@@ -120,13 +120,13 @@ function parse_line, line
   
   ;Parse the latitude, get sign from hemisphere
   ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
-  lat = float(vars[2])
+  lat = double(vars[2])
   lathem = vars[1]
   if (lathem eq 'S') then lat = -lat
   
   ;Parse the longitude, get sign from hemisphere
   ;TODO: deal with missing?  if(along eq '  ') then along=' 0', will get format error otherwise
-  lon = float(vars[4])
+  lon = double(vars[4])
   lonhem = vars[3]
   if(lonhem eq 'E') then lon = -lon
   ;east is negative!? doesn't really matter
@@ -136,7 +136,7 @@ function parse_line, line
   
   ;Parse sunspot area, LaTiS will have replaced missing values with NaN
   ;We'll add a flag for it when we compute the average area.
-  area = float(vars[6])
+  area = double(vars[6])
   
   ;Station name
   station = vars[7]
