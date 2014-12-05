@@ -47,7 +47,7 @@ function replace_nan_with_value, data, value
   ;TODO: should we use doubles?
 
   ;Make a copy of the data as floats so 'data' is not impacted.
-  result = float(data)
+  result = double(data)
   
   ;Get the indices of the NaNs. Note, we can't use equality tests for NaNs.
   index = where (FINITE(data, /nan), count)

@@ -84,7 +84,7 @@ function get_mg_index_from_latis, ymd1, ymd2
   ;define the data structure
   struct = {mg_index,   $
     mjd: 0l,     $
-    index: 0.0  $
+    index: 0.0d  $
   }
   
   ;number of time samples (one per day)

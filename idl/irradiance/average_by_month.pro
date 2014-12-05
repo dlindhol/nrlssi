@@ -29,12 +29,12 @@ function average_by_month, records
     min_mjd: 0.0,       $
     max_mjd: 0.0,       $
     count: 0,           $
-    tsi: 0.0,           $
-    tsi_stddev: 0.0,    $
-    ssi: fltarr(nwl),        $
-    ssi_stddev: fltarr(nwl), $
-    ssitot: 0.0,        $
-    ssitot_stddev: 0.0  $
+    tsi: 0.0d,           $
+    tsi_stddev: 0.0d,    $
+    ssi: dblarr(nwl),        $
+    ssi_stddev: dblarr(nwl), $
+    ssitot: 0.0d,        $
+    ssitot_stddev: 0.0d  $
   }
   
   ;Define resulting array of structures
@@ -55,16 +55,16 @@ function average_by_month, records
     result[index].iso = ym  ;yyyy-mm
     result[index].count = n_elements(recs)
     
-    result[index].tsi        = mean(recs.tsi)
-    result[index].tsi_stddev = stddev(recs.tsi)
+    result[index].tsi        = mean(recs.tsi, /double)
+    result[index].tsi_stddev = stddev(recs.tsi, /double)
     
     ;Note, ssi has an array for each time sample
     ssi = transpose(recs.ssi) ;so we can average over time dimension
-    result[index].ssi        = mean(ssi, dimension=1)
-    result[index].ssi_stddev = stddev(ssi, dimension=1)
+    result[index].ssi        = mean(ssi, dimension=1, /double)
+    result[index].ssi_stddev = stddev(ssi, dimension=1, /double)
     
-    result[index].ssitot        = mean(recs.ssitot)
-    result[index].ssitot_stddev = stddev(recs.ssitot)
+    result[index].ssitot        = mean(recs.ssitot, /double)
+    result[index].ssitot_stddev = stddev(recs.ssitot, /double)
 
     index += 1
   endforeach

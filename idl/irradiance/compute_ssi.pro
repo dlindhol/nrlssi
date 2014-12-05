@@ -157,9 +157,9 @@ function compute_ssi, sb, mg, model_params
   dspot=(sb+deltasb)*dspotcoef
   nrl2=iquiet+dfac+dspot+ccoef
 
-  dfactot=total(dfac)
-  dspottot=total(dspot)
-  nrl2tot=total(nrl2)
+  dfactot=total(dfac, /double)
+  dspottot=total(dspot, /double)
+  nrl2tot=total(nrl2, /double)
 
   ssi = {nrl2_ssi,    $
   nrl2:  nrl2,        $
