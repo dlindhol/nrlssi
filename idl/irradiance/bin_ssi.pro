@@ -70,7 +70,7 @@ function bin_ssi, model_params, spectral_bins, ssi
     wav1=bandcenter(m)-bandwidth(m)/2.
     wav2=bandcenter(m)+bandwidth(m)/2.
     rwav=where((lambda ge wav1) and (lambda lt wav2),cntwav)
-    nrl2bin(m)=total(nrl2(rwav))/(wav2-wav1)
+    nrl2bin(m)=total(nrl2(rwav), /double)/(wav2-wav1)
   endfor
     
   nrl2binsum=total(nrl2bin*bandwidth)

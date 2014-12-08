@@ -61,7 +61,7 @@ function get_solar_latitude_from_file, jd
     readf,5,line 
     ss = strsplit(line, /extract)
     tmp_mmdd = ss[0]
-    tmp_B0 = float(ss[1])
+    tmp_B0 = double(ss[1])
     data[tmp_mmdd] = tmp_B0
   endwhile
   

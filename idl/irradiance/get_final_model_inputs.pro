@@ -47,7 +47,7 @@ function get_final_model_inputs, file
   temp = {version:1.0, $
     datastart:5L, $
     delimiter:32b, $
-    missingvalue:!VALUES.F_NAN, $
+    missingvalue:!VALUES.D_NAN, $
     commentsymbol:'', $
     fieldcount:5l, $
     fieldtypes:[3l, 3l, 3l, 4l, 4l], $ ; float

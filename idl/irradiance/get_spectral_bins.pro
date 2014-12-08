@@ -54,8 +54,8 @@ function get_spectral_bins
   nband3=(10000-5000)/10
   nband4=(100000-10000)/50
   nband=nband1+nband2+nband3+nband4
-  bandcenter=fltarr(nband) 
-  bandwidth=fltarr(nband)
+  bandcenter=dblarr(nband) 
+  bandwidth=dblarr(nband)
 
   ; set up the wavelength bins
   for m=0,nband1-1 do begin
