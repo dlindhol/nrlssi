@@ -65,7 +65,7 @@ function get_mg_index_from_latis, ymd1, ymd2
   ;TODO: catch errors
   netUrl = OBJ_NEW('IDLnetUrl')
   netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
-  netUrl->SetProperty, URL_PORT  = 8080
+  netUrl->SetProperty, URL_PORT  = 8090
   ;netURL->SetProperty, URL_PATH  = 'lisird3/latis/nrlssi_mg_index.jsona'
   netURL->SetProperty, URL_PATH  = 'lisird3/latis/bremen_composite_mg_index.jsona'
   netURL->SetProperty, URL_QUERY = query

@@ -240,7 +240,7 @@ function get_sunspot_data_from_latis, ymd1, ymd2
   ;Make LaTiS request for csv
   netUrl = OBJ_NEW('IDLnetUrl')
   netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
-  netUrl->SetProperty, URL_PORT  = 8080
+  netUrl->SetProperty, URL_PORT  = 8090
   netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_mwl.csv'
   netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + end_date
   lines = netURL->Get(/string_array)
