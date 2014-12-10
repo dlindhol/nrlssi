@@ -1,4 +1,4 @@
-Tue Dec  2 10:03:55 2014   calc_USAF_spotindex_Nov12.pro
+Wed Dec 10 12:58:53 2014   calc_USAF_spotindex_Nov12.pro
 SSB:2009 AREA-DEP & AREA-INDEP CONTRASTS & SDEVS: BOL EXCESS=0.324
        90101   -999.00   -999.00   -999.00   -999.00       0
        90102   -999.00   -999.00   -999.00   -999.00       0
