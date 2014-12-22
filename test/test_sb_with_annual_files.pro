@@ -1,8 +1,8 @@
 pro test_sb_with_annual_files
 ;compares sunspot blocking function (and std. dev) for a year against Judiths annual files
-ymd1='2011-01-01'
-ymd2='2011-12-31'
-year='2011'
+ymd1='2014-01-01'
+ymd2='2014-12-31'
+year='2014'
 
 ;get sb 
 sb=process_sunspot_blocking(ymd1,ymd2)
@@ -22,6 +22,8 @@ atemplate = {version:1.0, $
 
 result=read_ascii(afile,temp=atemplate) ;structure to hold the contents of ascii annual file
 
-p=plot(result.date,sb.ssbt/result.sb_indep,title='Ratio: LASP/NRL (annual file)')
-stop
+p=plot(result.date,sb.ssbt-result.sb_indep,title='Difference: LASP/NRL (annual file)')
+for i=0,365 do begin 
+  print,mjd2iso_date(sb[i].mjdn),float(sb[i].ssbt)-result.sb_indep[i]
+endfor
 end; pro
