@@ -65,7 +65,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, /GLOBAL, "source", "nrl2_to_irradiance.pro"
   NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics"
   NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CD Standard Name Table v27"
-  NCDF_ATTPUT, id, /GLOBAL, "Id", file
+  NCDF_ATTPUT, id, /GLOBAL, "id", file
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc"
   NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3
   NCDF_ATTPUT, id, /GLOBAL, "license","No constraints on data use."
@@ -79,7 +79,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "total solar irradiance"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00828"
   NCDF_ATTPUT, id, /GLOBAL, "product_version", algver+algrev
-  NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TCTE"
+  NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TSIS"
   NCDF_ATTPUT, id, /GLOBAL, "instrument", "Total Irradiance Monitor (TIM)"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_max"," 90.0"

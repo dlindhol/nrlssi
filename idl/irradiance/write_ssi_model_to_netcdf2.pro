@@ -83,7 +83,7 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "solar spectral irradiance"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00899" 
   NCDF_ATTPUT, id, /GLOBAL, "product_version", algver+algrev
-  NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TCTE"
+  NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TSIS"
   NCDF_ATTPUT, id, /GLOBAL, "instrument", "Spectral Irradiance Monitor (SIM)"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_max"," 90.0"
