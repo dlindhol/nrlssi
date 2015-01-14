@@ -36,7 +36,7 @@
 ;                                     
 ; INPUTS
 ;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
-;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), 
+;   ymd2       - ending time range respective to midnight GMT of the given day  
 ;   stations = stations - Optional keyword to restrict sunspot darkening index to specified monitoring stations in the USAF white light network.
 ;                         If omitted (default), all stations are included. Used for QA analysis.
 ;   output_dir=output_dir - Optional keyword to specify directory path to store sunspot darkening index in a text file. If omitted (default), output
@@ -44,18 +44,18 @@
 ;   
 ; OUTPUTS
 ;   sunspot_blocking_struct - a structure containing the following variables:
-;   mjdn - the modified julian date (converted from YYYY-MM-DD format) 
-;   ssbt - the sunspot darkening index (a mean value of the reporting stations)
-;   dssbut - the standard deviation of the sunspot darkening index
-;   quality flag - a value of 0 or 1 (1 = missing data); Used for QA analysis.
+;     mjdn - the modified julian date 
+;     ssbt - the sunspot darkening index (a mean value of the reporting stations)
+;     dssbut - the standard deviation of the sunspot darkening index of the reporting stations
+;     quality flag - a value of 0 or 1 (1 = missing data); Used for QA analysis.
 ;
 ;   if optional keyword 'output_dir' is defined, an intermediate text file of the naming convention, 'sunspot_blocking_YMD1_YMD2_VER.txt',
-;   contains the structure data listed above.  Used for QA monitoring. 
+;   contains the structure data listed above, where version is a defined developmental version - Used for QA monitoring. 
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -68,7 +68,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   process_sunspot_blocking,ymd1,ymd2,stations=stations,output_dir=output_dir
