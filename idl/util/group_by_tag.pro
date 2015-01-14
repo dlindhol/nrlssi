@@ -50,10 +50,7 @@
 ;   group_by_tag,structures, tag
 ;
 ;@***** 
-; Given an array of structures and the name a tag in those structures
-; create a Hash where each value of that tag becomes a key and the value
-; for each key is an array of the structures that have that value of that tag.
-; Note, the original structures will not be modified.
+
 function group_by_tag, structures, tag
 
   ;Define Hash to contain the results.
