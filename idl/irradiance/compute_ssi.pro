@@ -5,9 +5,8 @@
 ;
 ; PURPOSE
 ;   The compute_ssi.pro procedure is a function called by the driver routine,nrl2_to_irradiance,pro,
-;   to compute daily Model Solar Spectral Irradiance using
-;   multiple regression coefficients specific to the NRL2 model, given values for the sunspot darkening function
-;   and the facular brightening function.
+;   to compute daily Model Solar Spectral Irradiance using multiple regression coefficients specific to 
+;   the NRLSSI2 model andgiven values for the sunspot darkening function and the facular brightening function.
 ;
 ; DESCRIPTION
 ;   The compute_ssi.pro function calculates the Model Solar Spectral Irradiance (SSI) for a specific day, given
@@ -17,6 +16,7 @@
 ;   I(k,t) it the spectral (k) and time-dependency (t) of SSI.
 ;   delta_I_F(k,t) is similarly described, but for SSI, and is also spectrally dependent 
 ;   delta_I_S(t) is similarly described, but for SSI, and is also spectrally dependent
+;   I_Q is the SSI of the adopted Quiet Sun reference spectrum.
 ;   
 ;   2-Component Regression formulas: 
 ;   I(k,t) = I_Q + delta_I_F(t) + delta_I_S(t)
@@ -102,12 +102,12 @@
 ;     nrl2 - modeled solar spectral irradiance
 ;     dfactot - spectrally integrated value of the facular brightening
 ;     dspottot - spectrally integrated value of the sunspot darkening 
-;     nrl2tot - spectrally integrated value of the irradiance, nrl2
+;     nrl2tot - spectrally integrated value of the SSI, nrl2
 ;     
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -120,7 +120,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   08/25/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   compute_ssi, sb, mg, model_params
