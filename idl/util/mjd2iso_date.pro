@@ -8,6 +8,7 @@
 ;
 ; DESCRIPTION
 ;   Converts time from Modified Julian Date (integer) to ISO 8601 standard, 'yyyy-mm-dd' 
+;   Uses the ITT/IDL library routine caldat.pro, which returns the calendar date given julian day 
 ;   
 ; INPUTS
 ;   mjd - Modified Julian Date
@@ -16,9 +17,9 @@
 ;   a value for time in ISO format ('yyyy-mm-dd')
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;     
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -31,7 +32,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   mjd2iso_date,mjd
