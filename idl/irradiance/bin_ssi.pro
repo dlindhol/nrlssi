@@ -34,9 +34,9 @@
 ;     nrl2binsum - the sum of the binned irradiance (equal to nrl2bin * bandwidth).  
 ;     
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -49,7 +49,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   08/26/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   bin_ssi, model_params, spectral_bins, ssi
