@@ -16,7 +16,7 @@
 ;   to the main driver routine.
 ;       
 ; INPUTS
-;   infile - an IDL save file containing the NRL2 model coefficients used to adjust the baseline, quiet Sun irradiance,
+;   infile - an IDL save file containing the NRLTSI2 and NRLSSI2 model coefficients used to adjust the baseline, quiet Sun irradiance,
 ;   either increasing or decreasing it depending on the wavelength-dependent strengths of the facular, F, and sunspot, S, 
 ;   influences at that time.
 ;
@@ -41,9 +41,9 @@
 ;                 for sunspot darkening at quiet sun conditions is zero.
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -56,7 +56,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   08/22/2014 Initial Version prepared for NCDC
+;   01/15/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   get_model_params,infile
