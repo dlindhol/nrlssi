@@ -10,7 +10,7 @@
 ; DESCRIPTION
 ;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance to a netcdf4 formatted file. 
 ;   Two time format variables are also included: an ISO 8601 time ('yyyy-mm-dd') and a seconds since a 1610-01-01 00:00:00 epoch
-;   CF-1.5 metadata conventions are used in defining global and variable name attributes. 
+;   CF-1.6 metadata conventions are used in defining global and variable name attributes. 
 ;   Missing values are defined as -99.0. 
 ;   This function is called from the main routine, nrl2_to_irradiance.pro.
 ; 

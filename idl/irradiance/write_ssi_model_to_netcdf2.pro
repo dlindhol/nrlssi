@@ -1,35 +1,45 @@
-;@***h* SOLAR_IRRADIANCE_FCDR/write_ssi_model_to_netcdf.pro
+;@***h* SOLAR_IRRADIANCE_FCDR/write_ssi_model_to_netcdf2.pro
 ; 
 ; NAME
-;   write_ssi_model_to_netcdf.pro
+;   write_ssi_model_to_netcdf2.pro
 ;
 ; PURPOSE
-;   The write_ssi_model_to_netcdf.pro function writes the date and Model Solar Spectral Irradiance
-;   to a netcdf4 file. This function is called from the main routine, nrl2_2_irradiance.pro.
+;   The write_ssi_model_to_netcdf2.pro function outputs Model Solar Spectral Irradiance
+;   to a netcdf4 file. This function is called from the main routine, nrl2_to_irradiance.pro.
 ;
 ; DESCRIPTION
-;   The write_ssi_model_to_netcdf.pro function writes the Model Solar Spectral Irradiance, wavelength grid (midpoints and range),
-;   date (YYYY-MM-DD format) to a netcdf4 formatted file. Also included is the value of total (spectrally)
-;   integrated Total Solar Irradiance for the particular date. CF-1.5 metadata conventions are used in defining global and 
-;   variable name attributes. Missing values are defined as -99.0. TODO: check: do we have NaN output still?
-;   This function is called from the main routine, nrl2_2_irradiance.pro.
+;   The write_ssi_model_to_netcdf2.pro function writes the Model Solar Spectral Irradiance and wavelength information 
+;   (midpoints and band width) to a netcdf4 formatted file. Also included is the value of total (spectrally)
+;   integrated Total Solar Irradiance for the particular date. 
+;   Two time format variables are also included: an ISO 8601 time ('yyyy-mm-dd') and a seconds since a 1610-01-01 00:00:00 epoch.
+;   CF-1.6 metadata conventions are used in defining global and variable name attributes. 
+;   Missing values are defined as -99.0. 
+;   This function is called from the main routine, nrl2_to_irradiance.pro.
 ; 
 ; INPUTS
 ;   ymd1  - starting time  (yyyy-mm-dd)
 ;   ymd2  - ending time  (yyyy-mm-dd)
-;   mjd   - array of dates covering time period (Modified Julian date)
-;   spectrum  - structure of Modeled Solar Spectral Irradiance (SSI) data containing date, ssi, wavelength grid (bin centers and ranges)
-;   tsi   - Modeled Total Solar Irradiance (TSI)
-;   file  - output file name. The default file naming convention is ssi_YMD1_YMD2_VER.nc 
-;           
-;           ; UPDATE: Include "creation date in file naming convention"
+;   ymd3  - creation date (yyyy-mm-dd)
+;   algver - version number of the NRLTSI2 model
+;   algrev - revision number of the NRLTSI2 model
+;   data - a structure containing the following variables
+;     mjd - Modified Julian Date  
+;     iso - iso 8601 formatted time
+;     tsi - Modeled Total Solar Irradiance
+;     ssi - Modeled Solar Spectral Irradiance (in wavelength bins) 
+;     ssitot - Integral of the Modeled Solar Spectral Irradiance
+;   spectral_bins - a structure containing the following variables
+;     nband       - number of spectral bands, for a variable wavelength grid, that the NRL2 model bins 1 nm solar spectral irradiance onto.
+;     bandcenter  - the bandcenters (nm) of the variable wavelength grid.
+;     bandwidth   - the bandwidths (delta wavelength, nm)  of the variable wavelength grid.    
+;   file - output filename. Created dynamically within the driver routine, nrl2_to_irradiance.pro  
 ;      
 ; OUTPUTS
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -42,10 +52,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   11/18/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_ssi_model_to_netcdf, ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,ssifile_daily
+;   write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,file
 ;  
 ;@***** 
 function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,file
