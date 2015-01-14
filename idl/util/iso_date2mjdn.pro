@@ -7,7 +7,9 @@
 ;   Converts time from ISO 8601 standard to Modified Julian Date 
 ;
 ; DESCRIPTION
-;   Converts time from ISO 8601 standard to Modified Julian Date 
+;   Converts time from ISO 8601 standard to Modified Julian Date. 
+;   Uses the ITT/IDL library routine julday.pro, which calculates the julian day 
+;   number for a given month, day, and year. 
 ;   
 ; INPUTS
 ;   ymd - a value for time in ISO format ('yyyy-mm-dd')
