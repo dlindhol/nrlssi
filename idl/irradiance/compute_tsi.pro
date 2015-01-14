@@ -5,9 +5,8 @@
 ;
 ; PURPOSE
 ;   The compute_tsi.pro procedure is a function called by the driver routine,nrl2_to_irradiance,pro,
-;   to compute daily Model Total Solar Irradiance using
-;   multiple regression coefficients specific to the NRL2 model, given values for the sunspot darkening function
-;   and the facular brightening function.
+;   to compute daily Model Total Solar Irradiance using multiple regression coefficients specific to the 
+;   NRLTSI2 model and given values for the sunspot darkening function and the facular brightening function.
 ;
 ; DESCRIPTION
 ;   The compute_tsi.pro function calculates the Model Total Solar Irradiance (TSI) for a specific day, given
@@ -17,6 +16,7 @@
 ;   T(t) is the time-dependency (t) of TSI,
 ;   delta_T_F(t) is the time dependency of the delta change to TSI from the facular brightening index, F(t)
 ;   delta_T_S(t) is the time dependency of the delta change to TSI from the sunspot darkening index, S(t)
+;   T_Q is the TSI of the adopted Quiet Sun reference value.
 ;   
 ;   2-Component Regression formulas: 
 ;   T(t) = T_Q + delta_T_F(t) + delta_T_S(t)
@@ -53,7 +53,7 @@
 ; INPUTS
 ;   sb           - sunspot darkening indice
 ;   mg           - facular brightening indice
-;   model_params - a structure containing NRL2 coefficients necessary to construct modeled TSI:
+;   model_params - a structure containing model coefficients necessary to construct modeled TSI:
 ;     tquiet     - the adopted total solar irradiance of the Quiet Sun
 ;     acoef      - the 'a' multiple regression coefficient for facular brightening (equal to a_F, in above description)
 ;     bfaccoef   - the 'b' multiple regression coefficient for facular brightening (equal to b_F, in above description)
@@ -68,9 +68,9 @@
 ;     
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -83,11 +83,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   08/25/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   compute_tsi, sb, mg, model_params
-;
 ;@*****
 
 function compute_tsi,sb, mg, model_params
