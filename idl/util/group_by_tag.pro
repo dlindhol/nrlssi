@@ -11,9 +11,9 @@
 ;
 ; DESCRIPTION
 ;   Called by process_sunspot_blocking.pro
-;   Makes a Hash mapping station name to an array of observations by that station.
-;   station -> (i -> (mjd, lat, lon, group, area, station))
-
+;   Makes a Hash mapping for a tag that becomes a key and the value for each key is an array of structures
+;   that has the value of that tag.  For example, USAF station name can be used as a key and the value for that key is an array of 
+;   structures holding observations by that station. 
 ;   
 ; INPUTS
 ;   structures - A structure containing, for each day of records in the USAF data:
