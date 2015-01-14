@@ -21,14 +21,14 @@
 ;  
 ; OUTPUTS
 ;   bins - a structure containing the following variables:
-;     nband      = number of spectral bands, for a variable wavelength grid, that the NRL2 model bins 1 nm solar spectral irradiance onto.
+;     nband      = number of spectral bands, for a variable wavelength grid, that the NRLSSI2 model bins 1 nm solar spectral irradiance onto.
 ;     bandcenter = the bandcenters (nm) of the variable wavelength grid.
-;     bandwidth  = the bandwidths (delta wavelength, nm)  of the variable wavelength grid. 
+;     bandwidth  = the bandwidths (delta wavelength, nm)  of the variable wavelength grid, centered on bandcenter. 
 ;     
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -41,7 +41,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   08/22/2014 Initial Version prepared for NCDC
+;   01/15/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   get_spectral_bins
