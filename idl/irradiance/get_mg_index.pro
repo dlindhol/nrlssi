@@ -7,11 +7,9 @@
 ;   The get_mg_index.pro is a function that parses a time-series of the facular brightening index for the desired starting and ending date. 
 ;   
 ; DESCRIPTION
-;   The get_mg_index.pro is a function that parses a time-series of the facular brightening index for the desired starting and ending date, 
-;   that is passed to the routine from the main driver, nrl_2_irradiance.pro. The data is parsed from LASP's time-series server, LaTiS, via
-;   an IDL net URL.
-;   The output is returned to the main driver via a structure containing time and mg II index (the Mg II index is the proxy used to 
-;   define the facular brightening index).
+;   The get_mg_index.pro is a function that parses a time-series of the facular brightening index (actually, a proxy of the facular brightening index - Mg II) 
+;   for the desired starting and ending date, and passes the results to the main driver routine, nrl2_to_irradiance.pro. 
+;   The data is parsed from LASP's time-series server, LaTiS, via an IDL net URL.
 ;      
 ; INPUTS
 ;   ymd1       - starting time range respective to midnight GMT of the given day, in 'yyyy-mm-dd' format.
@@ -19,13 +17,13 @@
 ;                  
 ; OUTPUTS
 ;   result - a structure containing the following variables:
-;   jdn - the modified Julian date 
-;   index - the Mg II index
+;     mjd - the modified Julian date 
+;     index - the Mg II index
 ;     
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -38,7 +36,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   get_mg_index,ymd1,ymd2
