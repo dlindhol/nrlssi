@@ -1,4 +1,51 @@
+;@***h* SOLAR_IRRADIANCE_FCDR/remove_duplicate_records.pro
+; 
+; NAME
+;   remove_duplicate_records.pro
+;
+; PURPOSE
+;   Checks for duplicate sunspot station records in the USAF white light observations. Removes duplicate records if found.
+;
+; DESCRIPTION
+;   Called by process_sunspot_blocking.pro
+;   If duplicate records are found, reports the number of duplicates
 
+;   
+; INPUTS
+;   ssdata_by_station - A structure containing an array of observations by that station:
+;     mjd - Modified Julian Date 
+;     lat - latitude of sunspot group
+;     lon - longitude of sunspot group
+;     group   - sunspot group number 
+;     area - recorded sunspot area
+;     station - station name 
+;   
+; OUTPUTS
+;   result - a structure containing an array of observations by that station, with duplicate records removed 
+;   ndup - an integer value of the number of duplicate records found (default = 0)
+;
+; AUTHOR
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;     
+; COPYRIGHT 
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   01/14/2015 Initial Version prepared for NCDC
+; 
+; USAGE
+;   remove_duplicate_records,ssdata_by_station, ndup
+;
+;@***** 
 function make_sunspot_record_hash_code, record
   ;records should already have same mjd and station so don't need to include those
   ;;but might as well for consistency?
