@@ -207,6 +207,8 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
   ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired?
   tsifile_daily = 'tsi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
+  ;tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' 
+  ;tsifile_daily = 'tsi_' + algver +algrev +'-preliminary_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' ;for preliminary file
   ssifile_daily = 'ssi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
   
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
