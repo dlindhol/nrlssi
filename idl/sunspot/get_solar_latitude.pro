@@ -4,8 +4,7 @@
 ;   get_solar_latitude.pro
 ;
 ; PURPOSE
-;   Obtains solar latitude from a generic file (betasun2.dat), or computation (JEAN MEEUS, ASTRONOMICAL ALGORITHMS;
-;   /data_systems/tools/knapp/idl/astronomy/helios.pro), for a specified date.
+;   Obtains solar latitude from a generic file (betasun2.dat)
 ;
 ; DESCRIPTION
 ;   Obtains the ecliptic plane correction, B0, for the given day. The B0 factor is used to correct the
@@ -15,15 +14,15 @@
 ;   area projection (cosine weighting). 
 ;   The corrected solar latitude = latitude - B0
 ; INPUTS
-;   jd - Modified Julian Date 
+;   jd - Julian Date 
 ;   
 ; OUTPUTS
-;   B0 - the ecliptic plane correction 
+;   lat - the ecliptic plane correction  
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;     
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -36,7 +35,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   get_solar_latitude,jd

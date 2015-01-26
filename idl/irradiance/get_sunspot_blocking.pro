@@ -5,7 +5,7 @@
 ;
 ; PURPOSE
 ;   The get_sunspot_blocking.pro is a utility function that iteratively invokes the function process_sunspot_blocking for a time period
-;   defined by a starting and ending date. 
+;   defined by a starting and ending date by the main driver routine, nrl2_to_irradiance.pro.
 ;   
 ; DESCRIPTION
 ;   The get_sunspot_blocking function is a utility function that iteratively invokes a second function, process_sunspot_blocking, 
@@ -23,9 +23,9 @@
 ; OUTPUTS
 ;     
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -38,7 +38,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/15/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   get_sunspot_blocking,ymd1,ymd2,stations=stations,output_dir=output_dir

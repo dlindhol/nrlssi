@@ -1,7 +1,56 @@
-; Given an array of structures and the name a tag in those structures
-; create a Hash where each value of that tag becomes a key and the value
-; for each key is an array of the structures that have that value of that tag.
-; Note, the original structures will not be modified.
+;@***h* SOLAR_IRRADIANCE_FCDR/group_by_tag.pro
+; 
+; NAME
+;   group_by_tag.pro
+;
+; PURPOSE
+;   Given an array of structures and the name (a tag) in those structures,
+;   creates a Hash where each value of that tag becomes a key and the value
+;   for each key is an array of the structures that has that value of that tag.
+;   Does not modify the original structures.
+;
+; DESCRIPTION
+;   Called by process_sunspot_blocking.pro
+;   Makes a Hash mapping for a tag that becomes a key and the value for each key is an array of structures
+;   that has the value of that tag.  For example, USAF station name can be used as a key and the value for that key is an array of 
+;   structures holding observations by that station. 
+;   
+; INPUTS
+;   structures - A structure containing, for each day of records in the USAF data:
+;     mjd - Modified Julian Date 
+;     lat - latitude of sunspot group
+;     lon - longitude of sunspot group
+;     group   - sunspot group number 
+;     area - recorded sunspot area
+;     station - station name 
+;   tag - an array of USAF station names  
+;   
+; OUTPUTS
+;   result - a Hash where the key is the USAF station name and the value is a List of sunspot records for that station (for a particular day).  
+;
+; AUTHOR
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;     
+; COPYRIGHT 
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   01/14/2015 Initial Version prepared for NCDC
+; 
+; USAGE
+;   group_by_tag,structures, tag
+;
+;@***** 
+
 function group_by_tag, structures, tag
 
   ;Define Hash to contain the results.

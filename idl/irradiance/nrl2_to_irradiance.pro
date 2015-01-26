@@ -4,23 +4,26 @@
 ;   nrl2_to_irradiance.pro
 ;
 ; PURPOSE
-;   The nrl2_to_irradiance.pro procedure is the driver routine to compute daily Model Total Solar Irradiance and 
-;   Solar Spectral Irradiance using the Judith Lean (Naval Research Laboratory) NRL2 model and write the output to NetCDF4 format.
+;   The nrl2_to_irradiance.pro procedure is the driver routine to compute daily Model Total Solar Irradiance (TSI) and 
+;   Solar Spectral Irradiance (SSI) using the Judith Lean (Naval Research Laboratory) NRLTSI2 and NRLSSI2 models 
+;   and write the output to NetCDF4 format.
 ;
 ; DESCRIPTION
-;   The nrl2_to_irradiance.pro procedure is the main driver routine that computes the Model Total Solar Irradiance (TSI)
-;   and Solar Spectral Irradiance (SSI) using the 2-component regression formulas described below and the variables as defined. Required 
+;   The nrl2_to_irradiance.pro procedure is the main driver routine that computes the Model Total Solar Irradiance
+;   and Solar Spectral Irradiance using the 2-component regression formulas described below and the variables as defined. Required 
 ;   input data is the time-dependent facular brightening and sunspot darkening functions that are derived from independent solar
-;   observations made approximately daily, respectively, the Mg II index of global facular emission and the areas and locations of 
+;   observations made approximately daily, respectively, the Mg II index of global facular emission and the number, areas and locations of 
 ;   sunspot active regions on the solar disk.
 ; 
 ;   Variable Definitions:
 ;   T(t) is the time-dependency (t) of TSI,
 ;   I(k,t) it the spectral (k) and time-dependency (t) of SSI.
 ;   delta_T_F(t) is the time dependency of the delta change to TSI from the facular brightening index, F(t)
-;   delta_I_F(k,t) is similarly described, but for SSI, and is also spectrally dependent 
+;   delta_I_F(k,t) is the time and wavelength dependency of the delta change to SSI from the facular brightening index, F(t)
 ;   delta_T_S(t) is the time dependency of the delta change to TSI from the sunspot darkening index, S(t)
-;   delta_I_S(t) is similarly described, but for SSI, and is also spectrally dependent
+;   delta_I_S(t) is the time and wavelength dependency of the delta change to SSI from the sunspot darkening index, S(t)
+;   T_Q is the TSI of the adopted Quiet Sun reference value.
+;   I_Q is the SSI of the adopted Quiet Sun reference spectrum.
 ;   
 ;   2-Component Regression formulas: 
 ;   T(t) = T_Q + delta_T_F(t) + delta_T_S(t)
@@ -37,12 +40,12 @@
 ;   delta_I_S(k,t) = c_S(k) + d_S(k) * [S(t) - S_Q] + e_S * [S(t) - S_Q]
 ;   
 ;   Coefficients for faculae and sunspots:
-;   The a, b, c(k), and d(k) coefficients for faculae and sunspots are specified (determined using multiple linear regression) 
+;   The 'a', 'b', 'c(k)', and 'd(k)' coefficients for faculae and sunspots are specified (determined using multiple linear regression) 
 ;   and supplied with the algorithm. These coefficients best reproduce the TSI irradiance variability  measured directly by 
 ;   SORCE TIM from 2003 to 2014 and detrended SSI irradiance variability (removal of 81-day running mean) measured by SORCE SIM. 
 ;   Note, the a and c coefficients are nominally zero so that when F=F_Q and S=S_Q, then T=T_Q and I=I_Q.
 ;   The additional wavelength-dependent terms in the spectral irradiance facular and sunspot components evaluated with the 
-;   e coefficients provide small adjustments to ensure that 1) the numerical integral over wavelength of the solar spectral irradiance is 
+;   'e' coefficients provide small adjustments to ensure that 1) the numerical integral over wavelength of the solar spectral irradiance is 
 ;   equal to the total solar irradiance, 2) the numerical integral over wavelength of the time-dependent SSI irradiance variations from
 ;   faculae and sunspots is equal to the time-dependent TSI irradiance variations from the faculae and sunspots. 
 ;   
@@ -57,15 +60,15 @@
 ;                      
 ;   Variable Definitions:
 ;   I_mod(k,t) = the spectral (k) and time (t) dependecies of the modeled spectral irradiance, I_mod.
-;   I_smooth(k,t) = the spectral and time dependences of the smoothed (i.e. after subtracting 81-day running mean) from observed spectral irradiance.
-;   F_smooth(t) = the time dependency of the smoothed (i.e. after subtracting 81-day running mean) from observed facular brightening index, F(t).
+;   I_smooth(k,t) = the spectral and time dependences of the smoothed (i.e. after subtracting 81-day running mean) observed spectral irradiance.
+;   F_smooth(t) = the time dependency of the smoothed (i.e. after subtracting 81-day running mean) observed facular brightening index, F(t).
 ;   S_smooth(t) = as above, but for the observed sunspot darkening index, S(t).
 ;   
 ;   The range of facular variability in the detrended time series is smaller than during the solar cycle which causes the coefficients
 ;   of models developed from detrended time series to differ from those developed from non-detrended observations. To address this, total
 ;   solar irradiance observations are used to numerically determine ratios of coefficients obtained from multiple regression using direct observations,
-;   with those obtained from multiple regression of detrended observations. Using a second model of TIM observations (using detrended observations) 
-;   was determined and the ratios of the coefficients for the two approaches were used to adjust the coefficients for spectral irradiance variations.
+;   with those obtained from multiple regression of detrended observations. Using a second model of TIM observations (using detrended observations),
+;   the ratios of the coefficients for the two approaches are used to adjust the coefficients for spectral irradiance variations.
 ;   
 ;   For wavelengths > 295 nm, where both sunspots and faculae modulate spectral and total irradiance, 
 ;   the d coefficients, d_F and d_S are estimated as:
@@ -96,18 +99,17 @@
 ; INPUTS
 ;   ymd1       - starting time range respective to midnight GMT of the given day, of the form 'yyyy-mm-dd'
 ;   ymd2       - ending time range respective to midnight GMT of the given day (i.e. in NOT inclusive), of the form 'yyyy-mm-dd'.
-;   output_dir - path to desired output directory. If left blank, the output file is placed in the current working directory with the 
-;                default title of 'nrl2_YMD1_YMD2_VER.sav'; using the time ranges above and a hard-coded "version" number.
+;   output_dir - path to desired output directory. If left blank, the output files are placed in the current working directory. 
 ;
 ; OUTPUTS
-;   outfile - user provided output filename (default filename is 'nrl_tsi.nc') that contains a data structure of
-;   Modeled Total Solar Irradiance ('tsi'), 'year', day of year ('doy'), and 'day_number'
-;   (cumulative day number since Jan. 1, 1978) in netCDF4 format.
-;
+;   outfiles - default titles of 'tsi_ver_rev_ymd1_ymd2_creation-date.sav' and 'ssi_ver_rev_ymd1_ymd2_creation-date'; using the 
+;                time ranges specified on input, a specified "version" (ver) and "revision" (rev) number, and the 
+;                creation_date (i.e. date when code was run).user provided output filename (default filename is 'nrl_tsi.nc') that contains a data structure of
+;                
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -120,7 +122,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   08/22/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
 ;   nrl2_to_irradiance, ymd1, ymd2,output_dir=output_dir

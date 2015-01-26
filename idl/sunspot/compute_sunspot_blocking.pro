@@ -13,12 +13,15 @@
 ;   The calculation effectively sums the projected area of sunspot regions on the solar hemisphere and multiplies this by the 
 ;   contrast of sunspots relative to the background (reference) Sun, taking into account variations with limb position on the solar disk.
 ;   [Lean, J.L., Cook, J., Marquette, W., and Johannesson, A.: 1998, Astrophys. J., 492, 390-401].
-;   It also includes empirical corrections for the additional darkness of larger sunspot than smaller sunspots  
+;   It does not include empirical corrections for the additional darkness of larger sunspot than smaller sunspots  
 ;   [Brandt, P, N., Stix, M., and Wdinhardt, H.: 1994, Solar Phys. 152 (119)]. 
 ;   
-;   ;Formula (from Lean et al., 1998)
-;   sunspot darkening = mu * (3*mu + 2)/2.0 * area * (0.2231 + 0.0244 * alog10(area)), where mu = cos(latitute) × cos(longitude) is the
+;   Formula (from Lean et al., 1998):
+;   sunspot darkening = mu * (3*mu + 2)/2.0 * area , where mu = cos(latitute) × cos(longitude) is the
 ;   cosine weighted area projection of sunspot area, and area = heliographic area of the sunspot group
+;   
+;   sunspot darkening (with empirical corrections for the additional darkness of larger sunspot than smaller sunspot = 
+;   mu * (3*mu + 2)/2.0 * area* (0.2231 + 0.0244 * alog10(area))
 ;                                     
 ; INPUTS
 ;   area - heliographic area of the sunspot group
@@ -29,9 +32,9 @@
 ;   ssb - the sunspot darkening  
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -44,7 +47,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   compute_sunspot_blocking,area,lat,lon

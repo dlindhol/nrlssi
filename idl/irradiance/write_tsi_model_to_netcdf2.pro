@@ -1,33 +1,39 @@
-;@***h* SOLAR_IRRADIANCE_FCDR/write_tsi_model_to_netcdf.pro
+;@***h* SOLAR_IRRADIANCE_FCDR/write_tsi_model_to_netcdf2.pro
 ; 
 ; NAME
-;   write_tsi_model_to_netcdf.pro
+;   write_tsi_model_to_netcdf2.pro
 ;
 ; PURPOSE
-;   The write_tsi_model_to_netcdf.pro function writes the date and Model Total Solar Irradiance
-;   to a netcdf4 file. This function is called from the main routine, nrl2_2_irradiance.pro.
+;   The write_tsi_model_to_netcdf2.pro function outputs Model Total Solar Irradiance
+;   to a netcdf4 file. This function is called from the main driver routine, nrl2_to_irradiance.pro.
 ;
 ; DESCRIPTION
-;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance, year, day of year, and cumulative day number 
-;   to a netcdf4 formatted file. CF-1.5 metadata conventions are used in defining global and variable name attributes. 
-;   Missing values (NaN's or '0's) are defined as -99.0. TODO: check: do we have NaN output still?
-;   This function is called from the main routine, nrl2_2_irradiance.pro.
+;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance to a netcdf4 formatted file. 
+;   Two time format variables are also included: an ISO 8601 time ('yyyy-mm-dd') and a seconds since a 1610-01-01 00:00:00 epoch
+;   CF-1.6 metadata conventions are used in defining global and variable name attributes. 
+;   Missing values are defined as -99.0. 
+;   This function is called from the main routine, nrl2_to_irradiance.pro.
 ; 
 ; INPUTS
 ;   ymd1  - starting time  (yyyy-mm-dd)
 ;   ymd2  - ending time  (yyyy-mm-dd)
-;   mjd   - time period (in Modified Julian Day format)
-;   data  - Modeled Total Solar Irradiance
-;   file  - name for output file. The default file naming convention is tsi_YMD1_YMD2_VER.nc 
-;           
-;           ; UPDATE: Include "creation date in file naming convention"
+;   ymd3  - creation date (yyyy-mm-dd)
+;   algver - version number of the NRLTSI2 model
+;   algrev - revision number of the NRLTSI2 model
+;   data - a structure containing the following variables
+;     mjd - Modified Julian Date  
+;     iso - iso 8601 formatted time
+;     tsi - Modeled Total Solar Irradiance
+;     ssi - Modeled Solar Spectral Irradiance (in wavelength bins) 
+;     ssitot - Integral of the Modeled Solar Spectral Irradiance 
+;   file - output filename. Created dynamically within the driver routine, nrl2_to_irradiance.pro  
 ;      
 ; OUTPUTS
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -40,10 +46,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_tsi_model_to_netcdf, ymd1, ymd2, ymd3, algver, algrev, data, file
+;   write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver, algrev, data, file
 ;  
 ;@***** 
 function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
@@ -65,7 +71,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, /GLOBAL, "source", "nrl2_to_irradiance.pro"
   NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics"
   NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CD Standard Name Table v27"
-  NCDF_ATTPUT, id, /GLOBAL, "Id", file
+  NCDF_ATTPUT, id, /GLOBAL, "id", file
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc"
   NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3
   NCDF_ATTPUT, id, /GLOBAL, "license","No constraints on data use."
@@ -79,7 +85,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "total solar irradiance"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00828"
   NCDF_ATTPUT, id, /GLOBAL, "product_version", algver+algrev
-  NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TCTE"
+  NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TSIS"
   NCDF_ATTPUT, id, /GLOBAL, "instrument", "Total Irradiance Monitor (TIM)"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_max"," 90.0"

@@ -7,24 +7,26 @@
 ;   Bins USAF white light sunspot data by day. 
 ;
 ; DESCRIPTION
-;   This routine is called from process_sunspot_blocking.pro. It aquires USAF white light sunspot region data from a 
-;   NOAA/NGDC web repository and stores it in a structure, 'result', identified by index -> (jd, lat, lon, area, station)
+;   This routine is called from process_sunspot_blocking.pro. Using a structure containing USAF white light sunspot region data 
+;   (from get_sunspot_data.pro), it returns a Hash where the key is the modified julian day number and the value is a list of sunspot records 
+;   for that modified julian day number
 ;   
 ; INPUTS
 ;   structures - A structure containing (for each record in the USAF data):
-;   jd - Modified Julian Date 
-;   lat - latitude of sunspot group
-;   lon - longitude of sunspot group
-;   area - recorded sunspot area
-;   station - station name 
+;     mjd - Modified Julian Date 
+;     lat - latitude of sunspot group
+;     lon - longitude of sunspot group
+;     group   - sunspot group number 
+;     area - recorded sunspot area
+;     station - station name 
 ;   
 ; OUTPUTS
-;   Returns a Hash where the key is the Julian Day Number and the value is a List of records for that day.  
+;   result - a Hash where the key is the Julian Day Number and the value is a List of records for that day.  
 ;
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;     
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -37,7 +39,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   group_by_day,structures

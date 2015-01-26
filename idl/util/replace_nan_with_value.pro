@@ -1,15 +1,15 @@
-;@***h* TSI_FCDR/replace_nan_with_missing.pro
+;@***h* TSI_FCDR/replace_nan_with_value.pro
 ; 
 ; NAME
-;   replace_nan_with_missing.pro
+;   replace_nan_with_value.pro
 ;
 ; PURPOSE
-;   The replace_nan_with_missing.pro function returns a float array containing the given data with 
+;   The replace_nan_with_value.pro function returns a float array containing the given data with 
 ;   NaN replaced with user designated missing value.
 ;
 ; DESCRIPTION
-;   The replace_nan_with_missing.pro function returns a float array containing the given data with 
-;   NaN replaced with user designated missing value. It is subroutine of write_tsi_model_to_netcdf.pro.
+;   The replace_nan_with_value.pro function returns a float array containing the given data with 
+;   NaN replaced with user designated missing value. It is subroutine of write_tsi_model_to_netcdf2.pro and write_ssi_model_to_netcdf2.
 ;   A copy of the input data as floats is made so 'data' remains immutable.
 ; 
 ; INPUTS
@@ -20,9 +20,9 @@
 ;   result - a copy of the input data, with NaNs replaced by missing values
 
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -35,14 +35,13 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/23/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   replace_nan_with_missing, data, value
 ;
 ;@***** 
-; Return a float array containing the given data with
-; any NaN replaced by the given value.
+
 function replace_nan_with_value, data, value
   ;TODO: should we use doubles?
 

@@ -4,8 +4,9 @@
 ;   write_sunspot_blocking.pro
 ;
 ; PURPOSE
-;   The write_sunspot_blocking.pro procedure outputs time, sunspot darkening index, the standard deviation of the sunspot darkening index,
-;   and a quality flag to an output text file.
+;   The write_sunspot_blocking.pro procedure outputs time (in iso yyyy-mm-dd format), sunspot darkening index, 
+;   the standard deviation of the sunspot darkening index, and a quality flag to an output text file.
+;   An optional routine utilized if the keyword paramater, output_dir, is defined in process_sunspot_blocking.pro
 ;
 ; DESCRIPTION
 ;   This routine is executed only if an optional keyword input, 'output_dir', is set in process_sunspot_blocking.pro.
@@ -17,18 +18,21 @@
 ;                                     
 ; INPUTS
 ;   sunspot_blocking_data - a structure containing the following variables:
-;   mjdn - the modified julian date (converted from YYYY-MM-DD format) 
-;   ssbt - the sunspot darkening index (a mean value of the reporting stations)
-;   dssbut - the standard deviation of the sunspot darkening index
-;   quality flag - a value of 0 or 1 (1 = missing data); Used for QA analysis.
+;     mjdn - the modified julian date 
+;     ssbt - the sunspot darkening index (a mean value of the reporting stations)
+;     dssbut - the standard deviation of the sunspot darkening index of the reporting stations
+;     quality flag - a value of 0 or 1 (1 = missing data); Used for QA analysis.
+;   file - defined file name of the convention, 'sunspot_blocking_YMD1_YMD2_VER.txt', where 
+;   version is a defined developmental version - Used for QA monitoring. 
 ;   
 ; OUTPUTS
-;   file - a text file of the data in the sunspot_blocking_data structure
+;   file - a text file of the data in the sunspot_blocking_data structure, of the convention, 
+;   'sunspot_blocking_YMD1_YMD2_VER.txt', where version is a defined developmental version - Used for QA monitoring. 
 ;   
 ; AUTHOR
-;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   
 ; COPYRIGHT 
 ;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
@@ -41,12 +45,13 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   write_sunspot_blocking,sunspot_blocking_data,file
 ;
 ;@***** 
+
 pro write_sunspot_blocking_data, sunspot_blocking_data, file
 ;sunspot_blocking_data: array of structures
 ;  ssb_struct = {sunspot_blocking,  $

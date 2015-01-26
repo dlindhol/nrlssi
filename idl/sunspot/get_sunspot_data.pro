@@ -8,22 +8,28 @@
 ;   http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/
 ;
 ; DESCRIPTION
-;   This routine is called from the main driver, process_sunspot_blocking.pro. 
+;   This routine is called from the function, process_sunspot_blocking.pro. 
 ;   It accesses the above url and parses the given record into a data structure. Each record is for a sunspot group 
 ;   measurement. The time (YYMMDD), solar latitude and longitude, sunspot area, and station ID are parsed from each record.
 ;   
 ; INPUTS
-;   year - four digit year (i.e. 1978) (TODO: update to time range args)
+;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
+;   ymd2       - ending time range respective to midnight GMT of the given day  
+;   stations = stations - Optional keyword to restrict sunspot darkening index to specified monitoring stations in the USAF white light network.
+;                         If omitted (default), all stations are included. Used for QA analysis.
 ;   
 ; OUTPUTS
-;   Data structure containing (for each record in the USAF data):
-;   jd      - Julian Date (converted from yymmdd) 
-;   lat     - latitude of sunspot group
-;   lon     - longitude of sunspot group
-;   area    - sunspot area
-;   station - station name 
+;   'data' - a structure containing (for each record in the USAF data):
+;     mjd      - Modified Julian Date 
+;     lat     - latitude of sunspot group
+;     lon     - longitude of sunspot group
+;     group   - sunspot group number 
+;     area    - sunspot area
+;     station - station name 
 ;
 ; AUTHOR
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
 ;   
 ; COPYRIGHT 
@@ -37,10 +43,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   04/09/2014 Initial Version prepared for NCDC
+;   01/14/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   get_sunspot_data,year
+;   get_sunspot_data,ymd1, ymd2, stations=stations
 ;
 ;@***** 
 function parse_line_orig, line
