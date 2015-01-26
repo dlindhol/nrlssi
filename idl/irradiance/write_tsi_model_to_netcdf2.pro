@@ -100,11 +100,11 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
   
   x2id = NCDF_VARDEF(id, 'iso_time', [tid], /STRING)
-  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date/time (YYYY-MM-DD) string'
+  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD) string'
 
-  x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT) ;Fix!                                                                                               
+  x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT)
   NCDF_ATTPUT, id, x3id, 'long_name','days since 1858-11-17 00:00:00.0' ;for MJD
-  NCDF_ATTPUT, id, x2id, 'standard_name','time'
+  NCDF_ATTPUT, id, x3id, 'standard_name','time'
 
   
   ; Put file in data mode:
