@@ -79,12 +79,20 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   ;Since a datetime without time is typically interpreted as midnight (time = 00:00)
   ;we will manage the addition of one day internal to these algorithms.
   ;ymd values for time range are expected to be dates of the form 'yyyy-mm-dd'.
+  ;TODO: assert that time format is valid
   
   ;use a development version to help keep track of data output
-  version='v0.10'
+  ;set to 1.0 for final release
+  version='v0.11'
+  
+  ;TODO: error if ymd1 not provided
   
   ;Process just one day if ymd2 is not provided.
+  ;TODO: or default to 'now'?
   if n_elements(ymd2) eq 0 then ymd2 = ymd1
+  
+  ;Define default set of stations here to be consistent with Judith's data.
+  if n_elements(stations) eq 0 then stations = ['LEAR','CULG','SVTO','RAMY','BOUL','MWIL','HOLL','PALE','MANI','ATHN']
   
   ;Get sunspot data for the given time range.
   ;Array of structures, one element per sunspot group observation.
@@ -110,7 +118,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   sunspot_blocking_struct = {sunspot_blocking,  $
     mjdn:0l,  $
     ssbt:0.0d, dssbt:0.0d,   $
-    ssbuv:0.0d, dssbuv:0.0d,  $
+;    ssbuv:0.0d, dssbuv:0.0d,  $
     quality_flag:0  $
   }
     
@@ -153,7 +161,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
       
       ;Create Hash to hold sum of all sunspot group contribution to blocking for each station.
       ssbt_by_station  = Hash()
-      ssbuv_by_station = Hash()
+;      ssbuv_by_station = Hash()
       
       ;Compute the total and uv sunspot blocking contribution for each record/observation/sunspot group.
       ;Records with missing area will result in a ssb of NaN.
@@ -166,13 +174,13 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
         lat  = records.lat - B0
         lon  = records.lon
         ssbt  = compute_sunspot_blocking(area, lat, lon)
-        ssbuv = compute_sunspot_blocking_uv(area, lat, lon)
+;        ssbuv = compute_sunspot_blocking_uv(area, lat, lon)
  
         ;TODO: also compute total area for each station?
 
         ;Handle missing values.
         ;If any of the records had a missing area, assume it is zero and set a flag
-        ;Note, if ssbt has a missing value, so will ssbuv.
+;        ;Note, if ssbt has a missing value, so will ssbuv.
         imissing = where(~ FINITE(ssbt), nmissing)
         ;Drop any station with all values missing (e.g. MWIL) but don't set the flag since it doesn't affect the data
         if nmissing eq n_elements(ssbt) then begin
@@ -183,7 +191,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
         ;Sum the total ssb contribution from all the sunspot groups observed by this station on this day.
         ;Missing values will be treated as 0. A quality flag is set above.
         ssbt_by_station[station]  = total(ssbt,  /NaN) ;treat NaNs as 0
-        ssbuv_by_station[station] = total(ssbuv, /NaN) ;treat NaNs as 0
+;        ssbuv_by_station[station] = total(ssbuv, /NaN) ;treat NaNs as 0
       endforeach
       
       ;Average the results from all stations.
@@ -199,10 +207,10 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
         sunspot_blocking_data[i].ssbt  = mean(ssbt_array, /double)
         sunspot_blocking_data[i].dssbt = stddev(ssbt_array, /double)
       
-        ssbuv_list = ssbuv_by_station.values()
-        ssbuv_array = ssbuv_list.toArray() ;IDL can't do mean ... on List so convert to array
-        sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array, /double)
-        sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array, /double)
+;        ssbuv_list = ssbuv_by_station.values()
+;        ssbuv_array = ssbuv_list.toArray() ;IDL can't do mean ... on List so convert to array
+;        sunspot_blocking_data[i].ssbuv  = mean(ssbuv_array, /double)
+;        sunspot_blocking_data[i].dssbuv = stddev(ssbuv_array, /double)
       endelse
       
       ;Compute the quality flag based on the bits set above.

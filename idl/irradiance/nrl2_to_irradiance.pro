@@ -131,6 +131,7 @@
 
 function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
 
+<<<<<<< HEAD
 ;TODO: keyword to indicate whether to run with final or prelim (or test?) data
 ;sunspot and mg come from latis
 ;  encode in dataset name
@@ -163,6 +164,10 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   
   algver = 'V02' ; get from function parameter?
   algrev = 'R00' ; get from function parameter?
+=======
+  algver = 'v01' ; get from function parameter?
+  algrev = 'r0' ; get from function parameter?
+>>>>>>> 29d5875e43e8f9907ed6a9fdda6370ff5199208e
   modver='21Nov14'
   fn='~/git/nrlssi/data/judith_2014_11_21/NRL2_model_parameters_AIndC_20_'+modver+'.sav'
   ;TODO: get this from function parameter?
@@ -237,6 +242,8 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
   ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired?
   tsifile_daily = 'tsi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
+  ;tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' 
+  ;tsifile_daily = 'tsi_' + algver +algrev +'-preliminary_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' ;for preliminary file
   ssifile_daily = 'ssi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
   
   ;Write the results to output in netCDF4 format; To Do: include an output file directory

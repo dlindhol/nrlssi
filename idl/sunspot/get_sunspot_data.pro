@@ -275,13 +275,14 @@ end
 ;-----------------------------------------------------------------------------
 ; Use this routine to get USAF sunspot region data.
 function get_sunspot_data, ymd1, ymd2, stations=stations
+  ;TODO: add keyword to get data from alternate source?
   data = get_sunspot_data_from_latis(ymd1, ymd2)
   
   ;Keep only requested stations
   if n_elements(stations) gt 0 then begin
     list = List() ;keep a list of records with station in stations
     for i=0, n_elements(data)-1 do begin
-      station = data[i].station
+      station = strupcase(data[i].station)
       w = where(stations eq station, n)
       if n eq 1 then list.add, data[i]
     endfor

@@ -50,6 +50,7 @@ function get_sunspot_blocking_from_routine, ymd1, ymd2,stations=stations,output_
   return, data
 end
 
+;TODO: get from LaTiS with option to get final vs prelim
 
 function get_sunspot_blocking, ymd1, ymd2
   return, get_sunspot_blocking_from_routine(ymd1, ymd2)
