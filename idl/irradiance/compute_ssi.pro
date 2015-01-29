@@ -140,6 +140,16 @@ function compute_ssi, sb, mg, model_params
   iquiet    = model_params.iquiet
   ccoef     = model_params.ccoef
   
+  tsisigma  = model_params.tsisigma
+  mgu       = model_params.mgu
+  sbu       = model_params.sbu
+  faccfunc  = model_params.faccfunc
+  spotcfunc = model_params.spotcfunc
+  qsigmafac = model_params.qsigmafac
+  coeff0fac = model_params.coeff0fac
+  qsigmaspot= model_params.qsigmaspot
+  coeff0spot =model_params.coeff0spot
+  ccoefunc  = model_params.ccoefunc
   
   ; calculate spectrum on 1 nm grid then sum into bins
   nlambda=n_elements(lambda)      ; this is the 1 nm grid
@@ -160,12 +170,24 @@ function compute_ssi, sb, mg, model_params
   dfactot=total(dfac, /double)
   dspottot=total(dspot, /double)
   nrl2tot=total(nrl2, /double)
+  
+  ;---------- uncertainty in solar spectral irradiance
 
+  facunc1=abs(dfaccoef*(mg-mgquiet))*sqrt(faccfunc^2.+mgu^2.)
+  spotunc1=abs(dspotcoef*sb)*sqrt(spotcfunc^2.+sbu^2.)
+  uu2=faccfunc^2.+(qsigmafac[1]/coeff0fac[1])^2.+(tsisigma[1]/bfaccoef)^2.+mgu^2.
+  facunc2=abs(dfaccoef*deltamg)*sqrt(uu2)  
+  uu2=spotcfunc^2.+(qsigmaspot[1]/coeff0spot[1])^2.+(tsisigma[2]/bspotcoef)^2.+sbu^2.
+  spotunc2=abs(dspotcoef*deltasb)*sqrt(uu2)   
+  nrl2unc=ccoefunc+facunc1+facunc2+spotunc1+spotunc2
+
+  
   ssi = {nrl2_ssi,    $
   nrl2:  nrl2,        $
   dfactot:  dfactot,  $
   dspottot: dspottot, $
-  nrl2tot: nrl2tot    $
+  nrl2tot:  nrl2tot,  $
+  nrl2unc:  nrl2unc   $
   }
   
   return,ssi
