@@ -64,8 +64,10 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
   ssi = replace_nan_with_value(data.ssi, missing_value)
+  ssiunc = replace_nan_with_value(data.ssiunc, missing_value) ;DO THIS WAY?
   dates =  data.iso 
   tsi = replace_nan_with_value(data.tsi, missing_value)
+  tsiunc = replace_nan_with_value(data.tsiunc, missing_value) ;DO THIS WAY?
   
   
   ; Create NetCDF file for writing output
@@ -134,7 +136,15 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   
   x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT) ;Fix! This must be an integer or float with a reference time.; ask NCDC what reference day they like? Include iso_time as another variable?
   NCDF_ATTPUT, id, x3id, 'long_name','days since 1858-11-17 00:00:00.0'
-  NCDF_ATTPUT, id, x2id, 'standard_name','time'
+  NCDF_ATTPUT, id, x3id, 'standard_name','time'
+  
+  x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
+  NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Daily Total Solar Irradiance (W m-2)'
+  NCDF_ATTPUT, id, x4id, 'units', 'W m-2'
+  
+  x5id = NCDF_VARDEF(id,'SSI_UNC',[lid,tid], /FLOAT)
+  NCDF_ATTPUT, id, x5id, 'long_name','Uncertainty in Daily Solar Spectral Irradiance (W m-2 nm-1)'
+  NCDF_ATTPUT, id, x5id, 'units', 'W m-2 nm-1'
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
@@ -143,7 +153,9 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
   NCDF_VARPUT, id, x3id, data.mjd ;CF-compliant time variable
   NCDF_VARPUT, id, x1id, tsi
+  NCDF_VARPUT, id, x4id, tsiunc
   NCDF_VARPUT, id, x0id, ssi
+  ;NCDF_VARPUT, id, x5id, ssiunc ;not currently included in NOAA CDR delivery products due to file size
   NCDF_VARPUT, id, t0id, spectral_bins.bandcenter
   NCDF_VARPUT, id, t1id, spectral_bins.bandwidth
   
