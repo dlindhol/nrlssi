@@ -131,10 +131,10 @@
 
 function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
 
-  algver = 'v01' ; get from function parameter?
-  algrev = 'r0' ; get from function parameter?
-  modver='21Nov14'
-  fn='~/git/nrlssi/data/judith_2014_11_21/NRL2_model_parameters_AIndC_20_'+modver+'.sav'
+  algver = 'v02' ; get from function parameter?
+  algrev = 'r00' ; get from function parameter?
+  modver='28Jan15'
+  fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
   ;TODO: get this from function parameter?
  
   ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
@@ -188,12 +188,14 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
     iso_time = mjd2iso_date(mjd)
     
     ; TODO Add bandcenters and bandwidths and nband to data structure
-    struct = {nrl2,                $
-      mjd:    mjd,                 $
-      iso:    iso_time,            $
-      tsi:    nrl2_tsi.totirrad,   $
-      ssi:    nrl2_ssi.nrl2bin,    $
-      ssitot: nrl2_ssi.nrl2binsum  $
+    struct = {nrl2,                 $
+      mjd:    mjd,                  $
+      iso:    iso_time,             $
+      tsi:    nrl2_tsi.totirrad,    $
+      tsiunc: nrl2_tsi.totirradunc, $
+      ssi:    nrl2_ssi.nrl2bin,     $
+      ssiunc: nrl2_ssi.nrl2binunc,  $
+      ssitot: nrl2_ssi.nrl2binsum   $
     }
     
     data_list.add, struct
@@ -205,12 +207,11 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   ;Make output file name(s), dynamically
   creation_date = iso_date2ddMonyy(ymd3)
   ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
-  ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired?
-  tsifile_daily = 'tsi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
-  ;tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' 
-  ;tsifile_daily = 'tsi_' + algver +algrev +'-preliminary_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' ;for preliminary file
-  ssifile_daily = 'ssi_' + algver +'_'+ algrev +'_'+'day_'+ymd1 +'_'+ ymd2 +'_'+ creation_date +'.nc' 
-  
+  ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired? 
+  tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' ;remove dashes from filename
+  ssifile_daily = 'ssi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' 
+  ;filename format for preliminary files: ssi/tsi_vXXrXX-preliminary_sYYYYMMDD_eYYYYMMDD_cYYYYMMDD.nc
+
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
   result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,tsifile_daily)
   result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,ssifile_daily)
