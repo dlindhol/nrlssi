@@ -57,7 +57,8 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
-  tsi = replace_nan_with_value(data.tsi, missing_value)
+  tsi = replace_nan_with_value(data.tsi, missing_value) 
+  tsiunc = replace_nan_with_value(data.tsiunc, missing_value) ;DO THIS WAY?
   dates =  data.iso 
   
   ; Create NetCDF file for writing output
@@ -109,7 +110,11 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
 
   x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT) ;Fix!                                                                                               
   NCDF_ATTPUT, id, x3id, 'long_name','days since 1858-11-17 00:00:00.0' ;for MJD
-  NCDF_ATTPUT, id, x2id, 'standard_name','time'
+  NCDF_ATTPUT, id, x3id, 'standard_name','time'
+  
+  x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
+  NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Daily Total Solar Irradiance (W m-2)'
+  NCDF_ATTPUT, id, x4id, 'units', 'W m-2'
 
   
   ; Put file in data mode:
@@ -119,6 +124,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
   NCDF_VARPUT, id, x3id, data.mjd ;CF-compliant time variable
   NCDF_VARPUT, id, x1id, tsi
+  NCDF_VARPUT, id, x4id, tsiunc
   
   ; Close the NetCDF file.
   NCDF_CLOSE, id 
