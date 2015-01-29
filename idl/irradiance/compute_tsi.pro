@@ -96,16 +96,29 @@ function compute_tsi,sb, mg, model_params
   bfaccoef  = model_params.bfaccoef
   bspotcoef = model_params.bspotcoef
   mgquiet   = model_params.mgquiet
+  
+  tsisigma  = model_params.tsisigma
+  mgu       = model_params.mgu
+  sbu       = model_params.sbu
+  
    
   ;---------- total irradiance
   totirrad = tquiet+acoef+bfaccoef*(mg-mgquiet)+bspotcoef*sb
   totfac = acoef+bfaccoef*(mg-mgquiet)  ; facular compoment - for checking with SSI
   totspot = bspotcoef*sb    ; spot component - for checking with SSI
 
+  ;---------- uncertainty in total irradiance
+  totfacunc = sqrt((tsisigma[1]/bfaccoef)^2.+mgu^2.)
+  totspotunc = sqrt((tsisigma[2]/bspotcoef)^2.+sbu^2.)
+  totirradunc = tsisigma[0]+abs(totfac)*totfacunc+abs(totspot)*totspotunc
+                  
   tsi = {nrl2_tsi,   $
     totirrad: totirrad,   $
     totfac:       totfac, $
-    totspot:      totspot $
+    totspot:      totspot, $
+    totirradunc:  totirradunc, $
+    totfacunc:    totfacunc, $
+    totspotunc:   totspotunc $
   }
   
   return,tsi
