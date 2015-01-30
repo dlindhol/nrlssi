@@ -23,14 +23,27 @@
 
 ;   Quantifying time-dependent TSI (T) Irradiance Variations from Faculae (F) and Sunspots (S):
 ;   delta_T_F(t) = a_F + b_F * [F(t) - F_Q]
-;   delta_T_S(t) = a_S + b_S * [S(t) - S_Q]
+;   delta_T_S(t) = a_S + b_S * [S(t) - S_Q] and a_S = 0
 ;   F_Q and S_Q (=0) are the values of the facular brightening and sunspot darkening indices corresponding to T_Q 
 ;   (i.e. for the quiet Sun, T_Q). 
 ;   
+;   Quantifying time-dependent Uncertainties in TSI Irradiance Variation from faculae and sunspots:
+;   T_unc(t) = T_Q_unc + delta_T_F_unc(t) + delta_T_S_unc(t) where,
+;   delta_T_F_unc(t) = a_F_unc + (the uncertainty in b_F * [F(t) - F_Q]) 
+;   delta_T_S_unc(t) = (the uncertainty in b_S * [S(t) - S_Q]) 
+;   
+;   The uncertainty in b_F*[F(t) - F_Q]:
+;   [(uncertainty in b_F * [F(t) - F_Q]) / (b_F * [F(t) - F_Q])^2 = (b_F_unc / b_F)^2 + ((uncertainty in [F(t) - F_Q])/[F(t) - F_Q])^2,
+;   therefore, delta_T_F_unc(t) = a_F_unc + the square root of the above result multiplied by [b_F * [F(t) - F_Q]
+;   
+;   The uncertainty in b_S*[S(t) - S_Q]:
+;   [(uncertainty in b_S * [S(t) - S_Q]) / (b_S * [S(t) - S_Q])^2 = (b_S_unc / b_S)^2 + ((uncertainty in [S(t) - S_Q])/[S(t) - S_Q])^2,
+;   therefore, delta_T_S_unc(t) = the square root of the above result multiplied by [b_S * [S(t) - S_Q]
+;   
 ;   Coefficients for faculae and sunspots:
-;   The a and b coefficients for faculae and sunspots are specified (determined using multiple linear regression) 
-;   and supplied with the algorithm. These coefficients best reproduce the TSI irradiance variability  measured directly by 
-;   SORCE TIM from 2003 to 2014. 
+;   The a and b coefficients for faculae and sunspots are specified and supplied with the algorithm, as are their 
+;   1-sigma estimates (determined from the multiple linear regression analysis) . These coefficients best reproduce 
+;   the TSI irradiance variability  measured directly by SORCE TIM from 2003 to 2014. 
 ;   Note, the a coefficient is nominally zero so that when F=F_Q and S=S_Q, then T=T_Q.
 ;   
 ;   Reference(s):
@@ -59,13 +72,23 @@
 ;     bfaccoef   - the 'b' multiple regression coefficient for facular brightening (equal to b_F, in above description)
 ;     bspotcoef  - the 'b' multiple regression coefficient for sunspot darkening (equal to b_S, in above description)
 ;     mgquiet    - the value of the facular brightening corresponding to quiet Sun (equal to F_Q, in above description)
+;     tsisigma   - the 1-sigma uncertainty estimates for the coefficients returned in the multiple linear 
+;                  regression. A 3-element array where first element contains the uncertainty in acoef (equal 
+;                  to a_F_unc in above description), the second element contains the uncertainty in bfaccoef (equal to 
+;                  b_F_unc in above description), and the third element contains the uncertainty in bspotcoef (equal to
+;                  b_S_unc in above description).
+;     mgu        - the uncertainty in change in facular brightening from its minimum value, mgquiet. Specified as 0.2 (20 %)
+;     sbu        - the uncertainty in change in sunspot darkening from its minimum value, '0'. Specified as 0.2 (20%)
 ;
 ; OUTPUTS
 ;   tsi   - a structure containing the following variables:
-;     totirrad - modeled total solar irradiance
-;     totfac  - bolometric (spectrally integrated) contribution from facular brightening
-;     totspot - bolometric (spectrally integrated) contribution from sunspot darkening
-;     
+;     totirrad    - modeled total solar irradiance
+;     totfac      - bolometric (spectrally integrated) contribution from facular brightening
+;     totspot     - bolometric (spectrally integrated) contribution from sunspot darkening
+;     totirradunc - uncertainty in the modeled total solar irradiance. Does not include the contribution 
+;                   from uncertainty in the absolute scale of the measured irradiance (+/- 0.5 Wm-2) 
+;     totfacunc   - uncertainty in the modeled total solar irradiance attributed to facular brightening contribution
+;     totspotunc  - uncertainty in the modeled total solar irradiance attributed to the sunspot darkening contribution     
 ;
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -95,13 +118,11 @@ function compute_tsi,sb, mg, model_params
   acoef     = model_params.acoef  
   bfaccoef  = model_params.bfaccoef
   bspotcoef = model_params.bspotcoef
-  mgquiet   = model_params.mgquiet
-  
+  mgquiet   = model_params.mgquiet  
   tsisigma  = model_params.tsisigma
   mgu       = model_params.mgu
   sbu       = model_params.sbu
-  
-   
+    
   ;---------- total irradiance
   totirrad = tquiet+acoef+bfaccoef*(mg-mgquiet)+bspotcoef*sb
   totfac = acoef+bfaccoef*(mg-mgquiet)  ; facular compoment - for checking with SSI
