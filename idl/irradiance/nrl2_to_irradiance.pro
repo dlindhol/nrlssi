@@ -132,7 +132,8 @@
 function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
 
   algver = 'v02' ; get from function parameter?
-  algrev = 'r00' ; get from function parameter?
+  algrev = 'r00' ; for 'final' files;  get from function parameter?
+  ;algrev = 'r00-preliminary' ; include '-preliminary' for operational, quarterly updates
   modver='28Jan15'
   fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
   ;TODO: get this from function parameter?
