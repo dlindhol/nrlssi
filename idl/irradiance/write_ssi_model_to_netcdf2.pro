@@ -65,8 +65,8 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   missing_value = -99.0
   ssi = replace_nan_with_value(data.ssi, missing_value)
   ssiunc = replace_nan_with_value(data.ssiunc, missing_value) ;DO THIS WAY?
-  ;tsi = replace_nan_with_value(data.tsi, missing_value)
-  ;tsiunc = replace_nan_with_value(data.tsiunc, missing_value) ;DO THIS WAY?
+  tsi = replace_nan_with_value(data.tsi, missing_value)
+  tsiunc = replace_nan_with_value(data.tsiunc, missing_value) ;DO THIS WAY?
   day_zero_mjd = iso_date2mjdn('1610-01-01')
   dates =  data.iso
   
@@ -125,11 +125,11 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, t1id, 'long_name', 'Wavelength band width. Centered on wavelength.'
   NCDF_ATTPUT, id, t1id, 'units', 'nm'  
  
-;  x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
-;  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Total Solar Irradiance (Watt/ m**2)'
-;  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
-;  NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
-;  NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
+  x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
+  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Total Solar Irradiance (Watt/ m**2)'
+  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
+  NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
+  NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
  
   x2id = NCDF_VARDEF(id, 'iso_time', [tid], /STRING) 
   NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
@@ -152,8 +152,8 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   ; Input data:
   NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
   NCDF_VARPUT, id, x3id, data.mjd - day_zero_mjd ;Days since 1610-01-01
-  ;NCDF_VARPUT, id, x1id, tsi
-  ;NCDF_VARPUT, id, x4id, tsiunc
+  NCDF_VARPUT, id, x1id, tsi
+  NCDF_VARPUT, id, x4id, tsiunc
   NCDF_VARPUT, id, x0id, ssi
   ;NCDF_VARPUT, id, x5id, ssiunc ;not currently included in NOAA CDR delivery products due to file size
   NCDF_VARPUT, id, t0id, spectral_bins.bandcenter
