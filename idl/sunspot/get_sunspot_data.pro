@@ -115,50 +115,6 @@ function parse_line_orig, line
   
 end
 
-;-----------------------------------------------------------------------------
-;Parse csv output from LaTiS
-function parse_line, line
-
-  vars = strsplit(line, ',', /EXTRACT)
-  
-  ;Parse the yymmdd date as Modified Julian Date
-  mjd = yymmdd2mjd(vars[0])
-  
-  ;Parse the latitude, get sign from hemisphere
-  ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
-  lat = double(vars[2])
-  lathem = vars[1]
-  if (lathem eq 'S') then lat = -lat
-  
-  ;Parse the longitude, get sign from hemisphere
-  ;TODO: deal with missing?  if(along eq '  ') then along=' 0', will get format error otherwise
-  lon = double(vars[4])
-  lonhem = vars[3]
-  if(lonhem eq 'E') then lon = -lon
-  ;east is negative!? doesn't really matter
-  
-  ;Parse the sunspot group number
-  group = fix(vars[5])
-  
-  ;Parse sunspot area, LaTiS will have replaced missing values with NaN
-  ;We'll add a flag for it when we compute the average area.
-  area = double(vars[6])
-  
-  ;Station name
-  station = vars[7]
-  
-  ;Create result structure
-  result = {       $
-    mjd:mjd,       $
-    lat:lat,       $
-    lon:lon,       $
-    group:group,   $
-    area:area,     $
-    station:station  $
-  }
-  
-  return, result
-end
 
 ;-----------------------------------------------------------------------------
 ;
@@ -231,6 +187,52 @@ function get_sunspot_data_from_local_file, year
      
 end
 
+
+;-----------------------------------------------------------------------------
+;Parse csv output from LaTiS
+function parse_line, line
+
+  vars = strsplit(line, ',', /EXTRACT)
+
+  ;Parse the yymmdd date as Modified Julian Date
+  mjd = yymmdd2mjd(vars[0])
+
+  ;Parse the latitude, get sign from hemisphere
+  ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
+  lat = double(vars[2])
+  lathem = vars[1]
+  if (lathem eq 'S') then lat = -lat
+
+  ;Parse the longitude, get sign from hemisphere
+  ;TODO: deal with missing?  if(along eq '  ') then along=' 0', will get format error otherwise
+  lon = double(vars[4])
+  lonhem = vars[3]
+  if(lonhem eq 'E') then lon = -lon
+  ;east is negative!? doesn't really matter
+
+  ;Parse the sunspot group number
+  group = fix(vars[5])
+
+  ;Parse sunspot area, LaTiS will have replaced missing values with NaN
+  ;We'll add a flag for it when we compute the average area.
+  area = double(vars[6])
+
+  ;Station name
+  station = vars[7]
+
+  ;Create result structure
+  result = {       $
+    mjd:mjd,       $
+    lat:lat,       $
+    lon:lon,       $
+    group:group,   $
+    area:area,     $
+    station:station  $
+  }
+
+  return, result
+end
+
 ;-----------------------------------------------------------------------------
 ; Get data from LaTiS.
 function get_sunspot_data_from_latis, ymd1, ymd2
@@ -271,88 +273,6 @@ function get_sunspot_data_from_latis, ymd1, ymd2
 
 end
 
-function get_sunspot_data_from_latis_dev, ymd1, ymd2
-  ;LaTiS assume that yyyy-MM-dd is midnight of that date so we need to add a
-  ;day to make the request inclusive.
-  end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
-  
-  netUrl = OBJ_NEW('IDLnetUrl')
-  netUrl->SetProperty, URL_HOST  = 'localhost'
-  netUrl->SetProperty, URL_PORT  = 8080
-  netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_sunspot_regions.jsona'
-  ;TODO: use json, but need time conversion
-  netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + end_date
-  lines = netURL->Get(/string_array)
-  OBJ_DESTROY, netUrl
-
-  ;combine all the lines into a single string
-  json = lines.Reduce(Lambda(x,y: x+y))
-  
-  ;parse the json response
-  ;list of lists where the inner list represents one sample (tuple)
-  data = json_parse(json)
-  n = data.LENGTH
-  ;TODO: handle errors
-  
-  ;Define the result structure
-  struct = {       $
-    mjd: 0d,       $
-    lat: 0d,       $
-    lon: 0d,       $
-    group: 0,      $
-    area: 0d,      $
-    station: ''    $
-  }
-  
-  ;Create the array of structure to hold the results
-  result = replicate(struct, n)
-  
-  ;Iterate over each sample
-  for i = 0, n-1 do begin
-    vars = data[i] ;ith record
-
-    ;Convert unix time (ms since 1970) to Modified Julian Date
-    mjd = unix2mjd(vars[0]/1000.0)
-
-    ;Parse the latitude, get sign from hemisphere
-    ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
-    lat = vars[2]
-    lathem = vars[1]
-    if (lathem eq 'S') then lat = -lat
-
-    ;Parse the longitude, get sign from hemisphere
-    ;TODO: deal with missing?  if(along eq '  ') then along=' 0', will get format error otherwise
-    lon = vars[4]
-    lonhem = vars[3]
-    if(lonhem eq 'E') then lon = -lon
-    ;east is negative!? doesn't really matter
-
-    ;Parse the sunspot group number
- ;TODO: deal with missing = null (from jsona)
-    group = fix(vars[5])
-
-    ;Parse sunspot area.
-    ;LaTiS will have replaced missing values with null. Set those to NaN.
-    ;We'll add a flag for it when we compute the average area.
-    if vars[6] eq !NULL then area = !VALUES.D_NAN  $
-    else area = vars[6]
-
-    ;Station name
-    station = vars[7]
-    
-    result[i] = {    $
-      mjd:mjd,       $
-      lat:lat,       $
-      lon:lon,       $
-      group:group,   $
-      area:area,     $
-      station:station $
-    }
-  endfor
-
-  return, result
-  
-end
 
 ;-----------------------------------------------------------------------------
 ; Use this routine to get USAF sunspot region data.
