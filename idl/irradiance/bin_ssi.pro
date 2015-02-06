@@ -62,8 +62,10 @@ function bin_ssi, model_params, spectral_bins, ssi
   bandcenter = spectral_bins.bandcenter
   bandwidth  = spectral_bins.bandwidth
   nrl2       = ssi.nrl2
+  nrl2unc    = ssi.nrl2unc
 
-  nrl2bin = dblarr(nband) ; Binned wavelength grid   
+  nrl2bin    = dblarr(nband) ; Binned wavelength grid   
+  nrl2binunc = dblarr(nband) ;Binned uncertainties
 
   ; Sum spectrum into wavelength bands
   for m=0,nband-1 do begin
@@ -71,12 +73,14 @@ function bin_ssi, model_params, spectral_bins, ssi
     wav2=bandcenter(m)+bandwidth(m)/2.
     rwav=where((lambda ge wav1) and (lambda lt wav2),cntwav)
     nrl2bin(m)=total(nrl2(rwav), /double)/(wav2-wav1)
+    nrl2binunc(m)=total(nrl2(rwav)*nrl2unc(rwav),/double)/total(nrl2(rwav),/double)
   endfor
     
   nrl2binsum=total(nrl2bin*bandwidth)
 
   ssi_bin = {nrl2_ssi_bin,    $
     nrl2bin:     nrl2bin,    $
+    nrl2binunc:  nrl2binunc, $
     nrl2binsum:  nrl2binsum  $
   }
   

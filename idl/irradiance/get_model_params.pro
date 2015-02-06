@@ -39,6 +39,19 @@
 ;                 irradiance variations from sunspots.
 ;     mgquiet   = specified, invariant, reference value for the Mg II index for the quiet sun. Nonzero value. By contrast, the reference value 
 ;                 for sunspot darkening at quiet sun conditions is zero.
+;    selmg
+;    selfrac:      selfrac, $
+;    seltim:        seltim, $
+;    ccoefunc:    ccoefunc, $
+;    mgu:              mgu, $
+;    sbu:              sbu, $
+;    tsisigma:    tsisigma, $
+;    faccfunc:    faccfunc, $
+;    spotcfunc:  spotcfunc, $
+;    coeff0spot: coeff0spot,$
+;    qsigmaspot: qsigmaspot,$
+;    coeff0fac:  coeff0fac, $
+;    qsigmafac:   qsigmafac $
 ;
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -66,19 +79,33 @@ function get_model_params,infile
 
   restore,infile
 
-  params = {model_params, $
-    tquiet:       tquiet, $
-    iquiet:       iquiet, $
-    lambda:       lambda, $
-    acoef:         acoef, $
-    bfaccoef:   bfaccoef, $
-    bspotcoef: bspotcoef, $
-    ccoef:         ccoef, $
-    dfaccoef:   dfaccoef, $
-    efaccoef:   efaccoef, $
-    dspotcoef: dspotcoef, $
-    espotcoef: espotcoef, $
-    mgquiet:     mgquiet  $
+  params = {model_params,  $
+    simver:        simver, $
+    tquiet:        tquiet, $
+    iquiet:        iquiet, $
+    lambda:        lambda, $
+    acoef:          acoef, $
+    bfaccoef:    bfaccoef, $
+    bspotcoef:  bspotcoef, $
+    ccoef:          ccoef, $
+    dfaccoef:    dfaccoef, $
+    efaccoef:    efaccoef, $
+    dspotcoef:  dspotcoef, $
+    espotcoef:  espotcoef, $
+    mgquiet:      mgquiet, $
+    selmg:          selmg, $
+    selfrac:      selfrac, $
+    seltim:        seltim, $
+    ccoefunc:    ccoefunc, $
+    mgu:              mgu, $
+    sbu:              sbu, $
+    tsisigma:    tsisigma, $
+    faccfunc:    faccfunc, $
+    spotcfunc:  spotcfunc, $
+    coeff0spot: coeff0spot,$
+    qsigmaspot: qsigmaspot,$
+    coeff0fac:  coeff0fac, $
+    qsigmafac:   qsigmafac $
   }
   
   return, params

@@ -83,7 +83,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   
   ;use a development version to help keep track of data output
   ;set to 1.0 for final release
-  version='v0.11'
+  version='v0.15'
   
   ;TODO: error if ymd1 not provided
   
@@ -92,7 +92,9 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   if n_elements(ymd2) eq 0 then ymd2 = ymd1
   
   ;Define default set of stations here to be consistent with Judith's data.
-  if n_elements(stations) eq 0 then stations = ['LEAR','CULG','SVTO','RAMY','BOUL','MWIL','HOLL','PALE','MANI','ATHN']
+  ;TODO: allow use of all stations, set these defaults at a higher level?
+  ;if n_elements(stations) eq 0 then stations = ['LEAR','CULG','SVTO','RAMY','BOUL','MWIL','HOLL','PALE','MANI','ATHN']
+  if n_elements(stations) eq 0 then stations = ['LEAR','CULG','SVTO','RAMY','BOUL','HOLL','PALE','MANI','ATHN']
   
   ;Get sunspot data for the given time range.
   ;Array of structures, one element per sunspot group observation.

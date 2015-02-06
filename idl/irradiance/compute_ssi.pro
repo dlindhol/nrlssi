@@ -29,7 +29,7 @@
 ;   The c(k), and d(k) coefficients for faculae and sunspots are specified (determined using multiple linear regression) 
 ;   and supplied with the algorithm. These coefficients best reproduce the detrended SSI irradiance variability (removal of 81-day running mean) 
 ;   measured by SORCE SIM. 
-;   Note, the c coefficient is nominally zero so that when F=F_Q and S=S_Q, then I=I_Q.
+;   Note, the c_F and c_S coefficient is nominally zero so that when F=F_Q and S=S_Q, then I=I_Q.
 ;   The additional wavelength-dependent terms in the spectral irradiance facular and sunspot components evaluated with the 
 ;   e coefficients provide small adjustments to ensure that 1) the numerical integral over wavelength of the solar spectral irradiance is 
 ;   equal to the total solar irradiance, 2) the numerical integral over wavelength of the time-dependent SSI irradiance variations from
@@ -88,14 +88,46 @@
 ;   model_params - a structure containing NRL2 coefficients necessary to construct modeled TSI:
 ;     lambda     - wavelength (nm; in 1-nm bins)
 ;     iquiet     - the adopted solar spectral irradiance of the Quiet Sun
-;     ccoef      - the 'c' multiple regression coefficient for spectral facular brightening (equal to c_F(k), in above description)
-;     dfaccoef   - the 'd' multiple regression coefficient for spectral facular brightening (equal to d_F(k), in above description)
-;     dspotcoef  - the 'd' multiple regression coefficient for spectral sunspot darkening (equal to d_S(k), in above description)  
+;     ccoef      - the sum of the 'c' multiple regression coefficient for spectral facular brightening (equal to c_F(k), in above description)
+;                  and the 'c' multiple regression coefficient for spectral sunspot darkening (equal to c_S(k), in above description)
+;     dfaccoef   - the 'd' multiple regression coefficient for spectral facular brightening (equal to d_F(k), in above description);
+;                  obtained from regression against detrended spectral irradiance observations multiplied with the ratio of the 'b' coefficients
+;                  obtained from regression against total solar irradiance observations to that obtained from regression against detrended total 
+;                  solar irradiance observations.
+;     dspotcoef  - the 'd' multiple regression coefficient for spectral sunspot darkening (equal to d_S(k), in above description);
+;                  obtained from regression against detrended spectral irradiance observations multiplied with the ratio of the 'b' coefficients
+;                  obtained from regression against total solar irradiance observations to that obtained from regression against detrended total 
+;                  solar irradiance observations.  
 ;     bfaccoef   - the 'b' multiple regression coefficient for bolometric facular brightening (equal to b_F, in above description)
 ;     bspotcoef  - the 'b' multiple regression coefficient for bolometric sunspot darkening (equal to b_S, in above description)
 ;     mgquiet    - the value of the facular brightening corresponding to quiet Sun (equal to F_Q, in above description)
 ;     efaccoef   - the small, but nonzero, correction factor needed so the numerical integral over wavelength of the time-dependent 
 ;                  SSI irradiance variations from faculae is equal to the time-dependent TSI irradiance variations from the faculae.
+;     espotcoef  - the small, but nonzero, correction factor needed so the numerical integral over wavelength of the time-dependent 
+;                  SSI irradiance variations from sunspots is equal to the time-dependent TSI irradiance variations from sunspots.             
+;     tsisigma   - the 1-sigma uncertainty estimates for the coefficients returned in the multiple linear 
+;                  regression of TSI. A 3-element array where first element contains the uncertainty in acoef (equal 
+;                  to a_F_unc in above description), the second element contains the uncertainty in bfaccoef (equal to 
+;                  b_F_unc in above description), and the third element contains the uncertainty in bspotcoef (equal to
+;                  b_S_unc in above description).
+;     mgu        - the relative uncertainty in change in facular brightening from its minimum value, mgquiet. Specified as 0.2 (20 %)
+;     sbu        - the relative uncertainty in change in sunspot darkening from its minimum value, '0'. Specified as 0.2 (20%)
+;     faccfunc   - the relative uncertainty estimate for the coefficients of spectral facular brightening obtained from multiple linear
+;                  regression of the detrended spectral observations, and detrended indices. Corrected by a scaling factor
+;                  derived from the ratio of linear regression coefficients from TSI observations and detrended TSI observations. 
+;                  Also accounts for autocorrelation.
+;     spotcfunc  - the relative uncertainty estimate for the coefficients of spectral sunspot darkening obtained from multiple linear
+;                  regression of the detrended spectral observations, and detrended indices. Corrected by a scaling factor
+;                  derived from the ratio of linear regression coefficients from TSI observations and detrended TSI observations. 
+;                  Also accounts for autocorrelation.
+;     qsigmafac  - the absolute uncertainty in the 'coeff0fac' factor 
+;     coeff0fac  - the regression coefficient that linearly relates the facular brightening index to the residual energy in the facular 
+;                  brightening index; only the 2nd element in the array (i.e. the "slope" coefficient) is used in the uncertainty propagation
+;     qsigmaspot - the absolute uncertainty in the small, but nonzero 'coeff0spot' factor 
+;     coeff0spot - the regression coefficient that linearly relates the sunspot darkening index to the residual energy in the sunspot darkening
+;                  index; only the 2nd element in the array (i.e. the "slope" coefficient) is used in the uncertainty propagation
+;     ccoefunc   - the absolute uncertainty in 'ccoef'
+;     
 ;                  
 ; OUTPUTS
 ;   ssi   - a structure containing the following variables:
@@ -138,8 +170,17 @@ function compute_ssi, sb, mg, model_params
   bspotcoef = model_params.bspotcoef
   dspotcoef = model_params.dspotcoef
   iquiet    = model_params.iquiet
-  ccoef     = model_params.ccoef
-  
+  ccoef     = model_params.ccoef 
+  tsisigma  = model_params.tsisigma
+  mgu       = model_params.mgu
+  sbu       = model_params.sbu
+  faccfunc  = model_params.faccfunc
+  spotcfunc = model_params.spotcfunc
+  qsigmafac = model_params.qsigmafac
+  coeff0fac = model_params.coeff0fac
+  qsigmaspot= model_params.qsigmaspot
+  coeff0spot =model_params.coeff0spot
+  ccoefunc  = model_params.ccoefunc
   
   ; calculate spectrum on 1 nm grid then sum into bins
   nlambda=n_elements(lambda)      ; this is the 1 nm grid
@@ -147,25 +188,40 @@ function compute_ssi, sb, mg, model_params
 ;nrl2bin=dblarr(nband)     ; this is the binned wavelength grid ; move
 ;
   ; facular component
-  deltati=poly(mg-mgquiet,efaccoef) ; this make spectrum match total
+  deltati=poly(mg-mgquiet,efaccoef) ; this make facular contributions from spectrum match total
   deltamg=deltati/bfaccoef
   dfac=(mg-mgquiet+deltamg)*dfaccoef
 
   ; spot component
-  deltati=poly(sb,espotcoef)    ; this make spectrum match total
+  deltati=poly(sb,espotcoef)    ; this make sunspot contributions from spectrum match total
   deltasb=deltati/bspotcoef
   dspot=(sb+deltasb)*dspotcoef
+  
+  ; spectral irradiance
   nrl2=iquiet+dfac+dspot+ccoef
 
+  ; integral quantities
   dfactot=total(dfac, /double)
   dspottot=total(dspot, /double)
   nrl2tot=total(nrl2, /double)
+  
+  ;---------- uncertainty in solar spectral irradiance
 
+  facunc1=abs(dfaccoef*(mg-mgquiet))*sqrt(faccfunc^2.+mgu^2.) 
+  spotunc1=abs(dspotcoef*sb)*sqrt(spotcfunc^2.+sbu^2.)
+  uu2=faccfunc^2.+(qsigmafac[1]/coeff0fac[1])^2.+(tsisigma[1]/bfaccoef)^2.+mgu^2.
+  facunc2=abs(dfaccoef*deltamg)*sqrt(uu2)  
+  uu2=spotcfunc^2.+(qsigmaspot[1]/coeff0spot[1])^2.+(tsisigma[2]/bspotcoef)^2.+sbu^2.
+  spotunc2=abs(dspotcoef*deltasb)*sqrt(uu2)   
+  nrl2unc=ccoefunc+facunc1+facunc2+spotunc1+spotunc2
+
+  
   ssi = {nrl2_ssi,    $
   nrl2:  nrl2,        $
   dfactot:  dfactot,  $
   dspottot: dspottot, $
-  nrl2tot: nrl2tot    $
+  nrl2tot:  nrl2tot,  $
+  nrl2unc:  nrl2unc   $
   }
   
   return,ssi
