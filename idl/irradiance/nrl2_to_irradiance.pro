@@ -129,7 +129,7 @@
 ;
 ;@*****
 
-function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
+function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
 
 ;TODO: keyword to indicate whether to run with final or prelim (or test?) data
 ;sunspot and mg come from latis
@@ -184,8 +184,8 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   spectral_bins = get_spectral_bins() 
   
   ;Get input data
-  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2) ;sunspot blocking data
-  mg_index = get_mg_index(ymd1, ymd2) ;MgII index data
+  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final) ;sunspot blocking/darkening data
+  mg_index = get_mg_index(ymd1, ymd2, final=final) ;MgII index data - facular brightening
   
   ;Create a Hash for each input dataset mapping MJD (assumed to be integer, i.e. midnight) to the appropriate record.
   ;Note, Hash values will be arrays but should have only one element: the data record for that day.
