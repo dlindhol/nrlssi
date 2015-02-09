@@ -115,50 +115,6 @@ function parse_line_orig, line
   
 end
 
-;-----------------------------------------------------------------------------
-;Parse csv output from LaTiS
-function parse_line, line
-
-  vars = strsplit(line, ',', /EXTRACT)
-  
-  ;Parse the yymmdd date as Modified Julian Date
-  mjd = yymmdd2mjd(vars[0])
-  
-  ;Parse the latitude, get sign from hemisphere
-  ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
-  lat = double(vars[2])
-  lathem = vars[1]
-  if (lathem eq 'S') then lat = -lat
-  
-  ;Parse the longitude, get sign from hemisphere
-  ;TODO: deal with missing?  if(along eq '  ') then along=' 0', will get format error otherwise
-  lon = double(vars[4])
-  lonhem = vars[3]
-  if(lonhem eq 'E') then lon = -lon
-  ;east is negative!? doesn't really matter
-  
-  ;Parse the sunspot group number
-  group = fix(vars[5])
-  
-  ;Parse sunspot area, LaTiS will have replaced missing values with NaN
-  ;We'll add a flag for it when we compute the average area.
-  area = double(vars[6])
-  
-  ;Station name
-  station = vars[7]
-  
-  ;Create result structure
-  result = {       $
-    mjd:mjd,       $
-    lat:lat,       $
-    lon:lon,       $
-    group:group,   $
-    area:area,     $
-    station:station  $
-  }
-  
-  return, result
-end
 
 ;-----------------------------------------------------------------------------
 ;
@@ -231,6 +187,52 @@ function get_sunspot_data_from_local_file, year
      
 end
 
+
+;-----------------------------------------------------------------------------
+;Parse csv output from LaTiS
+function parse_line, line
+
+  vars = strsplit(line, ',', /EXTRACT)
+
+  ;Parse the yymmdd date as Modified Julian Date
+  mjd = yymmdd2mjd(vars[0])
+
+  ;Parse the latitude, get sign from hemisphere
+  ;TODO: deal with missing?  if(xlat eq '  ') then xlat=' 0', will get format error otherwise
+  lat = double(vars[2])
+  lathem = vars[1]
+  if (lathem eq 'S') then lat = -lat
+
+  ;Parse the longitude, get sign from hemisphere
+  ;TODO: deal with missing?  if(along eq '  ') then along=' 0', will get format error otherwise
+  lon = double(vars[4])
+  lonhem = vars[3]
+  if(lonhem eq 'E') then lon = -lon
+  ;east is negative!? doesn't really matter
+
+  ;Parse the sunspot group number
+  group = fix(vars[5])
+
+  ;Parse sunspot area, LaTiS will have replaced missing values with NaN
+  ;We'll add a flag for it when we compute the average area.
+  area = double(vars[6])
+
+  ;Station name
+  station = vars[7]
+
+  ;Create result structure
+  result = {       $
+    mjd:mjd,       $
+    lat:lat,       $
+    lon:lon,       $
+    group:group,   $
+    area:area,     $
+    station:station  $
+  }
+
+  return, result
+end
+
 ;-----------------------------------------------------------------------------
 ; Get data from LaTiS.
 function get_sunspot_data_from_latis, ymd1, ymd2
@@ -247,7 +249,7 @@ function get_sunspot_data_from_latis, ymd1, ymd2
   netUrl = OBJ_NEW('IDLnetUrl')
   netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
   netUrl->SetProperty, URL_PORT  = 8090
-  netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_mwl.csv'
+  netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_sunspot_regions.csv'
   netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + end_date
   lines = netURL->Get(/string_array)
   ;buffer = netURL->Get(/buffer)
@@ -275,13 +277,15 @@ end
 ;-----------------------------------------------------------------------------
 ; Use this routine to get USAF sunspot region data.
 function get_sunspot_data, ymd1, ymd2, stations=stations
+  ;TODO: add keyword to get data from alternate source?
   data = get_sunspot_data_from_latis(ymd1, ymd2)
+  ;data = get_sunspot_data_from_latis_dev(ymd1, ymd2)
   
   ;Keep only requested stations
   if n_elements(stations) gt 0 then begin
     list = List() ;keep a list of records with station in stations
     for i=0, n_elements(data)-1 do begin
-      station = data[i].station
+      station = strupcase(data[i].station)
       w = where(stations eq station, n)
       if n eq 1 then list.add, data[i]
     endfor

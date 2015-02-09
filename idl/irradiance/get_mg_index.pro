@@ -42,7 +42,7 @@
 ;   get_mg_index,ymd1,ymd2
 ;
 ;@*****
-function get_mg_index_from_latis, ymd1, ymd2
+function get_mg_index_from_latis_orig, ymd1, ymd2
   ;ymd: yyyy-mm-dd, ymd2 is inclusive
   ;If neither time is specified, return the entire dataset.
   ;If only the first time is specified, return only that day.
@@ -101,12 +101,29 @@ function get_mg_index_from_latis, ymd1, ymd2
   return, result
 end
 
+;TODO: support missing ymd2, return just that day or no upper bound (latest)?
+function get_mg_index_from_latis, ymd1, ymd2, final=final
+  ;add day to end time to make it inclusive
+  end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
+  
+  ;get the dataset name
+  if keyword_set(final) then dataset = 'nrl2_facular_brightening_v02r00'  $
+  else dataset = 'nrl2_facular_brightening'
+  
+  ;add query parameters
+  query = 'convert(time,days since 1858-11-17)' ;convert times to MJD
+  query += '&rename(time,MJD)' ;rename parameters to match the structures we expect here.
+  
+  ;get the data as a list of structures
+  data = read_latis_data(dataset, ymd1, end_date, query=query)
+  return, data
+end
 
 
-function get_mg_index, ymd1, ymd2
+function get_mg_index, ymd1, ymd2, final=final
   ;ymd: yyyy-mm-dd, ymd2 is inclusive
   ;If neither time is specified, return the entire dataset.
   ;If only the first time is specified, return only that day.
-  return, get_mg_index_from_latis(ymd1, ymd2)
+  return, get_mg_index_from_latis(ymd1, ymd2, final=final)
 end
 

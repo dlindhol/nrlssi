@@ -94,7 +94,7 @@ function write_monthly_average_tsi_to_netcdf2, ym1, ym2, algver, result, file
   NCDF_ATTPUT, id, /GLOBAL, "contributor_role", "Principal Investigator and originator of total and spectral solar irradiance model, Principal Investigator ensuring overall integrity of the data product, Co-Investigator and Point-of-Contact and translated research-grade code to operational routine with FCDR output data being written out in NetCDF-4"
   
   ; Define Dimensions
-  tid = NCDF_DIMDEF(id, 'nday', /UNLIMITED) ;time series
+  tid = NCDF_DIMDEF(id, 'time', /UNLIMITED) ;time series
   
   ; Variable Attributes
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
@@ -106,7 +106,8 @@ function write_monthly_average_tsi_to_netcdf2, ym1, ym2, algver, result, file
   NCDF_ATTPUT, id, x1id, 'valid_min',0.0 ;
   
   x2id = NCDF_VARDEF(id, 'time', [tid], /STRING)
-  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date/time (YYYY-MM) format'
+  NCDF_ATTPUT, id, x2id, 'long_name', 'Days Since 1610-01-01'
+  NCDF_ATTPUT, id, x2id, 'units','days since 1610-01-01 00:00:00'
   NCDF_ATTPUT, id, x2id, 'standard_name','time'
   
   ; Put file in data mode:

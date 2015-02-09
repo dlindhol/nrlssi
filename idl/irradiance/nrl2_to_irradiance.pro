@@ -129,7 +129,36 @@
 ;
 ;@*****
 
-function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
+function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
+
+;TODO: keyword to indicate whether to run with final or prelim (or test?) data
+;sunspot and mg come from latis
+;  encode in dataset name
+;  or enter dataset name
+;  use version and revision args?
+;    ssb_v02r00
+;    but note use of preliminary: tsi_v01r0-preliminary_daily...
+;  need to be able to deal with appending prelim to end of final
+;    maybe prelim always appends to end of final?
+;    any other inputs for the "final" period would need to be a completely diff latis dataset
+;model params: currently in sav file
+;  make avail via latis? prob not, integral part of the model so in code (even if sav file, akin to jar) is ok
+;
+;get_spot, get_fac
+;definitive version served by LaTiS from archived copy of data
+;keyword options:
+;  get spot (ssb) directly from process_*
+;    e.g. diff set of stations
+;    output keyword to trigger saving ssb to file, which latis could serve?
+;    pass name of reader function to use? or just arg to the high level reader
+;  get from alt latis dataset, dataset='' ?
+;
+;
+;TODO: keywords for daily vs monthly vs annual
+;  avg ssb and mg values instead of reprocessing areas... then apply model, linear
+;  higher level job to get aggregation period right
+;  otherwise write all to single file?
+;
 
   algver = 'v02' ; get from function parameter?
   algrev = 'r00' ; for 'final' files;  get from function parameter?
@@ -155,8 +184,8 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir
   spectral_bins = get_spectral_bins() 
   
   ;Get input data
-  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2) ;sunspot blocking data
-  mg_index = get_mg_index(ymd1, ymd2) ;MgII index data
+  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final) ;sunspot blocking/darkening data
+  mg_index = get_mg_index(ymd1, ymd2, final=final) ;MgII index data - facular brightening
   
   ;Create a Hash for each input dataset mapping MJD (assumed to be integer, i.e. midnight) to the appropriate record.
   ;Note, Hash values will be arrays but should have only one element: the data record for that day.
