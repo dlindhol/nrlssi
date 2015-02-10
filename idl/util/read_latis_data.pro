@@ -1,5 +1,4 @@
 function read_latis_data, dataset, start_time, end_time, host=host, port=port, base_path=base_path, query=query
-  ;Times will be converted to modified julian date.
   ;TODO: consider complex datasets (nested functions)
   ;TODO: error handling
   ;TODO: support authentication
@@ -18,7 +17,9 @@ function read_latis_data, dataset, start_time, end_time, host=host, port=port, b
   OBJ_DESTROY, netUrl
 
   ;combine all the lines into a single string
-  json = lines.Reduce(Lambda(x,y: x+y))
+  ;json = lines.Reduce(Lambda(x,y: x+y)) ;requires IDL 8.4
+  json = ''
+  for i = 0, n_elements(lines)-1 do json += lines[i]
 
   ;parse the json response
   data = json_parse(json, /TOSTRUCT)
