@@ -28,9 +28,9 @@ nrl_reference='data/judith_2015_01_28/NRLSSI2_Reference_Spectra_CDR_11Feb15.txt'
  
   ;these sb and mg values are monthly averages for Sept, 2001 (high), May 2004 (moderate), and July 2008 (low)
   lasp_high = compute_ssi(3162.5460,0.16737667,model_params) 
-  lasp_high2 = compute_ssi(3139.8337,0.16741937,model_params) ;Judith's exact input values (note she averaged 31 days)
+  lasp_high2 = compute_ssi(3162.5464,0.16737668,model_params) ;Judith's exact input values (note she averaged 31 days)
   lasp_high_tsi = compute_tsi(3162.5460,0.16737667,model_params)
-  lasp_high_tsi2 = compute_tsi(3139.8337,0.16741937,model_params) 
+  lasp_high_tsi2 = compute_tsi(3162.5464,0.16737668,model_params) 
   lasp_moderate = compute_ssi(671.66613,0.15545161,model_params)
   lasp_moderate2 = compute_ssi(671.66608,0.15545161,model_params) ;Judith's exact indice values
   lasp_moderate_tsi = compute_tsi(671.66613,0.15545161,model_params)

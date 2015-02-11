@@ -4,8 +4,8 @@ pro test_averaging
 
 ymd1 = '2014-01-01'
 ymd2 = '2014-01-31'
-modver='21Nov14'
-fn='~/git/nrlssi/data/judith_2014_11_21/NRL2_model_parameters_AIndC_20_'+modver+'.sav'
+modver='28Jan15'
+fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
 model_params = get_model_params(fn)
 spectral_bins = get_spectral_bins() 
 
@@ -22,9 +22,11 @@ mean_ssitot = mean(result.ssitot)
  
 ;average of 1 month of inputs
 sunspot_blocking = get_sunspot_blocking(ymd1, ymd2) ;sunspot blocking data
+sunspot_blockinga = sunspot_blocking.toArray()
 mg_index = get_mg_index(ymd1, ymd2) 
-mean_sb = mean(sunspot_blocking.ssbt)
-mean_mg = mean(mg_index.index)
+mg_indexa = mg_index.toArray()
+mean_sb = mean(sunspot_blockinga.ssbt)
+mean_mg = mean(mg_indexa.index)
 
 ;irradiance of averaged inputs
 tsi1 = compute_tsi(mean_sb ,mean_mg ,model_params) ;calculate TSI for given sb and mg
