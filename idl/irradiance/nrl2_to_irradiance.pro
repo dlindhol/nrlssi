@@ -250,23 +250,6 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
   result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,tsifile_daily)
   result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,ssifile_daily)
- 
-  ;Example, convert modified julian date to iso string
-  ;print, mjd2iso_date(data[0].mjd)
-  
-  ;Example, plot spectral irradiance
-  ;plot,spectral_bins[0].bandcenter,data[0].ssi,/xlog
-  
-  ;QA output
-  ;print,data[0].tsi,data[0].ssitot
-  
-  ;Write the results if output_dir is specified
-  ;TODO: Consider writing each time sample as we compute it. Data may be too large for memory?
-  ;if n_elements(output_dir) eq 1 then begin
-  ;  file = output_dir + '/nrl2_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.sav'
-  ;  save, file=file, data
-  ;  ;TODO: status = write_nrl2_data(data, file)
-  ;endif
   
   return, data
 end
