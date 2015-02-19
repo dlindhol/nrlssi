@@ -238,8 +238,13 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
   creation_date = iso_date2ddMonyy(ymd3)
   ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
   ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired? 
-  tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' ;remove dashes from filename
-  ssifile_daily = 'ssi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' 
+  ;Remove hyphens from ISO 8601 time standard for file output convention.
+  symd = remove_hyphens(ymd1) ;starting ymd
+  eymd = remove_hyphens(ymd2) ;ending ymd
+  cymd = remove_hyphens(ymd3) ;creation ymd
+  
+  tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
+  ssifile_daily = 'ssi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
   ;filename format for preliminary files: ssi/tsi_vXXrXX-preliminary_sYYYYMMDD_eYYYYMMDD_cYYYYMMDD.nc
 
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
