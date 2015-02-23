@@ -251,6 +251,24 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
   result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,tsifile_daily)
   result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,ssifile_daily)
   
+
+  ;Dynamically determine file size (in bytes) and MD5 checksum and output to manifest file
+  tsifile_daily_manifest = tsifile_daily + '.mnf'
+  ssifile_daily_manifest = ssifile_daily + '.mnf'  
+  ;Determine file sizes (in bytes)
+  command = 'ls -l '+tsifile_daily+ " |awk '{print $5}'"
+  spawn, command, tsi_bytes
+  command = 'ls -l '+ssifile_daily+ " |awk '{print $5}'"
+  spawn, command, ssi_bytes
+  ;Perform MD5 checksum on files
+  command = 'md5 ' + tsifile_daily + " | awk '{print $4}'"
+  spawn,command,tsi_checksum
+  command = 'md5 ' + ssifile_daily + " | awk '{print $4}'"
+  spawn,command,ssi_checksum
+  ;Write the results to manifest files
+  result = write_to_manifest(tsifile_daily, tsi_bytes, tsi_checksum, tsifile_daily_manifest)
+  result = write_to_manifest(ssifile_daily, ssi_bytes, ssi_checksum, ssifile_daily_manifest)
+  
   return, data
 end
 
