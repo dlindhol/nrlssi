@@ -93,7 +93,7 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ymd1
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2
   NCDF_ATTPUT, id, /GLOBAL, "program", "NOAA Climate Data Record Program"
-  NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "solar spectral irradiance"
+  NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "SSI, TSI"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00899" 
   NCDF_ATTPUT, id, /GLOBAL, "product_version", algver+algrev
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0"
@@ -110,9 +110,10 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
  
   ; Variable Attributes
   x0id = NCDF_VARDEF(id, 'SSI', [lid,tid], /FLOAT)
-  NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Solar Spectral Irradiance (W m-2 nm-1)'
+  NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Climate Data Record of Daily Solar Spectral Irradiance (W m-2 nm-1)'
   NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_incoming_shortwave_flux_per_unit_wavelength'
   NCDF_ATTPUT, id, x0id, 'units', 'W m-2 nm-1'
+  NCDF_ATTPUT, id, x0id, 'cell_methods','time: mean'
   NCDF_ATTPUT, id, x0id, 'missing_value', missing_value
 
   
@@ -126,25 +127,30 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, t1id, 'units', 'nm'  
  
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
-  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Total Solar Irradiance (Watt/ m**2)'
+  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Daily Total Solar Irradiance (Watt/ m**2)'
   NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
+  NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean'
+  NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC'
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
  
-  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /STRING) 
+  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /CHAR) 
   NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
   
   x3id = NCDF_VARDEF(id, 'time',[tid],/FLOAT)
   NCDF_ATTPUT, id, x3id, 'units','days since 1610-01-01 00:00:00'
   NCDF_ATTPUT, id, x3id, 'standard_name','time'
+  NCDF_ATTPUT, id, x3id, 'axis','T'
     
   x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
   NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Daily Total Solar Irradiance (W m-2)'
   NCDF_ATTPUT, id, x4id, 'units', 'W m-2'
-  
-  x5id = NCDF_VARDEF(id,'SSI_UNC',[lid,tid], /FLOAT)
-  NCDF_ATTPUT, id, x5id, 'long_name','Uncertainty in Daily Solar Spectral Irradiance (W m-2 nm-1)'
-  NCDF_ATTPUT, id, x5id, 'units', 'W m-2 nm-1'
+  NCDF_ATTPUT, id, x4id, 'missing_value',missing_value
+
+;  SSI_UNC not currently included in NOAA CDR delivery products due to file size  
+;  x5id = NCDF_VARDEF(id,'SSI_UNC',[lid,tid], /FLOAT)
+;  NCDF_ATTPUT, id, x5id, 'long_name','Uncertainty in Daily Solar Spectral Irradiance (W m-2 nm-1)'
+;  NCDF_ATTPUT, id, x5id, 'units', 'W m-2 nm-1'
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
