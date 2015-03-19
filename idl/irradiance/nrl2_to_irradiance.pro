@@ -184,7 +184,7 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
   spectral_bins = get_spectral_bins() 
   
   ;Get input data
-  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final) ;sunspot blocking/darkening data
+  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final, dev=dev) ;sunspot blocking/darkening data
   mg_index = get_mg_index(ymd1, ymd2, final=final) ;MgII index data - facular brightening
   
   ;Create a Hash for each input dataset mapping MJD (assumed to be integer, i.e. midnight) to the appropriate record.
@@ -238,30 +238,36 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
   creation_date = iso_date2ddMonyy(ymd3)
   ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
   ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired? 
-  tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' ;remove dashes from filename
-  ssifile_daily = 'ssi_' + algver +algrev +'_'+'daily_s'+ymd1 +'_e'+ ymd2 +'_c'+ ymd3 +'.nc' 
+  ;Remove hyphens from ISO 8601 time standard for file output convention.
+  symd = remove_hyphens(ymd1) ;starting ymd
+  eymd = remove_hyphens(ymd2) ;ending ymd
+  cymd = remove_hyphens(ymd3) ;creation ymd
+  
+  tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
+  ssifile_daily = 'ssi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
   ;filename format for preliminary files: ssi/tsi_vXXrXX-preliminary_sYYYYMMDD_eYYYYMMDD_cYYYYMMDD.nc
 
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
   result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,tsifile_daily)
   result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,ssifile_daily)
- 
-  ;Example, convert modified julian date to iso string
-  ;print, mjd2iso_date(data[0].mjd)
   
-  ;Example, plot spectral irradiance
-  ;plot,spectral_bins[0].bandcenter,data[0].ssi,/xlog
-  
-  ;QA output
-  ;print,data[0].tsi,data[0].ssitot
-  
-  ;Write the results if output_dir is specified
-  ;TODO: Consider writing each time sample as we compute it. Data may be too large for memory?
-  ;if n_elements(output_dir) eq 1 then begin
-  ;  file = output_dir + '/nrl2_' + ymd1 +'_'+ ymd2 +'_'+ modver +'.sav'
-  ;  save, file=file, data
-  ;  ;TODO: status = write_nrl2_data(data, file)
-  ;endif
+
+  ;Dynamically determine file size (in bytes) and MD5 checksum and output to manifest file
+  tsifile_daily_manifest = tsifile_daily + '.mnf'
+  ssifile_daily_manifest = ssifile_daily + '.mnf'  
+  ;Determine file sizes (in bytes)
+  command = 'ls -l '+tsifile_daily+ " |awk '{print $5}'"
+  spawn, command, tsi_bytes
+  command = 'ls -l '+ssifile_daily+ " |awk '{print $5}'"
+  spawn, command, ssi_bytes
+  ;Perform MD5 checksum on files
+  command = 'md5 ' + tsifile_daily + " | awk '{print $4}'"
+  spawn,command,tsi_checksum
+  command = 'md5 ' + ssifile_daily + " | awk '{print $4}'"
+  spawn,command,ssi_checksum
+  ;Write the results to manifest files
+  result = write_to_manifest(tsifile_daily, tsi_bytes, tsi_checksum, tsifile_daily_manifest)
+  result = write_to_manifest(ssifile_daily, ssi_bytes, ssi_checksum, ssifile_daily_manifest)
   
   return, data
 end
