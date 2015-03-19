@@ -85,7 +85,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ymd1
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2
   NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program"
-  NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "total solar irradiance"
+  NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "TSI"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00828"
   NCDF_ATTPUT, id, /GLOBAL, "product_version", algver+algrev
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0"
@@ -101,21 +101,25 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   
   ; Variable Attributes
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
-  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Fundamental Climate Data Record of Daily Total Solar Irradiance (W m-2)'
+  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Daily Total Solar Irradiance (W m-2)'
   NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
+  NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean'
+  NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC'
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
   
-  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /STRING)
+  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /CHAR)
   NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
 
   x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT)
   NCDF_ATTPUT, id, x3id, 'units','days since 1610-01-01 00:00:00'
   NCDF_ATTPUT, id, x3id, 'standard_name','time'
+  NCDF_ATTPUT, id, x3id, 'axis','T'
   
   x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
   NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Daily Total Solar Irradiance (W m-2)'
   NCDF_ATTPUT, id, x4id, 'units', 'W m-2'
+  NCDF_ATTPUT, id, x4id, 'missing_value',missing_value
   
   
   ; Put file in data mode:
