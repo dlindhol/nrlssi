@@ -76,7 +76,39 @@ function time_utils_ut::test_iso_date2mjd
   return, 1
 end
 
+function time_utils_ut::test_get_year_from_iso
+  compile_opt strictarr
+  
+  record = {time: '2014-05-01', value: 0.0}
+  year = get_year_from_record(record)
+  
+  assert, 2014 eq year
 
+  return, 1
+end
+
+function time_utils_ut::test_annual_average
+  compile_opt strictarr
+
+  records = List()
+  records.add, {time: '2014-05-01', value: 1.0}
+  records.add, {time: '2014-06-01', value: 2.0}
+  records.add, {time: '2015-07-01', value: 3.0}
+  records.add, {time: '2015-08-01', value: 4.0}
+  averaged = average_by_year(records.toarray())
+
+  years = averaged.keys()
+  assert, 2 eq years.count()
+  assert, 2015 eq years[1]
+  
+
+  return, 1
+end
+
+
+
+
+;---------------------------
 pro time_utils_ut__define
   compile_opt strictarr
   

@@ -14,7 +14,7 @@ function get_ym_from_record, record
   return, mjd2iso_yyyymm(record.mjd)
 end
 
-function average_by_month, records
+function average_irradiance_by_month, records
   ;Group data by month.
   ;Hash with keys yyyy-mm and array of records as values.
   grouped = group_by_function(records, 'get_ym_from_record')

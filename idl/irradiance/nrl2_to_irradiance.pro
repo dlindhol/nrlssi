@@ -129,7 +129,8 @@
 ;
 ;@*****
 
-function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
+function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final, dev=dev,  &
+  daily=daily, monthly=monthly, annual=annual
 
 ;TODO: keyword to indicate whether to run with final or prelim (or test?) data
 ;sunspot and mg come from latis
@@ -168,7 +169,7 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
   ;TODO: get this from function parameter?
  
   ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
-  ymd3 = jd2iso_date(systime(/julian, /utc)) 
+  creation_date = jd2iso_date(systime(/julian, /utc)) 
    
   ;Convert start and stop dates to Modified Julian Day Number (integer).
   mjd_start = iso_date2mjdn(ymd1)
@@ -235,21 +236,20 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final
   data = data_list.toArray()
   
   ;Make output file name(s), dynamically
-  creation_date = iso_date2ddMonyy(ymd3)
   ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
   ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired? 
   ;Remove hyphens from ISO 8601 time standard for file output convention.
   symd = remove_hyphens(ymd1) ;starting ymd
   eymd = remove_hyphens(ymd2) ;ending ymd
-  cymd = remove_hyphens(ymd3) ;creation ymd
+  cymd = remove_hyphens(creation_date) ;creation ymd
   
   tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
   ssifile_daily = 'ssi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
   ;filename format for preliminary files: ssi/tsi_vXXrXX-preliminary_sYYYYMMDD_eYYYYMMDD_cYYYYMMDD.nc
 
   ;Write the results to output in netCDF4 format; To Do: include an output file directory
-  result = write_tsi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,tsifile_daily)
-  result = write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,ssifile_daily)
+  result = write_tsi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,tsifile_daily)
+  result = write_ssi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,spectral_bins,ssifile_daily)
   
 
   ;Dynamically determine file size (in bytes) and MD5 checksum and output to manifest file
