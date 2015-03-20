@@ -38,15 +38,11 @@
 ;   remove_hyphens,ymd
 ;
 ;@***** 
-function remove_hyphens, ymd
-;Convert a date of the form 'yyyy-mm-dd' to 'yyyymmdd'.
+function remove_hyphens, string
+;For example, convert a date of the form 'yyyy-mm-dd' to 'yyyymmdd'.
 
-  year = strmid(ymd,0,4)
-  mon  = strmid(ymd,5,2)
-  day  = strmid(ymd,8,2)
-
-  fymd = year+mon+day
+  result = strjoin(strsplit(string,"-", /extract))
   
-  return, fymd
+  return, result
   
 end
