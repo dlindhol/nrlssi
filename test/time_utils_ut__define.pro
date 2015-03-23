@@ -95,12 +95,32 @@ function time_utils_ut::test_annual_average
   records.add, {time: '2014-06-01', value: 2.0}
   records.add, {time: '2015-07-01', value: 3.0}
   records.add, {time: '2015-08-01', value: 4.0}
-  averaged = average_by_year(records.toarray())
+  averaged = bin_average(records.toarray(), 'year')
 
   years = averaged.keys()
   assert, 2 eq years.count()
-  assert, 2015 eq years[1]
-  
+  assert, '2015' eq (years.sort())[1]
+  assert, 1.5 eq averaged['2014']
+  assert, 3.5 eq averaged['2015']
+
+  return, 1
+end
+
+function time_utils_ut::test_monthly_average
+  compile_opt strictarr
+
+  records = List()
+  records.add, {time: '2014-05-01', value: 1.0}
+  records.add, {time: '2014-05-02', value: 2.0}
+  records.add, {time: '2014-08-01', value: 3.0}
+  records.add, {time: '2014-08-03', value: 4.0}
+  averaged = bin_average(records.toarray(), 'month')
+
+  months = averaged.keys()
+  assert, 2 eq months.count()
+  assert, '2014-08' eq (months.sort())[1]
+  assert, 1.5 eq averaged['2014-05']
+  assert, 3.5 eq averaged['2014-08']
 
   return, 1
 end
