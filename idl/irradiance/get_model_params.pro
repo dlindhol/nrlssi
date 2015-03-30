@@ -75,9 +75,10 @@
 ;   get_model_params,infile
 ;
 ;@*****
-function get_model_params,infile
+function get_model_params, file=file
 
-  restore,infile
+  if n_elements(file) eq 0 then file = 'data/NRL2_model_parameters_v02r00.sav'
+  restore,file
 
   params = {model_params,  $
     simver:        simver, $
