@@ -76,32 +76,21 @@ function time_utils_ut::test_iso_date2mjd
   return, 1
 end
 
-function time_utils_ut::test_get_year_from_iso
-  compile_opt strictarr
-  
-  record = {time: '2014-05-01', value: 0.0}
-  year = get_year_from_record(record)
-  
-  assert, 2014 eq year
-
-  return, 1
-end
-
 function time_utils_ut::test_annual_average
   compile_opt strictarr
 
   records = List()
-  records.add, {time: '2014-05-01', value: 1.0}
-  records.add, {time: '2014-06-01', value: 2.0}
-  records.add, {time: '2015-07-01', value: 3.0}
-  records.add, {time: '2015-08-01', value: 4.0}
-  averaged = bin_average(records.toarray(), 'year')
+  records.add, {time: iso_date2mjdn('2014-05-01'), value: 1.0}
+  records.add, {time: iso_date2mjdn('2014-06-01'), value: 2.0}
+  records.add, {time: iso_date2mjdn('2015-07-01'), value: 3.0}
+  records.add, {time: iso_date2mjdn('2015-08-01'), value: 4.0}
+  averaged = bin_average(records, 'year')
 
-  years = averaged.keys()
-  assert, 2 eq years.count()
-  assert, '2015' eq (years.sort())[1]
-  assert, 1.5 eq averaged['2014']
-  assert, 3.5 eq averaged['2015']
+  times = averaged.keys()
+  assert, 2 eq times.count()
+  assert, 57204 eq (times.sort())[1] ;2nd sample
+  assert, 1.5 eq averaged[56839] ;2014-07-01
+  assert, 3.5 eq averaged[57204] ;2015-07-01
 
   return, 1
 end
@@ -110,17 +99,17 @@ function time_utils_ut::test_monthly_average
   compile_opt strictarr
 
   records = List()
-  records.add, {time: '2014-05-01', value: 1.0}
-  records.add, {time: '2014-05-02', value: 2.0}
-  records.add, {time: '2014-08-01', value: 3.0}
-  records.add, {time: '2014-08-03', value: 4.0}
-  averaged = bin_average(records.toarray(), 'month')
+  records.add, {time: iso_date2mjdn('2014-05-01'), value: 1.0}
+  records.add, {time: iso_date2mjdn('2014-05-02'), value: 2.0}
+  records.add, {time: iso_date2mjdn('2014-08-01'), value: 3.0}
+  records.add, {time: iso_date2mjdn('2014-08-03'), value: 4.0}
+  averaged = bin_average(records, 'month')
 
   months = averaged.keys()
   assert, 2 eq months.count()
-  assert, '2014-08' eq (months.sort())[1]
-  assert, 1.5 eq averaged['2014-05']
-  assert, 3.5 eq averaged['2014-08']
+  assert, 56884 eq (months.sort())[1] ;2nd record
+  assert, 1.5 eq averaged[56792] ;2014-05-15
+  assert, 3.5 eq averaged[56884] ;2014-08-15
 
   return, 1
 end
