@@ -48,7 +48,7 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev,  $
     
     ;Create the resulting data structure.
     ; TODO Add bandcenters and bandwidths and nband to data structure
-    struct = {nrl2,                 $
+    struct = {nrl2_irradiance,      $
       mjd:    mjd,                  $
       iso:    iso_time,             $
       tsi:    nrl2_tsi.totirrad,    $
