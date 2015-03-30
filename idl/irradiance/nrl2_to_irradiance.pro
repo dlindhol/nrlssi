@@ -164,9 +164,6 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final, dev
   algver = 'v02' ; get from function parameter?
   algrev = 'r00' ; for 'final' files;  get from function parameter?
   ;algrev = 'r00-preliminary' ; include '-preliminary' for operational, quarterly updates
-  modver='28Jan15'
-  fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
-  ;TODO: get this from function parameter?
  
   ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
   creation_date = jd2iso_date(systime(/julian, /utc)) 
@@ -179,7 +176,7 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final, dev
   n = mjd_stop - mjd_start + 1
   
   ;Restore model parameters
-  model_params = get_model_params(fn)
+  model_params = get_model_params()
   
   ;Set up wavelength bands for summing 1 nm spectrum
   spectral_bins = get_spectral_bins() 
