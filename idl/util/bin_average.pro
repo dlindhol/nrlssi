@@ -73,12 +73,16 @@ function bin_average, records, bin
   grouped = group_by_function(records, function_name)
   
   ;Extract just the values for each group of records.
-  f = lambda(rec: rec.(1)) ;extract the value from a record
-  grouped_values = grouped.map(f)
+  ;f = lambda(rec: rec.(1)) ;extract the value from a record
+  ;grouped_values = grouped.map(f)
+  grouped_values = Hash()
+  foreach record, grouped, key do grouped_values[key] = record.(1)
   
   ;Average the values in the records for each time bin.
-  g = lambda(xs: mean(xs)) ;average the array of values
-  averaged = grouped_values.map(g)
+  ;g = lambda(xs: mean(xs)) ;average the array of values
+  ;averaged = grouped_values.map(g)
+  averaged = Hash()
+  foreach values, grouped_values, key do averaged[key] = mean(values)
   
   return, averaged
 end
