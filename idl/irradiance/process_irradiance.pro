@@ -19,9 +19,13 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev,  $
   ssb = bin_average(sunspot_blocking, time_bin)
   mgi = bin_average(mg_index, time_bin)
   
-  ;Iterate over each time bin
-  ssb_times = (ssb.keys()).sort()
-  mgi_times = (mgi.keys()).sort()
+  ;Get the sorted list of times
+  ;ssb_times = (ssb.keys()).sort()
+  ;mgi_times = (mgi.keys()).sort()
+  ssb_times = (ssb.keys()).toArray()
+  ssb_times = ssb_times[sort(ssb_times)]
+  mgi_times = (mgi.keys()).toArray()
+  mgi_times = mgi_times[sort(mgi_times)]
   
   ;Make sure that we have the same time samples for each
   bad = where(ssb_times ne mgi_times, nbad)
@@ -34,7 +38,7 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev,  $
   data_list = List()
   
   ;Iterate over each time sample.
-  n = ssb_times.count()
+  n = n_elements(ssb_times) ;.count()
   for i = 0, n-1 do begin
     mjd = ssb_times[i] ;time of the current sample
     iso_time = mjd2iso_date(mjd)
