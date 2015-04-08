@@ -1,3 +1,0 @@
-pro bar
-
-end
