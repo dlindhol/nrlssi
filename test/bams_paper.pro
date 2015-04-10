@@ -392,6 +392,11 @@ print,'stddev of diff', diff_std
 
 ;end of Figure 8------------------------------
 fig9:
+
+upperflag = 1 ;if 1, do upper bound of uncertainties, if 0, do lower bound
+if upperflag eq 1 then print,'***** Performing Upper bound of uncertainties'
+if upperflag eq 0 then print, '***** Not Performing Upper bound of uncertainties'
+
 ;compare energy max to min from NRLSSI and NRLSSI2 (in energy units and in irradiance units)
 ;include uncertainties with NRLSSI2
 ;original NRLSSI values  (NOTE - 5 less wavelength bands for NRLSSI1 compared to NRLSSI2)
@@ -434,8 +439,8 @@ nrlssi2_max_mean = fltarr(3785)
 unc_nrlssi2_max_mean = fltarr(3785)
 for ii=0,3784 do begin
   nrlssi2_max_mean[ii] = mean(nrlssi2_max[ii,*]) ;average irradiance for max conditions.
-  ;unc_nrlssi2_max_mean[ii] = mean(nrlssi2_max_unc[ii,*])
-  unc_nrlssi2_max_mean[ii] = 1./nday * total(nrlssi2_max_unc[ii,*]) ; (upper bound would be 1/nday * sum of individual errors)
+  if upperflag eq 1 then unc_nrlssi2_max_mean[ii] = 1./nday * total(nrlssi2_max_unc[ii,*]) ; upper bound 
+  if upperflag eq 0 then unc_nrlssi2_max_mean[ii] =  1./nday * SQRT(total(nrlssi2_max_unc[ii,*])^2.) ;not upper bound 
 endfor
 
 ;min = 2008.91 to 2008.98 ('2008-11-28' to '2008-12-23')
@@ -450,7 +455,8 @@ unc_nrlssi2_min_mean = fltarr(3785)
 for ii=0,3784 do begin
   nrlssi2_min_mean[ii] = mean(nrlssi2_min[ii,*])
   ;unc_nrlssi2_min_mean[ii] = mean(nrlssi2_min_unc[ii,*]) 
-  unc_nrlssi2_min_mean[ii] = 1./nday * total(nrlssi2_min_unc[ii,*]) ;(upper bound would be 1/nday * sum of individual errors)
+  if upperflag eq 1 then unc_nrlssi2_min_mean[ii] = 1./nday * total(nrlssi2_min_unc[ii,*]) ; upper bound 
+  if upperflag eq 0 then unc_nrlssi2_min_mean[ii] = 1./nday * SQRT(total(nrlssi2_min_unc[ii,*])^2.) ;not upper bound
 endfor
 
 ;;define wl grid for NRLSSI2 data
@@ -461,25 +467,26 @@ wl_nrlssi2 = result.wl
 
 ;Now compute irradiance difference (max-min) and propagate uncertainties
 nrlssi2_max_minus_min = nrlssi2_max_mean -nrlssi2_min_mean
-unc_nrlssi2_max_minus_min = sqrt((unc_nrlssi2_max_mean)^2. + (unc_nrlssi2_min_mean)^2.) ;the upper bound would be the sum (not the quadrature sum) of the individual uncertainties for the means.
+if upperflag eq 1 then unc_nrlssi2_max_minus_min = (unc_nrlssi2_max_mean) + (unc_nrlssi2_min_mean) ;the upper bound
+if upperflag eq 0 then unc_nrlssi2_max_minus_min = sqrt((unc_nrlssi2_max_mean)^2. + (unc_nrlssi2_min_mean)^2.) ; the quadrature sum of the individual uncertainties for the means.
 nrlssi1_max_minus_min = nrlssi1_max_mean - nrlssi1_min_mean
 
 ;Now compute energy change (max/min) and propagate uncertainties ;need to account for different spectral range in nrlssi2 and nrlssi1
 nrlssi2_max_over_min = ((nrlssi2_max_mean / nrlssi2_min_mean) -1.)*100. ;max to min energy change in %
-unc_nrlssi2_max_over_min = abs(1./nrlssi2_min_mean)*unc_nrlssi2_max_mean + abs(((-1.)*nrlssi2_max_mean)/(nrlssi2_min_mean)^2)
-;sqrt( ((nrlssi2_min_mean)*unc_nrlssi2_max_mean)^2. + ((nrlssi2_max_mean/(nrlssi2_min_mean^2.))*unc_nrlssi2_min_mean)^2. )
-;unc_nrlssi2_max_over_min = ((-1.*nrlssi2_min_mean)*unc_nrlssi2_max_mean) + ((nrlssi2_max_mean)*unc_nrlssi2_min_mean)
+if upperflag eq 1 then unc_nrlssi2_max_over_min = abs(1./nrlssi2_min_mean) + abs(((-1.)*nrlssi2_max_mean*unc_nrlssi2_min_mean)/nrlssi2_min_mean^2.) ;upper bound
+if upperflag eq 0 then unc_nrlssi2_max_over_min = SQRT( (abs(1./nrlssi2_min_mean)*unc_nrlssi2_max_mean)^2. + (abs( ((-1.)*nrlssi2_max_mean)/ nrlssi2_min_mean^2.)*unc_nrlssi2_min_mean )^2. );lwer bound
+;if upperflag eq 0 then unc_nrlssi2_max_over_min = SQRT((unc_nrlssi2_max_mean/nrlssi2_min_mean)^2 + (((-1.)*nrlssi2_max_mean*unc_nrlssi2_min_mean)/(nrlssi2_min_mean)^2)^2.) ;not upper bound
 nrlssi1_max_over_min = ((nrlssi1_max_mean / nrlssi1_min_mean) -1.)*100. ;because it's relative, don't need to worry about converting from mW to W
 
 ;Irradiance difference
 p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_minus_min,unc_nrlssi2_max_minus_min,xtitle='Wavelength (nm)',ytitle='W m-2 nm-1',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2')
 p1=plot(wl_nrlssi1(*,0),(nrlssi1_max_minus_min)/1000.,xlog=1,overplot=1,name='NRLSSI') ;convert from mW to W
 l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0)
-p.yrange=[-0.001,0.005]
+p.yrange=[-0.001,0.006]
 ;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9a_v2.eps';, /TRANSPARENT
 
 ;Energy Difference
-p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_over_min,unc_nrlssi2_max_over_min,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2',xlog=1)
+p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_over_min,unc_nrlssi2_max_over_min*nrlssi2_max_over_min,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2',xlog=1)
 p1=plot(wl_nrlssi1(*,0),(nrlssi1_max_over_min),overplot=1,name='NRLSSI') ;convert from mW to W
 l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0)
 p.yrange=[0.0001,100]
