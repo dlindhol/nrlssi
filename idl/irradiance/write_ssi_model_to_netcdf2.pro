@@ -111,7 +111,7 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   ; Variable Attributes
   x0id = NCDF_VARDEF(id, 'SSI', [lid,tid], /FLOAT)
   NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Climate Data Record of Daily Solar Spectral Irradiance (W m-2 nm-1)'
-  NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_incoming_shortwave_flux_per_unit_wavelength'
+  NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_solar_spectral_irradiance'
   NCDF_ATTPUT, id, x0id, 'units', 'W m-2 nm-1'
   NCDF_ATTPUT, id, x0id, 'cell_methods','time: mean'
   NCDF_ATTPUT, id, x0id, 'missing_value', missing_value
@@ -127,15 +127,15 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_ATTPUT, id, t1id, 'units', 'nm'  
  
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
-  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Daily Total Solar Irradiance (Watt/ m**2)'
-  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
+  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Daily Total Solar Irradiance (Watt m-2)'
+  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance'
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
   NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean'
   NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC'
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
  
-  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /CHAR) 
-  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
+ ; x2id = NCDF_VARDEF(id, 'iso_time', [tid], /CHAR) 
+ ; NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
   
   x3id = NCDF_VARDEF(id, 'time',[tid],/FLOAT)
   NCDF_ATTPUT, id, x3id, 'units','days since 1610-01-01 00:00:00'
@@ -156,12 +156,12 @@ function write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_
   NCDF_CONTROL, id, /ENDEF
   
   ; Input data:
-  NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
+;  NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
   NCDF_VARPUT, id, x3id, data.mjd - day_zero_mjd ;Days since 1610-01-01
   NCDF_VARPUT, id, x1id, tsi
   NCDF_VARPUT, id, x4id, tsiunc
   NCDF_VARPUT, id, x0id, ssi
-  ;NCDF_VARPUT, id, x5id, ssiunc ;not currently included in NOAA CDR delivery products due to file size
+;  NCDF_VARPUT, id, x5id, ssiunc ;not currently included in NOAA CDR delivery products due to file size
   NCDF_VARPUT, id, t0id, spectral_bins.bandcenter
   NCDF_VARPUT, id, t1id, spectral_bins.bandwidth
   

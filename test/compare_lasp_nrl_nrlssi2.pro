@@ -1,7 +1,7 @@
 pro compare_lasp_nrl_nrlssi2
 
 jud = read_nrl_nrlssi2() ;read Judith's MEGA files, 1978-2014
-goto, float
+;goto, float
 
 ;------compute LASP NRLSSI2 for time series
 modver='28Jan15'

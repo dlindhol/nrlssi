@@ -108,8 +108,8 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC'
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
   
-  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /CHAR)
-  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
+;  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /CHAR)
+;  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
 
   x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT)
   NCDF_ATTPUT, id, x3id, 'units','days since 1610-01-01 00:00:00'
@@ -126,7 +126,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_CONTROL, id, /ENDEF
   
   ; Input data:
-  NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
+;  NCDF_VARPUT, id, x2id, dates ;YYYY-MM-DD; ISO 8601 standards
   NCDF_VARPUT, id, x3id, data.mjd - day_zero_mjd ;CF-compliant time variable
   NCDF_VARPUT, id, x1id, tsi
   NCDF_VARPUT, id, x4id, tsiunc
