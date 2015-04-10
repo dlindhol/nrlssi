@@ -35,7 +35,7 @@ sim=read_lasp_ascii_file('/Users/hofmann/Downloads/sorce_ssi_L3_c24h_0000nm_2413
 ;s=sort(sim.max_wavelength)      
 ;qmax=uniq(sim[s].max_wavelength)
 
-goto, fig7
+goto, fig9
 
 ;Figure 2-------------------------------
 ;NRLSSI2 reference spectrum with blackbody curve
@@ -435,7 +435,7 @@ unc_nrlssi2_max_mean = fltarr(3785)
 for ii=0,3784 do begin
   nrlssi2_max_mean[ii] = mean(nrlssi2_max[ii,*]) ;average irradiance for max conditions.
   ;unc_nrlssi2_max_mean[ii] = mean(nrlssi2_max_unc[ii,*])
-  unc_nrlssi2_max_mean[ii] = 1./nday * SQRT(total(nrlssi2_max_unc[ii,*]^2.)) ;uncertainty in the binned irradiance = N-1 * quadrature sum of wavelength dependent uncertainties on each day (N = number of days averaging over) (upper bound would be 1/nday * sum of individual errors)
+  unc_nrlssi2_max_mean[ii] = 1./nday * total(nrlssi2_max_unc[ii,*]) ; (upper bound would be 1/nday * sum of individual errors)
 endfor
 
 ;min = 2008.91 to 2008.98 ('2008-11-28' to '2008-12-23')
@@ -450,7 +450,7 @@ unc_nrlssi2_min_mean = fltarr(3785)
 for ii=0,3784 do begin
   nrlssi2_min_mean[ii] = mean(nrlssi2_min[ii,*])
   ;unc_nrlssi2_min_mean[ii] = mean(nrlssi2_min_unc[ii,*]) 
-  unc_nrlssi2_min_mean[ii] = 1./nday * SQRT(total(nrlssi2_min_unc[ii,*]^2.)) ;uncertainty in the binned irradiance = N-1 * quadrature sum of wavelength dependent uncertainties on each day (N = number of days averaging over) (upper bound would be 1/nday * sum of individual errors)
+  unc_nrlssi2_min_mean[ii] = 1./nday * total(nrlssi2_min_unc[ii,*]) ;(upper bound would be 1/nday * sum of individual errors)
 endfor
 
 ;;define wl grid for NRLSSI2 data
@@ -466,7 +466,8 @@ nrlssi1_max_minus_min = nrlssi1_max_mean - nrlssi1_min_mean
 
 ;Now compute energy change (max/min) and propagate uncertainties ;need to account for different spectral range in nrlssi2 and nrlssi1
 nrlssi2_max_over_min = ((nrlssi2_max_mean / nrlssi2_min_mean) -1.)*100. ;max to min energy change in %
-unc_nrlssi2_max_over_min = sqrt( ((-1.*nrlssi2_min_mean)*unc_nrlssi2_max_mean)^2. + ((nrlssi2_max_mean/(nrlssi2_min_mean^2.))*unc_nrlssi2_min_mean)^2. )
+unc_nrlssi2_max_over_min = abs(1./nrlssi2_min_mean)*unc_nrlssi2_max_mean + abs(((-1.)*nrlssi2_max_mean)/(nrlssi2_min_mean)^2)
+;sqrt( ((nrlssi2_min_mean)*unc_nrlssi2_max_mean)^2. + ((nrlssi2_max_mean/(nrlssi2_min_mean^2.))*unc_nrlssi2_min_mean)^2. )
 ;unc_nrlssi2_max_over_min = ((-1.*nrlssi2_min_mean)*unc_nrlssi2_max_mean) + ((nrlssi2_max_mean)*unc_nrlssi2_min_mean)
 nrlssi1_max_over_min = ((nrlssi1_max_mean / nrlssi1_min_mean) -1.)*100. ;because it's relative, don't need to worry about converting from mW to W
 

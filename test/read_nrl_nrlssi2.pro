@@ -71,7 +71,8 @@ function read_nrl_nrlssi2
     totspec: tspec, $
     year:    yr,    $
     month:   mn,    $
-    day:     dd     $
+    day:     dd,    $
+    wl:    wldat    $ 
     }
   
     return,nrl    
