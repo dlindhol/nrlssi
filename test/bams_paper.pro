@@ -478,6 +478,7 @@ if upperflag eq 0 then unc_nrlssi2_max_over_min = SQRT( (abs(1./nrlssi2_min_mean
 ;if upperflag eq 0 then unc_nrlssi2_max_over_min = SQRT((unc_nrlssi2_max_mean/nrlssi2_min_mean)^2 + (((-1.)*nrlssi2_max_mean*unc_nrlssi2_min_mean)/(nrlssi2_min_mean)^2)^2.) ;not upper bound
 nrlssi1_max_over_min = ((nrlssi1_max_mean / nrlssi1_min_mean) -1.)*100. ;because it's relative, don't need to worry about converting from mW to W
 
+
 ;Irradiance difference
 p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_minus_min,unc_nrlssi2_max_minus_min,xtitle='Wavelength (nm)',ytitle='W m-2 nm-1',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2')
 p1=plot(wl_nrlssi1(*,0),(nrlssi1_max_minus_min)/1000.,xlog=1,overplot=1,name='NRLSSI') ;convert from mW to W
@@ -486,8 +487,10 @@ p.yrange=[-0.001,0.006]
 ;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9a_v2.eps';, /TRANSPARENT
 
 ;Energy Difference
-p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_over_min,unc_nrlssi2_max_over_min*nrlssi2_max_over_min,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2',xlog=1)
-p1=plot(wl_nrlssi1(*,0),(nrlssi1_max_over_min),overplot=1,name='NRLSSI') ;convert from mW to W
+rel_log_error = 0.434 * (unc_nrlssi2_max_over_min / nrlssi2_max_over_min)
+;p=errorplot(wl_nrlssi2(*,0),alog(nrlssi2_max_over_min),rel_log_error,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2',xlog=1)
+p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_over_min,unc_nrlssi2_max_over_min*100,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2',xlog=1)
+p1=plot(wl_nrlssi1(*,0),alog(nrlssi1_max_over_min),overplot=1,name='NRLSSI') ;convert from mW to W
 l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0)
 p.yrange=[0.0001,100]
 p.ylog=1
