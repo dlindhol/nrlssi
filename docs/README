@@ -1,0 +1,83 @@
+Information about the specific contents of this project.
+
+----
+idl/orig:
+  Original code that is largely obsolete but worth keeping for provenance.
+
+	calc_spotindex_Apr12.pro.ORIG
+	  Code used by Judith to process the sunspot blocking data from NOAA.
+	
+	calc_USAF_spotindex_Aug13.pro
+	  Odele's modification of Judith's code.
+	  Doug refactored this code into the routines in "sunspot".
+	  
+	nrl_2_tsi.pro.ORIG
+	  Odele's original code to compute and write the TSI model.
+	  Doug refactored this into the routines in "tsi".
+	
+	calc_NRLSSI_13Mar14.pro:
+	  Judith's original code for computing the SSI model.
+	  Doug refactored into "ssi".
+
+idl/ssi:
+  IDL routines to compute the solar spectral irradiance model, starting with calc_nrlssi.pro.
+
+idl/sunspot:
+  IDL code to compute sunspot blocking data, start with process_sunspot_blocking.pro.
+
+idl/tsi:
+  IDL code to compute the total solar irradiance model, starting with nrl_2_tsi.pro.
+
+idl/util:
+  IDL utility routines.
+  
+test:
+  IDL test code.
+  
+----
+data:
+
+betasun.dat
+  Solar beta angle given to us by Judith. 
+  Used by calc_spotindex_Apr12.
+
+MOD4_SOL_V0009_w1.sav
+  UARS UV model coefficients for calcuating UV spectrum
+  Used by ssi processing
+
+NRLSSI_spectrum_parameters.txt
+  Used by ssi processing
+  
+SSB_USAF_2010_Apr12.txt
+SSB_USAF_2011_Apr12.txt  
+SSB_USAF_2012_Apr12.txt  
+  Output files of sunspot blocking from calc_spotindex_Apr12 that Judith gave us to validate our runs.
+
+tsi_mod_mr2_13Feb13.txt
+  Input data for TSI model
+
+USAF_Denig_2010-2012.txt
+  Given to us by Judith Lean.
+  Used in her Apr12 update.
+  Apparently generated manually for her by Bill Denig.
+  
+NRL2_model_parameters_v02r00.sav
+  Final model input copied from judith_2015_01_28/NRL2_model_parameters_AIndC_21_28Jan15.sav
+  
+----
+docs:
+  Various documentation, emails, papers that have informed the process. 
+  Some are duplicates of information managed elsewhere but kept here for convenience.
+  TODO: capture some of this on the wiki
+
+denig_data_update_email_Mar2014:
+  Email from Bill to Judith announcing updated versions of the sunspot data:
+  http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/
+
+TODO: describe source of other docs
+
+----
+_NOTES
+  Cryptic developer notes as I try to understand the state of things.
+  This should probably be digested into wiki docs and new issues.
+  
