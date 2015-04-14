@@ -1,11 +1,11 @@
-function read_nrl_nrlssi2
+function read_nrl_nrlssi2,infile,starty,endy
 ;reader for Judith's NRLSSI2 results (MEGA download, stored at /Users/hofmann/Documents/FCDR_Solar/NRLSSI2_1978_2014d_S21_28Jan15.txt)
 
-  nrlfile = '/Users/hofmann/Documents/FCDR_Solar/NRLSSI2_1978_2014d_S21_28Jan15.txt'
+  nrlfile = infile
   ;parameters and arrays to read NRL download
   ;nver = n_elements(nrlfile)
-  startyear = 1978
-  endyear = 2014
+  startyear = starty
+  endyear = endy
   ndy=julday(1,1,endyear+1)-julday(1,1,startyear)
   yr=fltarr(ndy)
   mn=fltarr(ndy)
