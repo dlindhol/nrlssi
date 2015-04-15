@@ -1,141 +1,134 @@
 pro compare_lasp_nrl_nrlssi2
 
-jud = read_nrl_nrlssi2() ;read Judith's MEGA files, 1978-2014
-;goto, float
+time_bin = 'daily' ;CHANGE
 
-;------compute LASP NRLSSI2 for time series
-modver='28Jan15'
-fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
-ymd1 = '2000-01-01'
-ymd2 = '2000-12-31'
-;Convert start and stop dates to Modified Julian Day Number (integer).
-mjd_start = iso_date2mjdn(ymd1)
-mjd_stop  = iso_date2mjdn(ymd2)  
-;Number of time samples (days)
-n = mjd_stop - mjd_start + 1
+if time_bin eq 'daily' then begin 
+  ;nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1882_1909d_6Apr15.txt'
+  ;nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1910_1949d_6Apr15.txt'
+  nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1950_1977d_6Apr15.txt'
+  ;nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1978_2014d_6Apr15.txt'
+  startyear=1950 ;CHANGE to match time frame in daily files
+  endyear = 1977 ;CHANGE to match time frame in daily files
+  jud = read_nrl_nrlssi2d(nrl_ssi,startyear,endyear) ;read Judith's MEGA files, 1978-2014
+endif
+if time_bin eq 'monthly' then begin
+  ;nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1882_1959m_6Apr15.txt' 
+  nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1960_2014m_6Apr15.txt'
+  startyear=1960 ;CHANGE to match time frame in monthly files (ALSO NEED TO SUBSET DATA in lines 45-49)
+  endyear = 2014 ;CHANGE to match time frame in monthly files (ALSO NEED TO SUBSET DATA in lines 45-49)
+  jud = read_nrl_nrlssi2m(nrl_ssi,startyear,endyear) ;read Judith's MEGA files, 1978-2014
+endif
+if time_bin eq 'yearly' then begin
+  nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1882_2014a_6Apr15.txt' 
+  startyear=1882 
+  endyear = 2014 
+  jud = read_nrl_nrlssi2a(nrl_ssi,startyear,endyear) ;read Judith's MEGA files, 1978-2014
+endif
+
+ 
+;judith data
+judssi = jud.spec
+judtsi = jud.tsi
+judtotssi = jud.totspec
+jwavelength=jud.wl[*,0]
+jbandwidth=jud.wl[*,1]
+k=n_elements(judssi[0,*]) ;elements in time series
+
+
+;create LASP SSI data from saved annual, monthly and daily inputs
+restore,'test/LASP_annual_month_day_indices_1882_2014.sav',/verb
+if time_bin eq 'daily' then begin
+  sbi = sb_d[24836:35062] ;(index 0:10225 spans 1882 through 1909-12-31), (index 24836:35062 spans 1950 through 1977-12-31)
+  mgi = mg_d[24836:35062] 
+  lasp_date=jd2yf4(mjd2jd(times_d[24836:35062]))
+endif
+if time_bin eq 'monthly' then begin
+  sbi = sb_m[936:*]
+  mgi = mg_m[936:*]
+  lasp_date=jd2yf4(mjd2jd(times_m[936:*])) ;index 936 = Jan, 1960
+endif
+
+if time_bin eq 'yearly' then begin
+  sbi = sb_a
+  mgi = mg_a
+  lasp_date=jd2yf4(mjd2jd(times_a))
+endif
+
 ;Restore model parameters
-model_params = get_model_params(fn)
-;Set up wavelength bands for summing 1 nm spectrum
+model_params = get_model_params()
 spectral_bins = get_spectral_bins() 
-;Get input data
-sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final) ;sunspot blocking/darkening data
-mg_index = get_mg_index(ymd1, ymd2, final=final) ;Mg
-;Create a Hash for each input dataset mapping MJD (assumed to be integer, i.e. midnight) to the appropriate record.
-;Note, Hash values will be arrays but should have only one element: the data record for that day.
-sunspot_blocking_by_day = group_by_tag(sunspot_blocking, 'MJDN')
-mg_index_by_day = group_by_tag(mg_index, 'MJD')
-;Make list to accumulate results
+
 data_list = List()
-;Iterate over days.
-;TODO: consider passing complete arrays of data to these routines
-  for i = 0, n-1 do begin
-    mjd = mjd_start + i
-    
-    ;sb = sunspot_blocking[i].ssbt
-    ;mg = mg_index[i].index
-    sb = sunspot_blocking_by_day[mjd].ssbt
-    sb = float(sb)
-    mg = mg_index_by_day[mjd].index
-    mg = float(mg)
-    
-    ;sanity check that we have one record per day
-    if ((n_elements(sb) ne 1) or (n_elements(mg) ne 1)) then begin
-      print, 'WARNING: Invalid input data for day ' + mjd2iso_date(mjd)
-      continue  ;skip this day
-    endif
+;check to see if 'k' elements in judith's data matches the lasp data (subsetted to the same time frame).
+
+
+;loop over days
+for i = 0, k-1 do begin
+    sb = sbi(i) 
+    mg = mgi(i)
     
     nrl2_tsi = compute_tsi(sb ,mg ,model_params) ;calculate TSI for given sb and mg
     ssi = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
     nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
     
-    iso_time = mjd2iso_date(mjd)
-    
     ; TODO Add bandcenters and bandwidths and nband to data structure
-    struct = {nrl2,                 $
-      mjd:    mjd,                  $
-      iso:    iso_time,             $
+    struct = {nrl2,               $
       tsi:    nrl2_tsi.totirrad,    $
-      tsiunc: nrl2_tsi.totirradunc, $
       ssi:    nrl2_ssi.nrl2bin,     $
-      ssiunc: nrl2_ssi.nrl2binunc,  $
       ssitot: nrl2_ssi.nrl2binsum   $
     }
     
     data_list.add, struct
-  endfor
-;Convert data List to array
-lasp = data_list.toArray()
-;-------------end getting lasp data
+endfor
+lasp = data_list.toArray()  
+laspssi=lasp.ssi
+lasptsi=lasp.tsi
 
-;truncate judith data to same time period
-;2000-01-01 through 2000-12-31 = jud[8035:8400]
-j1 = 8035
-j2 = 8400
-tt=jd2yf4(mjd2jd(lasp.mjd))
+;Bin SSI for comparisons
+wav1a = 200 & wav1b = 210
+wav2a = 300 & wav2b = 400
+wav3a = 700 & wav3b = 1000
+wav4a = 1000 & wav4b = 1300
 
-sub = jud.tsi[j1:j2]
-p=plot(tt,sub,layout = [1,2,1],name='NRL')
-p1=plot(tt,lasp.tsi,'r',overplot=1,name='LASP')
-l=legend(target=[p,p1],/data)
-p.title='TSI Comparison'
-p.ytitle='W m!U-2'
-p=plot(tt,(1-(sub/lasp.tsi))*100,layout=[1,2,2],/current)
-p.title='TSI Percent Difference'
-p.ytitle='(1-NRL/LASP)*100'
-p.xtitle='Year'
+;Judith binned results
+jbin_ssi_1 = dblarr(k) ;200-210 nm
+jbin_ssi_2 = dblarr(k) ;300-400 nm
+jbin_ssi_3 = dblarr(k) ;700-1000 nm
+jbin_ssi_4 = dblarr(k) ;1000-1300 nm
 
-iband=400
-sub = reform(jud.spec[iband,j1:j2])
-p=plot(tt,sub,layout = [1,2,1],name='NRL')
-p1=plot(tt,lasp.ssi[iband,*],'r',overplot=1,name='LASP')
-l=legend(target=[p,p1],/data)
-p.title='SSI Comparison: '+strtrim(spectral_bins.bandcenter[iband],2)+' nm'
-p.ytitle='W m!U-2!N nm!U-1'
-p=plot(tt,(1-(sub/lasp.ssi[iband,*]))*100,layout=[1,2,2],/current)
-p.title='SSI Percent Difference: '+strtrim(spectral_bins.bandcenter[iband],2)+' nm'
-p.ytitle='(1-NRL/LASP)*100'
-p.xtitle='Year'
+;LASP Binned results
+lbin_ssi_1 = dblarr(k) ;200-210 nm  
+lbin_ssi_2 = dblarr(k) ;300-400 nm
+lbin_ssi_3 = dblarr(k) ;700-1000 nm
+lbin_ssi_4 = dblarr(k) ;1000-1300 nm
 
-FLOAT:
-;re do comparison against LASP .NC output (which is float precision)
-ncdf_file = 'tsi_v02r00_daily_s2000-01-01_e2000-12-31_c2015-02-13.nc'
-filename=ncdf_file
-cdfid = ncdf_open(filename,/nowrite) ;open for read only
-ivaridt = ncdf_varid(cdfid,'TSI')
-ncdf_varget,cdfid,ivaridt,lasp_tsi ;read the data from the variables
-ivaridt = ncdf_varid(cdfid,'time')
-ncdf_varget,cdfid,ivaridt,lasp_time
+bin_ssi_1_unc = dblarr(k)
+bin_ssi_2_unc = dblarr(k)
+bin_ssi_3_unc = dblarr(k)
+bin_ssi_4_unc = dblarr(k)
 
-ncdf_file = 'ssi_v02r00_daily_s2000-01-01_e2000-12-31_c2015-02-13.nc'
-filename=ncdf_file
-cdfid = ncdf_open(filename,/nowrite) ;open for read only
-ivaridt = ncdf_varid(cdfid,'SSI')
-ncdf_varget,cdfid,ivaridt,lasp_ssi ;read the data from the variables
+bin_1 =where((jwavelength ge wav1a) and (jwavelength lt wav1b),cntwav)
+bin_2 = where((jwavelength ge wav2a) and (jwavelength lt wav2b),cntwav)
+bin_3 = where((jwavelength ge wav3a) and (jwavelength lt wav3b),cntwav)
+bin_4 = where((jwavelength ge wav4a) and (jwavelength lt wav4b),cntwav)
 
+for j=0, k-1 do begin
+ jbin_ssi_1[j] = total(judssi[bin_1,j]*jbandwidth(bin_1),/double)
+ jbin_ssi_2[j] = total(judssi[bin_2,j]*jbandwidth(bin_2),/double)
+ jbin_ssi_3[j] = total(judssi[bin_3,j]*jbandwidth(bin_3),/double)
+ jbin_ssi_4[j] = total(judssi[bin_4,j]*jbandwidth(bin_4),/double)
 
-sub = jud.tsi[j1:j2]
-p=plot(tt,sub,layout = [1,2,1],name='NRL')
-p1=plot(tt,lasp_tsi,'r',overplot=1,name='LASP')
-l=legend(target=[p,p1],/data)
-p.title='TSI Comparison'
-p.ytitle='W m!U-2'
-p=plot(tt,(1-(sub/lasp_tsi))*100,layout=[1,2,2],/current)
-p.yrange=[-.0001,0.0001]
-p.title='TSI Percent Difference'
-p.ytitle='(1-NRL/LASP)*100'
-p.xtitle='Year'
+ lbin_ssi_1[j] = total(laspssi[bin_1,j]*jbandwidth(bin_1),/double)
+ lbin_ssi_2[j] = total(laspssi[bin_2,j]*jbandwidth(bin_2),/double)
+ lbin_ssi_3[j] = total(laspssi[bin_3,j]*jbandwidth(bin_3),/double)
+ lbin_ssi_4[j] = total(laspssi[bin_4,j]*jbandwidth(bin_4),/double)
+endfor
 
-sub = reform(jud.spec[iband,j1:j2])
-p=plot(tt,sub,layout = [1,2,1],name='NRL')
-p1=plot(tt,lasp_ssi[iband,*],'r',overplot=1,name='LASP')
-l=legend(target=[p,p1],/data)
-p.title='SSI Comparison: '+strtrim(spectral_bins.bandcenter[iband],2)+' nm'
-p.ytitle='W m!U-2!N nm!U-1'
-p=plot(tt,(1-(sub/lasp_ssi[iband,*]))*100,layout=[1,2,2],/current)
-p.title='SSI Percent Difference: '+strtrim(spectral_bins.bandcenter[iband],2)+' nm'
-p.ytitle='(1-NRL/LASP)*100'
-p.xtitle='Year'
+;PLOTS
+p=plot(lasp_date[0:k-1],(1-(jbin_ssi_1/lbin_ssi_1))*100,layout=[1,4,1],title='Percent Difference in SSI: 200-210 nm',font_size=10)
+p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_2/lbin_ssi_2))*100,layout=[1,4,2],title='Percent Difference in SSI: 300-400 nm',/current,font_size=10)
+p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_3/lbin_ssi_3))*100,layout=[1,4,3],title='Percent Difference in SSI: 700-1000 nm',/current,font_size=10)
+p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_4/lbin_ssi_4))*100,layout=[1,4,4],title='Percent Difference in SSI: 1000-1300 nm',/current,font_size=10)
 
 
-
-end; pro
+end ; pro
