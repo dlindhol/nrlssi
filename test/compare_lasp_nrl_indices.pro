@@ -1,9 +1,9 @@
 pro compare_lasp_nrl_indices
 
 ;obtain Judith's daily, monthly, and annually averaged indices
-nrl_outputa = 'data/judith_2015_04_03/spotAIndC_fac_1882_2014a_6Apr15.txt' ;Judith's new annual averaged indices we will validate against
-nrl_outputm = 'data/judith_2015_04_03/spotAIndC_fac_1882_2014m_6Apr15.txt' ;Judith's new monthly averaged indices we will validate against
-nrl_outputd = 'data/judith_2015_04_03/spotAIndC_fac_1882_2014d_6Apr15.txt' ;Judith's new daily averaged indices we will validate against
+nrl_outputa = 'data/judith_2015_04_06/spotAIndC_fac_1882_2014a_6Apr15.txt' ;Judith's new annual averaged indices we will validate against
+nrl_outputm = 'data/judith_2015_04_06/spotAIndC_fac_1882_2014m_6Apr15.txt' ;Judith's new monthly averaged indices we will validate against
+nrl_outputd = 'data/judith_2015_04_06/spotAIndC_fac_1882_2014d_6Apr15.txt' ;Judith's new daily averaged indices we will validate against
  
 ;template to read NRL ascii file of annually averaged facular brightening and sunspot darkening functions from file
   tempa = {version:1.0, $
