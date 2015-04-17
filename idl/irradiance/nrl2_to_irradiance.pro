@@ -206,39 +206,23 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final, dev
   ;Convert data List to array
   data = data_list.toArray()
   
-  ;Make output file name(s), dynamically
-  ;ToDO, create monthly and annually averaged filenames, for monthly file, ymd1, ymd2 ->ym1, and ym2, and for annual file, ymd1 and ymd2 ->y1,y2
-  ;ToDo, use an optional keyword parameter to define whether daily, monthly-averaged, or yearly-averaged output is desired? 
-  ;Remove hyphens from ISO 8601 time standard for file output convention.
-  symd = remove_hyphens(ymd1) ;starting ymd
-  eymd = remove_hyphens(ymd2) ;ending ymd
-  cymd = remove_hyphens(creation_date) ;creation ymd
-  
-  tsifile_daily = 'tsi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
-  ssifile_daily = 'ssi_' + algver +algrev +'_'+'daily_s'+symd +'_e'+ eymd +'_c'+ cymd +'.nc' ;
-  ;filename format for preliminary files: ssi/tsi_vXXrXX-preliminary_sYYYYMMDD_eYYYYMMDD_cYYYYMMDD.nc
+  ;Dynamically create output file names
+  ;TO DO (replace daily, monthly, and annual keywords with time_bin? If so, would need to revise create_filenames.pro as well.
+  names = create_filenames(ymd1,ymd2,creation_date,algver,algrev, final=final, dev=dev,  $
+  daily=daily,monthly=monthly, annual=annual)
 
-  ;Write the results to output in netCDF4 format; To Do: include an output file directory
-  result = write_tsi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,tsifile_daily)
-  result = write_ssi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,spectral_bins,ssifile_daily)
+  ;Write the results to output in netCDF4 format; 
+  ;To Do: include an output file directory
+  ;TO Do: point to separate writers for the daily, monthly and annual average output
+  result = write_tsi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,names.tsi)
+  result = write_ssi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,spectral_bins,names.ssi)
   
-
   ;Dynamically determine file size (in bytes) and MD5 checksum and output to manifest file
-  tsifile_daily_manifest = tsifile_daily + '.mnf'
-  ssifile_daily_manifest = ssifile_daily + '.mnf'  
-  ;Determine file sizes (in bytes)
-  command = 'ls -l '+tsifile_daily+ " |awk '{print $5}'"
-  spawn, command, tsi_bytes
-  command = 'ls -l '+ssifile_daily+ " |awk '{print $5}'"
-  spawn, command, ssi_bytes
-  ;Perform MD5 checksum on files
-  command = 'md5 ' + tsifile_daily + " | awk '{print $4}'"
-  spawn,command,tsi_checksum
-  command = 'md5 ' + ssifile_daily + " | awk '{print $4}'"
-  spawn,command,ssi_checksum
-  ;Write the results to manifest files
-  result = write_to_manifest(tsifile_daily, tsi_bytes, tsi_checksum, tsifile_daily_manifest)
-  result = write_to_manifest(ssifile_daily, ssi_bytes, ssi_checksum, ssifile_daily_manifest)
+  manifest=create_manifest(names.tsi,names.ssi)
+
+  ;Write the manifest data to file
+  result = write_to_manifest(names.tsi, manifest.tsibytes, manifest.tsichecksum, names.tsi_man)
+  result = write_to_manifest(names.ssi, manifest.ssibytes, manifest.ssichecksum, names.ssi_man)
   
   return, data
 end
