@@ -50,28 +50,31 @@
 ;   write_yearly_average_ssi_to_netcdf, y1, y2, ymd3, algver, result, file
 ;  
 ;@***** 
-function write_yearly_average_ssi_to_netcdf2, y1,y2,ymd3,algver,result,spectral_bins,file
+function write_yearly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, file
 
+  ;Extract data component
+  data = irradiance_data.data
+  ;Extract the wavelength bins
+  spectral_bins = irradiance_data.wavelength
+  
   ; Define missing value and replace NaNs in the modeled data with it.
-  ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
-  ssi = replace_nan_with_value(result.ssi, missing_value)
-  tsi = replace_nan_with_value(result.tsi, missing_value)
-  
-  dates =  mjd2iso_yyyymm(result.mjd) 
+  ssi = replace_nan_with_value(data.ssi, missing_value)
+  tsi = replace_nan_with_value(data.tsi, missing_value)
+  day_zero_mjd = iso_date2mjdn('1610-01-01')
 
-  
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
   ;TODO: handle error: NCDF_CREATE: Unable to create the file, /data/tmp/nrltsi.nc. (NC_ERROR=-35)
+  src = 'NRLSSI2_'+version ;'creates the dynamic 'source' model version/revision for global attributes
   
   ; Global Attributes
-  NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.5"
+  NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.6"
   NCDF_ATTPUT, id, /GLOBAL, "title", "Yearly Averaged SSI calculated using NRL2 solar irradiance model. Includes yearly average of the spectrally integrated (total) TSI value"
-  NCDF_ATTPUT, id, /GLOBAL, "source", "nrl2_to_irradiance.pro"
+  NCDF_ATTPUT, id, /GLOBAL, "source", src
   NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics"
   NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CD Standard Name Table (v27, 28, November 2013)
-  NCDF_ATTPUT, id, /GLOBAL, "Id", "Solar Irradiance FCDR"
+  NCDF_ATTPUT, id, /GLOBAL, "id", file
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc"
   NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3
   NCDF_ATTPUT, id, /GLOBAL, "license","No constraints on data use."
@@ -79,12 +82,12 @@ function write_yearly_average_ssi_to_netcdf2, y1,y2,ymd3,algver,result,spectral_
   NCDF_ATTPUT, id, /GLOBAL, "keywords", "EARTH SCIENCE, ATMOSPHERE, ATMOSPHERIC RADIATION, INCOMING SOLAR RADIATION, SOLAR IRRADIANCE, SOLAR RADIATION, SOLAR FORCING, INSOLATION RECONSTRUCTION, SUN-EARTH INTERATIONS, CLIMATE INDICATORS, PALEOCLIMATE INDICATORS, SOLAR FLUX, SOLAR ENERGY, SOLAR ACTIVITY, SOLAR CYCLE"
   NCDF_ATTPUT, id, /GLOBAL, "keywords_vocabularly","NASA Global Change Master Directory (GCMD) Earth Science Keywords, Version 6.0"
   NCDF_ATTPUT, id, /GLOBAL, "cdm_data_type","Point"
-  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ym1
-  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ym2
+  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ymd1
+  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2
   NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program, FY 2014"
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "solar spectral irradiance"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "????" ;***TODO
-  NCDF_ATTPUT, id, /GLOBAL, "product_version", algver
+  NCDF_ATTPUT, id, /GLOBAL, "product_version", version
   NCDF_ATTPUT, id, /GLOBAL, "platform", "SORCE, TSIS"
   NCDF_ATTPUT, id, /GLOBAL, "sensor", "Spectral Irradiance Monitor (SIM)"
   NCDF_ATTPUT, id, /GLOBAL, "spatial_resolution", "N/A"
@@ -92,20 +95,23 @@ function write_yearly_average_ssi_to_netcdf2, y1,y2,ymd3,algver,result,spectral_
   NCDF_ATTPUT, id, /GLOBAL, "contributor_role", "Principal Investigator and originator of total and spectral solar irradiance model, Principal Investigator ensuring overall integrity of the data product, Co-Investigator and Point-of-Contact and translated research-grade code to operational routine with FCDR output data being written out in NetCDF-4"
   
   ; Define Dimensions
-  tid = NCDF_DIMDEF(id, 'nday', /UNLIMITED) ;time series
-  lid = NCDF_DIMDEF(id, 'nlambda',spectral_bins.nband) ;wavelengths
+  tid = NCDF_DIMDEF(id, 'time', /UNLIMITED) ;time series
+  bid = NCDF_DIMDEF(id, 'bounds', 2) ;time bounds dimension
+  lid = NCDF_DIMDEF(id, 'wavelength',spectral_bins.nband) ;wavelengths
  
   ; Variable Attributes
   x0id = NCDF_VARDEF(id, 'SSI', [lid,tid], /FLOAT)
   NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Fundamental Climate Data Record of Yearly Averaged Solar Spectral Irradiance (Watt/ m**2/ nm**1)'
   NCDF_ATTPUT, id, x0id, 'units', 'W/m**2/nm**1'
   NCDF_ATTPUT, id, x0id, 'missing_value', missing_value
-  NCDF_ATTPUT, id, x0id, 'valid_max',2.5; TODO, the maximum valid range for SSI
+  ;NCDF_ATTPUT, id, x0id, 'valid_max',2.5; TODO, the maximum valid range for SSI
   NCDF_ATTPUT, id, x0id, 'valid_min',0.0 ;
+  NCDF_ATTPUT, id, x0id, 'cell_methods', 'time: mean'
   
-  t0id = NCDF_VARDEF(id,'Central_Wavelength',[lid], /FLOAT)
+  t0id = NCDF_VARDEF(id,'wavelength',[lid], /FLOAT) 
   NCDF_ATTPUT, id, t0id, 'long_name', 'Wavelength grid center'
   NCDF_ATTPUT, id, t0id, 'units', 'nm'
+  NCDF_ATTPUT, id, t0id, 'standard_name','radiation_wavelength'
 
   t1id = NCDF_VARDEF(id,'Wavelength_Bands',[lid], /FLOAT)
   NCDF_ATTPUT, id, t1id, 'long_name', 'Wavelength bands. Centered on Central Wavelength'
@@ -116,22 +122,30 @@ function write_yearly_average_ssi_to_netcdf2, y1,y2,ymd3,algver,result,spectral_
   NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
   NCDF_ATTPUT, id, x1id, 'units', 'W/m**2'
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
-  NCDF_ATTPUT, id, x1id, 'valid_max',2.5; TODO, the maximum valid range for TSI
+  ;NCDF_ATTPUT, id, x1id, 'valid_max',2.5; TODO, the maximum valid range for TSI
   NCDF_ATTPUT, id, x1id, 'valid_min',0.0 ;
+  NCDF_ATTPUT, id, x1id, 'cell_methods', 'time: mean'
   
-  x2id = NCDF_VARDEF(id, 'time', [tid], /STRING)
-  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date/time (YYYY) format'
+  x2id = NCDF_VARDEF(id, 'time', [tid], /FLOAT)
+  NCDF_ATTPUT, id, x2id, 'units','days since 1610-01-01 00:00:00'
   NCDF_ATTPUT, id, x2id, 'standard_name','time'
+  NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds'
+  
+  x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT)
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
   
   ; Input data:
-  NCDF_VARPUT, id, x2id, dates ;YYYY; ISO 8601 standards; 
+  NCDF_VARPUT, id, x2id, data.mjd - day_zero_mjd
   NCDF_VARPUT, id, x1id, tsi
   NCDF_VARPUT, id, x0id, ssi
   NCDF_VARPUT, id, t0id, spectral_bins.bandcenter
   NCDF_VARPUT, id, t1id, spectral_bins.bandwidth
+  
+  ;Define the bounds for each time bin.
+  time_bounds = get_yearly_time_bounds(data.mjd)
+  NCDF_VARPUT, id, x3id, time_bounds - day_zero_mjd
   
   ; Close the NetCDF file.
   NCDF_CLOSE, id 
