@@ -113,6 +113,7 @@ function write_monthly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   x2id = NCDF_VARDEF(id, 'time', [tid], /FLOAT)
   NCDF_ATTPUT, id, x2id, 'units','days since 1610-01-01 00:00:00'
   NCDF_ATTPUT, id, x2id, 'standard_name','time'
+  NCDF_ATTPUT, id, x2id, 'axis','T'
   NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds'
    
   x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT)
