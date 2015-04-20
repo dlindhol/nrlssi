@@ -1,5 +1,4 @@
-function process_irradiance, ymd1, ymd2, final=final, dev=dev,  $
-  time_bin=time_bin
+function process_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin
 
   ;Get the NRL2 model parameters
   model_params = get_model_params()
@@ -51,7 +50,6 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev,  $
     nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
     
     ;Create the resulting data structure.
-    ; TODO Add bandcenters and bandwidths and nband to data structure
     struct = {nrl2_irradiance,      $
       mjd:    mjd,                  $
       iso:    iso_time,             $
@@ -65,5 +63,11 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev,  $
     data_list.add, struct
   endfor
   
-  return, data_list
+  ;Convert to an array.
+  irradiance_data = data_list.toArray()
+  
+  ;Construct resulting data structure, including the spectral bins.
+  data = {nrl2_data, wavelength: spectral_bins, data: irradiance_data}
+  
+  return, data
 end
