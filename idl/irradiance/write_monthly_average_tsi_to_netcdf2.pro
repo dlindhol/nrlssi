@@ -95,6 +95,7 @@ function write_monthly_average_tsi_to_netcdf2, ym1, ym2, algver, result, file
   
   ; Define Dimensions
   tid = NCDF_DIMDEF(id, 'time', /UNLIMITED) ;time series
+  bid = NCDF_DIMDEF(id, 'bounds', 2) ;time bounds dimension
   
   ; Variable Attributes
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
@@ -104,17 +105,22 @@ function write_monthly_average_tsi_to_netcdf2, ym1, ym2, algver, result, file
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
   NCDF_ATTPUT, id, x1id, 'valid_max',2.5; TODO, the maximum valid range for TSI
   NCDF_ATTPUT, id, x1id, 'valid_min',0.0 ;
+  NCDF_ATTPUT, id, x1id, 'cell_methods', 'time: mean'
   
-  x2id = NCDF_VARDEF(id, 'time', [tid], /STRING)
-  NCDF_ATTPUT, id, x2id, 'long_name', 'Days Since 1610-01-01'
+  x2id = NCDF_VARDEF(id, 'time', [tid], /FLOAT)
+  NCDF_ATTPUT, id, x2id, 'long_name', 'time'
   NCDF_ATTPUT, id, x2id, 'units','days since 1610-01-01 00:00:00'
   NCDF_ATTPUT, id, x2id, 'standard_name','time'
+  NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds'
+  
+  x3id = NCDF_VARDEF(id, 'time_bnds', [tid,bid], /FLOAT)
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
   
   ; Input data:
-  NCDF_VARPUT, id, x2id, dates ;YYYY-MM; ISO 8601 standards; 
+  ;NCDF_VARPUT, id, x2id, dates ;YYYY-MM; ISO 8601 standards; 
+  NCDF_VARPUT, id, x3id, data.mjd - day_zero_mjd
   NCDF_VARPUT, id, x1id, tsi
   
   ; Close the NetCDF file.
