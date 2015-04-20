@@ -62,7 +62,7 @@ function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   ssi = replace_nan_with_value(data.ssi, missing_value)
   ;ssiunc = replace_nan_with_value(data.ssiunc, missing_value)
   tsi = replace_nan_with_value(data.tsi, missing_value)
-  tsiunc = replace_nan_with_value(data.tsiunc, missing_value)
+  ;tsiunc = replace_nan_with_value(data.tsiunc, missing_value)
   day_zero_mjd = iso_date2mjdn('1610-01-01')
 
   ; Create NetCDF file for writing output

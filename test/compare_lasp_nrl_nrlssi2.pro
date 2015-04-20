@@ -14,7 +14,7 @@ endif
 if time_bin eq 'monthly' then begin
   ;nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1882_1959m_6Apr15.txt' 
   nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1960_2014m_6Apr15.txt'
-  startyear=1960 ;CHANGE to match time frame in monthly files (ALSO NEED TO SUBSET DATA in lines 45-49)
+  startyear=2014 ;CHANGE to match time frame in monthly files (ALSO NEED TO SUBSET DATA in lines 45-49)
   endyear = 2014 ;CHANGE to match time frame in monthly files (ALSO NEED TO SUBSET DATA in lines 45-49)
   jud = read_nrl_nrlssi2m(nrl_ssi,startyear,endyear) ;read Judith's MEGA files, 1978-2014
 endif
@@ -43,9 +43,9 @@ if time_bin eq 'daily' then begin
   lasp_date=jd2yf4(mjd2jd(times_d[24836:35062]))
 endif
 if time_bin eq 'monthly' then begin
-  sbi = sb_m[936:*]
-  mgi = mg_m[936:*]
-  lasp_date=jd2yf4(mjd2jd(times_m[936:*])) ;index 936 = Jan, 1960
+  sbi = sb_m[1584:*]
+  mgi = mg_m[1584:*]
+  lasp_date=jd2yf4(mjd2jd(times_m[1584:*])) ;index 936 = Jan, 1960; 1584 = Jan, 2014
 endif
 
 if time_bin eq 'yearly' then begin
@@ -130,5 +130,47 @@ p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_2/lbin_ssi_2))*100,layout=[1,4,2],title='P
 p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_3/lbin_ssi_3))*100,layout=[1,4,3],title='Percent Difference in SSI: 700-1000 nm',/current,font_size=10)
 p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_4/lbin_ssi_4))*100,layout=[1,4,4],title='Percent Difference in SSI: 1000-1300 nm',/current,font_size=10)
 
+;Addendum - add comparison to new monthly/averaged data from .nc output
+;open .nc file for NRLTSI2 and NRLSSI2 data from 1978-11-07 to 2014-12-31
+cdfid = ncdf_open('ssi_v02r00_monthly_s201401_e201412_c20150420.nc',/nowrite)
+ivaridt = ncdf_varid(cdfid,'SSI')
+ncdf_varget,cdfid,ivaridt,dougssi
+;ivaridt = ncdf_varid(cdfid,'SSI_UNC')
+;ncdf_varget,cdfid,ivaridt,nrl_ssi_unc
+ivaridt = ncdf_varid(cdfid,'time')
+ncdf_varget,cdfid,ivaridt,dougdate
+day_zero_mjd = iso_date2mjdn('1610-01-01')
+dougdate = dougdate + day_zero_mjd
+dougdate_jd = mjd2jd(dougdate)
+dougdate = jd2yf4(mjd2jd(dougdate))
+ivaridt=ncdf_varid(cdfid,'wavelength')
+ncdf_varget,cdfid,ivaridt,wavelength
+ivaridt=ncdf_varid(cdfid,'Wavelength_Bands')
+ncdf_varget,cdfid,ivaridt,bandwidth
+ivaridt=ncdf_varid(cdfid,'TSI')
+ncdf_varget,cdfid,ivaridt,dougtsi
+;ivaridt=ncdf_varid(cdfid,'TSI_UNC')
+;ncdf_varget,cdfid,ivaridt,dougtsi_unc
+
+
+;Doug binned results (using same bins)
+dbin_ssi_1 = dblarr(k) ;200-210 nm
+dbin_ssi_2 = dblarr(k) ;300-400 nm
+dbin_ssi_3 = dblarr(k) ;700-1000 nm
+dbin_ssi_4 = dblarr(k) ;1000-1300 nm
+
+for j=0, k-1 do begin
+ dbin_ssi_1[j] = total(dougssi[bin_1,j]*jbandwidth(bin_1),/double)
+ dbin_ssi_2[j] = total(dougssi[bin_2,j]*jbandwidth(bin_2),/double)
+ dbin_ssi_3[j] = total(dougssi[bin_3,j]*jbandwidth(bin_3),/double)
+ dbin_ssi_4[j] = total(dougssi[bin_4,j]*jbandwidth(bin_4),/double)
+endfor
+
+
+;Compare Doug results (to be used to send final data to NCDC) to my version
+p=plot(lasp_date[0:k-1],(1-(dbin_ssi_1/lbin_ssi_1))*100,layout=[1,4,1],title='Percent Difference in SSI: 200-210 nm',font_size=10)
+p1=plot(lasp_date[0:k-1],(1-(dbin_ssi_2/lbin_ssi_2))*100,layout=[1,4,2],title='Percent Difference in SSI: 300-400 nm',/current,font_size=10)
+p1=plot(lasp_date[0:k-1],(1-(dbin_ssi_3/lbin_ssi_3))*100,layout=[1,4,3],title='Percent Difference in SSI: 700-1000 nm',/current,font_size=10)
+p1=plot(lasp_date[0:k-1],(1-(dbin_ssi_4/lbin_ssi_4))*100,layout=[1,4,4],title='Percent Difference in SSI: 1000-1300 nm',/current,font_size=10)
 
 end ; pro

@@ -51,7 +51,6 @@
 ;  
 ;@***** 
 function write_monthly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, file
-  ;ym1, ym2, algver, result, file
 
   ;Extract data component
   data = irradiance_data.data

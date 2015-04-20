@@ -6,9 +6,11 @@ function create_manifest,tsifile,ssifile
   command = 'ls -l '+ssifile+ " |awk '{print $5}'"
   spawn, command, ssi_bytes
   ;Perform MD5 checksum on files
-  command = 'md5sum ' + tsifile + " | awk '{print $4}'"
+  ;command = 'md5sum ' + tsifile + " | awk '{print $4}'" ;for LINUX system
+  command = 'md5 ' + tsifile + " | awk '{print $4}'" ;for MAC system
   spawn,command,tsi_checksum
-  command = 'md5sum ' + ssifile + " | awk '{print $4}'"
+  ;command = 'md5sum ' + ssifile + " | awk '{print $4}'" ;for LINUX system
+  command = 'md5 ' + ssifile + " | awk '{print $4}'" ;for MAC system
   spawn,command,ssi_checksum
   
   ;Create the resulting structure for manifest data.
