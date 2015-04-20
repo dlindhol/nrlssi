@@ -50,7 +50,7 @@
 ;   write_yearly_average_tsi_to_netcdf, y1, y2, ymd3, algver, result, file
 ;  
 ;@***** 
-function write_yearly_average_tsi_to_netcdf2, y1, y2, algver, result, file
+function write_yearly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, file
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ; 
