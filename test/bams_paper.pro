@@ -37,6 +37,7 @@ sim=read_lasp_ascii_file('/Users/hofmann/Downloads/sorce_ssi_L3_c24h_0000nm_2413
 
 goto, fig9
 
+fig2:
 ;Figure 2-------------------------------
 ;NRLSSI2 reference spectrum with blackbody curve
 ;  algver = 'v02' ; get from function parameter?
@@ -58,12 +59,12 @@ goto, fig9
   sigma = 5.670373 * 10^(-8.) ;units W m-2 K-4 : Stephan-Boltzman constant
   Teff = (model_params.tquiet/sigma)^(.25) ; effective temperature of the planet
   bwien=2897; um K ; Wien constant of proportionality
-
+  RSE = 2.164487E-5 ;sun/earth distance squared
   imax = where(nrlssi2_ref eq max(nrlssi2_ref))
   lambda_max = lambda(imax)
   T_at_max = bwien/(lambda_max/1000.) ;6423.03 K
   
-  ;Planck function (function of wavelength) units = W m-2 sr-1 um-1 (lambda must be in microns!!)
+  
   lambda1=lambda/1000.
   T0 = 5000.
   T1 = 5770.; peak energy around 502 nm using Wien's displacement law
@@ -72,17 +73,56 @@ goto, fig9
   T3 = 6450. ;
   T4 = 7000. ;
   
-  B0 = c1/(lambda1^5.*(exp(c2/(lambda1*T0))-1)) ;planck body curve for T = T1 units = W m-2 sr-1 um-1
-  B1 = c1/(lambda1^5.*(exp(c2/(lambda1*T1))-1)) ;planck body curve for T = T1 units = W m-2 sr-1 um-1
-  B2 = c1/(lambda1^5.*(exp(c2/(lambda1*T2))-1)) ;planck body curve for T = T2 units = W m-2 sr-1 um-1
-  B3 = c1/(lambda1^5.*(exp(c2/(lambda1*T3))-1)) ;planck body curve for T = T3 units = W m-2 sr-1 um-1
-  B4 = c1/(lambda1^5.*(exp(c2/(lambda1*T4))-1)) ;planck body curve for T = T3 units = W m-2 sr-1 um-1 
-  ;convert to W m-2 sr-1 nm-1
-  B0 = B0/1000.
-  B1 = B1/1000.
-  B2 = B2/1000.
-  B3 = B3/1000.
-  B4 = B4/1000.
+  ;Planck radiance function (function of wavelength) units = W m-2 sr-1 um-1 (lambda must be in microns!!)
+  B0_rad = c1/lambda1^5./(exp(c2/lambda1/T0)-1) ;planck radiance function (wavelength units) -this is radiance at Sun (W m-2 sr-1 um-1)
+  B1_rad = c1/lambda1^5./(exp(c2/lambda1/T1)-1) 
+  B2_rad = c1/lambda1^5./(exp(c2/lambda1/T2)-1) 
+  B3_rad = c1/lambda1^5./(exp(c2/lambda1/T3)-1) 
+  B4_rad = c1/lambda1^5./(exp(c2/lambda1/T4)-1) 
+
+  ;Planck Irradiance Function units = W m-2 um-1 (Irradiance = pi * radiance)
+  B0_irrad = !pi * B0_rad ;Planck Irradiance function (wavelength units) - this is irradiance at Sun (W m-2 um-1)
+  B1_irrad = !pi * B1_rad
+  B2_irrad = !pi * B2_rad
+  B3_irrad = !pi * B3_rad
+  B4_irrad = !pi * B4_rad
+
+  ;Account for distance dependency to convert to irradiance at 1 AU (units = W m-2 um-1)
+  B0_irrad = B0_irrad * RSE 
+  B1_irrad = B1_irrad * RSE
+  B2_irrad = B2_irrad * RSE  
+  B3_irrad = B3_irrad * RSE
+  B4_irrad = B4_irrad * RSE
+  
+;  bb,T0,lambda,FBBW_B0,FBBP_B0,XW_B0,XP_B0 ;Temp (Kelvin), wavelength(nm), irradiance at 1 AU, photon flux at 1 AU, irradiance at sun, photon flux at Sun.
+;  B0_irrad_jud = XW_B0
+  
+  
+;  XP=2*PII*C/W^4/(EXP(C2/W/TEMP)-1) ;ph/cm**2/sec/cm at sun
+;  B1 = c1/(lambda1^5.*(exp(c2/(lambda1*T1))-1)) ;planck body curve for T = T1 units = W m-2 sr-1 um-1
+;  B2 = c1/(lambda1^5.*(exp(c2/(lambda1*T2))-1)) ;planck body curve for T = T2 units = W m-2 sr-1 um-1
+;  B3 = c1/(lambda1^5.*(exp(c2/(lambda1*T3))-1)) ;planck body curve for T = T3 units = W m-2 sr-1 um-1
+;  B4 = c1/(lambda1^5.*(exp(c2/(lambda1*T4))-1)) ;planck body curve for T = T3 units = W m-2 sr-1 um-1 
+
+  ;convert to W m-2 sr-1 nm-1 (RADIANCE VALUE)
+;  B0 = B0/1000.
+;  B1 = B1/1000.
+;  B2 = B2/1000.
+;  B3 = B3/1000.
+;  B4 = B4/1000.
+  
+  ;convert to W m-2 nm-1 (IRRADIANCE VALUE)
+;  B0_IRR = B0/(4.*!pi)
+;  B1_IRR = B1/(4.*!pi)
+;  B2_IRR = B2/(4.*!pi)
+;  B3_IRR = B3/(4.*!pi)
+;  B4_IRR = B4/(4.*!pi)
+  
+  ;Judith's BB procedure
+;  bb,T0,lambda,FBBW_B0,FBBP_B0,XW_B0,XP_B0
+;  bb,T1,lambda,FBBW_B1,FBBP_B1,XW_B1,XP_B1
+;  bb,T2,lambda,FBBW_B2,FBBP_B2,XW_B2,XP_B2
+  
   wien_max = bwien/[T1,T2,T3] ;wavelengths where radiance at Planck temperatures peaks
 ;  a0 = where(lambda1 ge wien_max[0]) & a0 = a0[0]
   a1 = where(lambda1 ge wien_max[0]) & a1 = a1[0]
@@ -90,21 +130,22 @@ goto, fig9
   a3 = where(lambda1 ge wien_max[2]) & a3 = a3[0]
 ;  a4 = where(lambda1 ge wien_max[4]) & a4 = a4[0]
   
-  B_at_wien_max = [B1[a1]/(10^4.),B2[a2]/(10^4.),B3[a3]/(10^4.)] ;radiance at above wavelengths
+  B_at_wien_max = [B1_irrad[a1]/(10^3.),B2_irrad[a2]/(10^3.),B3_irrad[a3]/(10^3.)] ;irradiance at above wavelengths (in units W m-2 nm-1)
   
   p=plot(lambda,nrlssi2_ref,ytitle='Irradiance (W m!U-2!N nm!U-1!N)',xtitle='Wavelength (nm)','-k',axis_style=1,margin=[.2,.15,.2,.15],thick=2,font_size=16,title='Reference (Quiet Sun) Spectrum') 
   p0=plot(lambda[0:2285],nrlssi2_ref[0:2285],'-',color='medium purple',overplot=1) ;color section based on SORCE measurements purple
-  p1=plot(lambda,B1/(10^4.),name='T=5770 K','-',color='grey',overplot=1,font_size=16) ;factor of 1.23
-  p2=plot(lambda,B2/(10^4.),name='T=6000 K','-.',color='grey',overplot=1,font_size=16)
-  p3=plot(lambda,B3/(10^4.),name='T=6450 K','--',sym_size=0.2,color='grey',overplot=1,font_size=16)
-  p4=plot(wien_max*1000.,B_at_wien_max,'o-',overplot=1,name="$\lambda$!Dpeak!N",sym_size=0.6)
+  p1=plot(lambda,B1_irrad/1000.,name='T=5770 K','--',color='grey',overplot=1,font_size=16) ;units converted to W m-2 nm-1
+;  p2=plot(lambda,B2_irrad/1000.,name='T=6000 K','-.',color='grey',overplot=1,font_size=16)
+;  p3=plot(lambda,B3_irrad/1000.,name='T=6450 K','--',sym_size=0.2,color='grey',overplot=1,font_size=16)
+;  p4=plot(wien_max*1000.,B_at_wien_max,'o-',overplot=1,name="$\lambda$!Dpeak!N",sym_size=0.6)
   
+
   ;insert another y axis for Planck Radiance 
-  yaxis=axis('Y',location=[10^(5.),10^(-8.)],title='Planck Radiance (W m!U-2!N nm!U-1!N sr!U-1!N) x 10!U4!N',textpos=1,axis_range=[0,10],color='grey',tickfont_size=16)
+;  yaxis=axis('Y',location=[10^(5.),10^(-8.)],title='Planck Radiance (W m!U-2!N nm!U-1!N sr!U-1!N) x 10!U4!N',textpos=1,axis_range=[0,10],color='grey',tickfont_size=16)
   p.xlog=1
   p.ylog=1
   t1=text(2.01*10^2.,10^(-6.),'Total Irradiance = 1360.45 W m!U-2!N',font_size=14,/data)
-  l=legend(target=[p1,p2,p3,p4],/data,linestyle=6,font_size=16,shadow=0,position=[5.*10^4.,10^2.])
+  l=legend(target=[p1],/data,linestyle=6,font_size=16,shadow=0,position=[5.*10^4.,10^2.])
 ;  p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig2.png';, /TRANSPARENT
 ;end of Figure 2------------------------------- 
 
@@ -224,10 +265,14 @@ for j=0,k-1 do begin
  bin_ssi_2[j] = total(nrl_ssi[bin_2,j]*bandwidth(bin_2),/double)
  bin_ssi_3[j] = total(nrl_ssi[bin_3,j]*bandwidth(bin_3),/double)
  bin_ssi_4[j] = total(nrl_ssi[bin_4,j]*bandwidth(bin_4),/double)
- bin_ssi_1_unc[j] = total(nrl_ssi_unc[bin_1,j],/double) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
- bin_ssi_2_unc[j] = total(nrl_ssi_unc[bin_2,j],/double)
- bin_ssi_3_unc[j] = total(nrl_ssi_unc[bin_3,j],/double)
- bin_ssi_4_unc[j] = total(nrl_ssi_unc[bin_4,j],/double)
+ ;bin_ssi_1_unc[j] = total(nrl_ssi_unc[bin_1,j],/double) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
+ ;bin_ssi_2_unc[j] = total(nrl_ssi_unc[bin_2,j],/double)
+ ;bin_ssi_3_unc[j] = total(nrl_ssi_unc[bin_3,j],/double)
+ ;bin_ssi_4_unc[j] = total(nrl_ssi_unc[bin_4,j],/double)
+ bin_ssi_1_unc[j] = total(nrl_ssi_unc[bin_1,j]*bandwidth(bin_1),/double) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
+ bin_ssi_2_unc[j] = total(nrl_ssi_unc[bin_2,j]*bandwidth(bin_2),/double)
+ bin_ssi_3_unc[j] = total(nrl_ssi_unc[bin_3,j]*bandwidth(bin_3),/double)
+ bin_ssi_4_unc[j] = total(nrl_ssi_unc[bin_4,j]*bandwidth(bin_4),/double)
  
 ; bin_ssi_1_unc[j] = SQRT(total((nrl_ssi_unc[bin_1,j])^2.)) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
 ; bin_ssi_2_unc[j] = SQRT(total((nrl_ssi_unc[bin_2,j])^2.))
@@ -338,13 +383,13 @@ print,'bin 3, 700-1000, ',bs3
 print,'bin 4, 1000-1300, ',bs4
 
 p=errorplot(nrl_date(subset),bin_ssi_1(subset),bin_ssi_1_unc(subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink',title='NRLSSI2 Solar Spectral Irradiance !C with Uncertainties',errorbar_capsize=0,errorbar_color='grey')
-ps=plot(nrl_date(subset(b1)),bin_1_sim(b1)*bs1,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1)
+ps=plot(nrl_date(subset(b1)),bin_1_sim(b1)*bs1,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1,axis_style=1)
 p1=errorplot(nrl_date(subset),bin_ssi_2(subset),bin_ssi_2_unc(subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,ytitle='Irradiance (W m!U-2!N)',layout=[1,4,2],/current,color='deep pink',errorbar_capsize=0,errorbar_color='grey')
-p1s=plot(nrl_date(subset(b2)),bin_2_sim(b2)*bs2,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1,min_value=90.)
+p1s=plot(nrl_date(subset(b2)),bin_2_sim(b2)*bs2,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1,min_value=90.,axis_style=1)
 p2=errorplot(nrl_date(subset),bin_ssi_3(subset),bin_ssi_3_unc(subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,3],/current,'deep pink',errorbar_capsize=0,errorbar_color='grey')
-p2s=plot(nrl_date(subset(b3)),bin_3_sim(b3)*bs3,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1)
+p2s=plot(nrl_date(subset(b3)),bin_3_sim(b3)*bs3,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1,axis_style=1)
 p3=errorplot(nrl_date(subset),bin_ssi_4(subset),bin_ssi_4_unc(subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,4],/current,'deep pink',errorbar_capsize=0,errorbar_color='grey')
-p3s=plot(nrl_date(subset(b4)),bin_4_sim(b4)*bs4,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1)
+p3s=plot(nrl_date(subset(b4)),bin_4_sim(b4)*bs4,margin=[0.25,.2,.2,.35],color='light green',sym_size=0.5,overplot=1,axis_style=1)
 
 p.yrange=[0.104,0.115]
 p1.yrange=[92.6,93.6]
@@ -460,8 +505,8 @@ for ii=0,3784 do begin
 endfor
 
 ;;define wl grid for NRLSSI2 data
-;nrlfile_2 = '/Users/hofmann/Documents/FCDR_Solar/NRLSSI2_1978_2014d_S21_28Jan15.txt'
-result = read_nrl_nrlssi2() 
+infile = '/Users/hofmann/Documents/FCDR_Solar/NRLSSI2_1978_2014d_S21_28Jan15.txt'
+result = read_nrl_nrlssi2(infile,1978,2014)
 jud_nrlssi2 = result.spec
 wl_nrlssi2 = result.wl
 
@@ -473,8 +518,8 @@ nrlssi1_max_minus_min = nrlssi1_max_mean - nrlssi1_min_mean
 
 ;Now compute energy change (max/min) and propagate uncertainties ;need to account for different spectral range in nrlssi2 and nrlssi1
 nrlssi2_max_over_min = ((nrlssi2_max_mean / nrlssi2_min_mean) -1.)*100. ;max to min energy change in %
-if upperflag eq 1 then unc_nrlssi2_max_over_min = abs(1./nrlssi2_min_mean) + abs(((-1.)*nrlssi2_max_mean*unc_nrlssi2_min_mean)/nrlssi2_min_mean^2.) ;upper bound
-if upperflag eq 0 then unc_nrlssi2_max_over_min = SQRT( (abs(1./nrlssi2_min_mean)*unc_nrlssi2_max_mean)^2. + (abs( ((-1.)*nrlssi2_max_mean)/ nrlssi2_min_mean^2.)*unc_nrlssi2_min_mean )^2. );lwer bound
+if upperflag eq 1 then unc_nrlssi2_max_over_min = abs(1./nrlssi2_min_mean)*unc_nrlssi2_max_mean + abs((-1.)*nrlssi2_max_mean/nrlssi2_min_mean^2.)*unc_nrlssi2_min_mean ;upper bound
+if upperflag eq 0 then unc_nrlssi2_max_over_min = SQRT( (unc_nrlssi2_max_mean/nrlssi2_min_mean)^2 + (((-1.)*unc_nrlssi2_min_mean*nrlssi2_max_mean)/nrlssi2_min_mean)^2 );lwer bound
 ;if upperflag eq 0 then unc_nrlssi2_max_over_min = SQRT((unc_nrlssi2_max_mean/nrlssi2_min_mean)^2 + (((-1.)*nrlssi2_max_mean*unc_nrlssi2_min_mean)/(nrlssi2_min_mean)^2)^2.) ;not upper bound
 nrlssi1_max_over_min = ((nrlssi1_max_mean / nrlssi1_min_mean) -1.)*100. ;because it's relative, don't need to worry about converting from mW to W
 
@@ -487,15 +532,40 @@ p.yrange=[-0.001,0.006]
 ;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9a_v2.eps';, /TRANSPARENT
 
 ;Energy Difference
-rel_log_error = 0.434 * (unc_nrlssi2_max_over_min / nrlssi2_max_over_min)
-;p=errorplot(wl_nrlssi2(*,0),alog(nrlssi2_max_over_min),rel_log_error,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2',xlog=1)
-p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_over_min,unc_nrlssi2_max_over_min*100,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2',xlog=1)
-p1=plot(wl_nrlssi1(*,0),alog(nrlssi1_max_over_min),overplot=1,name='NRLSSI') ;convert from mW to W
-l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0)
-p.yrange=[0.0001,100]
-p.ylog=1
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9b_v2.eps';, /TRANSPARENT
 
+;p=plot(wl_nrlssi2(*,0),nrlssi2_max_over_min,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',name='NRLSSI2',xlog=1)
+;p0=plot(wl_nrlssi2(a,0),nrlssi2_max_over_min(a),color='deep pink','--',overplot=1)
+;p1=plot(wl_nrlssi2(*,0),nrlssi2_max_over_min+(unc_nrlssi2_max_over_min)*100,color='grey',overplot=1) ;positive bound of error bar
+;p2=plot(wl_nrlssi2(*,0),abs(nrlssi2_max_over_min-(unc_nrlssi2_max_over_min)*100),color='grey',overplot=1) ;negative bound of error bar
+;p3=plot(wl_nrlssi1(*,0),(nrlssi1_max_over_min),overplot=1,name='NRLSSI') ;convert from mW to W
+;l=legend(target=[p,p3],/data,linestyle=6,font_size=16,shadow=0)
+;p.yrange=[0.0001,100]
+;p.ylog=1
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9b_revised.eps';, /TRANSPARENT
+
+high = nrlssi2_max_over_min+(unc_nrlssi2_max_over_min)*100 ;+1 error bar
+low = nrlssi2_max_over_min-(unc_nrlssi2_max_over_min)*100 ;-1 error bar
+a=where(nrlssi2_max_over_min lt 0)
+a1=where(nrlssi1_max_over_min lt 0)
+b=where(high lt 0)
+;c=where(low lt 0)
+;new_low = low
+;new_low(c) = 1e-4
+
+p=plot(wl_nrlssi2(*,0),nrlssi2_max_over_min,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',name='NRLSSI2')
+p0=plot(wl_nrlssi2(a,0),abs(nrlssi2_max_over_min(a)),color='deep pink',symbol='.',linestyle=6,overplot=1)
+p3=plot(wl_nrlssi1(*,0),(nrlssi1_max_over_min),overplot=1,name='NRLSSI') ;convert from mW to W
+p30=plot(wl_nrlssi1(a1,0),abs(nrlssi1_max_over_min(a1)),symbol='.',linestyle=6,overplot=1) ;convert from mW to W
+p1=plot(wl_nrlssi2(*,0),high,'--',color='grey',overplot=1) ;positive bound of error bar
+;p10=plot(wl_nrlssi2(b,0),high(b),'--',color='red',overplot=1) ;
+p2=plot(wl_nrlssi2(*,0),low,'--',color='grey',overplot=1) ;negative bound of error bar
+;p20=plot(wl_nrlssi2(c,0),(new_low(c)),'--',symbol='.',color='grey',overplot=1,linestyle=6) 
+p.xlog=1
+p.ylog=1
+l=legend(target=[p,p3],/data,linestyle=6,font_size=16,shadow=0)
+p.yrange=[0.0001,100]
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9b_revised.eps';, /TRANSPARENT
+;
 ;p.save,'/Users/hofmann/git
 
 end ;pro  

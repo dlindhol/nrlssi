@@ -1,6 +1,6 @@
 pro compare_lasp_nrl_nrlssi2
 
-time_bin = 'daily' ;CHANGE
+time_bin = 'monthly' ;CHANGE
 
 if time_bin eq 'daily' then begin 
   ;nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1882_1909d_6Apr15.txt'

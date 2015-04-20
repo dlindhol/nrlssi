@@ -102,7 +102,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   ; Variable Attributes
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
   NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Daily Total Solar Irradiance (W m-2)'
-  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_incoming_shortwave_flux'
+  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance'
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
   NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean'
   NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC'
