@@ -52,7 +52,10 @@
 ;   write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver, algrev, data, file
 ;  
 ;@***** 
-function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
+function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, file
+
+  ;Extract data component
+  data = irradiance_data.data
 
   ; Define missing value and replace NaNs in the modeled data with it.
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
@@ -60,12 +63,12 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   tsi = replace_nan_with_value(data.tsi, missing_value) 
   tsiunc = replace_nan_with_value(data.tsiunc, missing_value) ;DO THIS WAY?
   day_zero_mjd = iso_date2mjdn('1610-01-01')
-  dates =  data.iso 
+  dates = data.iso 
   
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
   ;TODO: handle error: NCDF_CREATE: Unable to create the file, /data/tmp/nrltsi.nc. (NC_ERROR=-35)
-  src = 'NRLTSI2_'+algver+algrev ;'creates the dynamic 'source' model version/revision for global attributes
+  src = 'NRLTSI2_'+version ;'creates the dynamic 'source' model version/revision for global attributes
   
   ; Global Attributes
   NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.6"
@@ -87,7 +90,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver,algrev, data, file
   NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program"
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "TSI"
   NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00828"
-  NCDF_ATTPUT, id, /GLOBAL, "product_version", algver+algrev
+  NCDF_ATTPUT, id, /GLOBAL, "product_version", version
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_max"," 90.0"
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lon_min","-180.0"
