@@ -129,111 +129,19 @@
 ;
 ;@*****
 
-function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final, time_bin=time_bin
+pro nrl2_to_irradiance, ymd1, ymd2, final=final, time_bin=time_bin, version=version, output_dir=output_dir
 
-  data_list = process_irradiance(ymd1, ymd2, final=final, time_bin=time_bin)
+  ;Define the version of the data.
+  ;If the version argument is not set, use the default.
+  if n_elements(version) eq 0 then version = 'v02r00'  ;default to current final release version
+  ;If the 'final' keyword is not set, add 'preliminary' to the version
+  if (not keyword_set(final)) then version += '-preliminary'
+
+  ;Generate the data.
+  irradiance_data = process_irradiance(ymd1, ymd2, final=final, time_bin=time_bin)
+
+  ;Write the data files.
+  status = write_irradiance_data(irradiance_data, version, time_bin=time_bin, output_dir=output_dir)
   
-  ;Convert data List to array
-  data = data_list.toArray()
-
-
-
-
-;--------
-
-;TODO: much of this has been superceded by process_irradiance.
-;This driver should delegate to it to get the 'data_list' then resume with file creation logic.
-
-  algver = 'v02' ; get from function parameter?
-  algrev = 'r00' ; for 'final' files;  get from function parameter?
-  ;algrev = 'r00-preliminary' ; include '-preliminary' for operational, quarterly updates
- 
-  ;Creation date, used for output files (TO DO: change to form DDMMMYY, ex., 09Sep14, but saved under alternative variable name as .nc4 metadata requires this info as well in ISO 8601 form..) 
-  creation_date = jd2iso_date(systime(/julian, /utc)) 
-   
-  ;Convert start and stop dates to Modified Julian Day Number (integer).
-  mjd_start = iso_date2mjdn(ymd1)
-  mjd_stop  = iso_date2mjdn(ymd2)
-  
-  ;Number of time samples (days)
-  n = mjd_stop - mjd_start + 1
-  
-  ;Restore model parameters
-  model_params = get_model_params()
-  
-  ;Set up wavelength bands for summing 1 nm spectrum
-  spectral_bins = get_spectral_bins() 
-  
-  ;Get input data
-  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final, dev=dev) ;sunspot blocking/darkening data
-  mg_index = get_mg_index(ymd1, ymd2, final=final) ;MgII index data - facular brightening
-  
-  ;Create a Hash for each input dataset mapping MJD (assumed to be integer, i.e. midnight) to the appropriate record.
-  ;Note, Hash values will be arrays but should have only one element: the data record for that day.
-  sunspot_blocking_by_day = group_by_tag(sunspot_blocking, 'MJDN')
-  mg_index_by_day = group_by_tag(mg_index, 'MJD')
-
-  ;Make list to accumulate results
-  data_list = List()
-  
-  ;Iterate over days.
-  ;TODO: consider passing complete arrays of data to these routines
-  for i = 0, n-1 do begin
-    mjd = mjd_start + i
-    
-    ;sb = sunspot_blocking[i].ssbt
-    ;mg = mg_index[i].index
-    sb = sunspot_blocking_by_day[mjd].ssbt
-    mg = mg_index_by_day[mjd].index
-    
-    ;sanity check that we have one record per day
-    if ((n_elements(sb) ne 1) or (n_elements(mg) ne 1)) then begin
-      print, 'WARNING: Invalid input data for day ' + mjd2iso_date(mjd)
-      continue  ;skip this day
-    endif
-    
-    nrl2_tsi = compute_tsi(sb ,mg ,model_params) ;calculate TSI for given sb and mg
-    ssi = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
-    nrl2_ssi = bin_ssi(model_params, spectral_bins, ssi) ; SSI on the binned wavelength grid
-    
-    iso_time = mjd2iso_date(mjd)
-    
-    ; TODO Add bandcenters and bandwidths and nband to data structure
-    struct = {nrl2,                 $
-      mjd:    mjd,                  $
-      iso:    iso_time,             $
-      tsi:    nrl2_tsi.totirrad,    $
-      tsiunc: nrl2_tsi.totirradunc, $
-      ssi:    nrl2_ssi.nrl2bin,     $
-      ssiunc: nrl2_ssi.nrl2binunc,  $
-      ssitot: nrl2_ssi.nrl2binsum   $
-    }
-    
-    data_list.add, struct
-  endfor
-  
-
-;----------
-
-  
-  ;Dynamically create output file names
-  ;TO DO (replace daily, monthly, and annual keywords with time_bin? If so, would need to revise create_filenames.pro as well.
-  names = create_filenames(ymd1,ymd2,creation_date,algver,algrev, final=final, dev=dev,  $
-  daily=daily,monthly=monthly, annual=annual)
-
-  ;Write the results to output in netCDF4 format; 
-  ;To Do: include an output file directory
-  ;TO Do: point to separate writers for the daily, monthly and annual average output
-  result = write_tsi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,names.tsi)
-  result = write_ssi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,spectral_bins,names.ssi)
-  
-  ;Dynamically determine file size (in bytes) and MD5 checksum and output to manifest file
-  manifest=create_manifest(names.tsi,names.ssi)
-
-  ;Write the manifest data to file
-  result = write_to_manifest(names.tsi, manifest.tsibytes, manifest.tsichecksum, names.tsi_man)
-  result = write_to_manifest(names.ssi, manifest.ssibytes, manifest.ssichecksum, names.ssi_man)
-  
-  return, data
 end
 
