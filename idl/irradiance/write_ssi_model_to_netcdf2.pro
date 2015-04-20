@@ -69,11 +69,11 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   ;if (n_elements(missing_value) eq 0) then missing_value = -99.0
   missing_value = -99.0
   ssi = replace_nan_with_value(data.ssi, missing_value)
-  ssiunc = replace_nan_with_value(data.ssiunc, missing_value) ;DO THIS WAY?
+  ;ssiunc = replace_nan_with_value(data.ssiunc, missing_value) ;DO THIS WAY?
   tsi = replace_nan_with_value(data.tsi, missing_value)
   tsiunc = replace_nan_with_value(data.tsiunc, missing_value) ;DO THIS WAY?
   day_zero_mjd = iso_date2mjdn('1610-01-01')
-  dates = data.iso
+  ;dates = data.iso
   
   ; Create NetCDF file for writing output
   id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
