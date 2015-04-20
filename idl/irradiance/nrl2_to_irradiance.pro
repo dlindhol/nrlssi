@@ -212,10 +212,9 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final, tim
     data_list.add, struct
   endfor
   
-<<<<<<< HEAD
+
 ;----------
 
-
   
   ;Dynamically create output file names
   ;TO DO (replace daily, monthly, and annual keywords with time_bin? If so, would need to revise create_filenames.pro as well.
@@ -228,22 +227,6 @@ function nrl2_to_irradiance, ymd1, ymd2, output_dir=output_dir, final=final, tim
   result = write_tsi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,names.tsi)
   result = write_ssi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,spectral_bins,names.ssi)
   
-=======
-  ;Convert data List to array
-  data = data_list.toArray()
-  
-  ;Dynamically create output file names
-  ;TO DO (replace daily, monthly, and annual keywords with time_bin? If so, would need to revise create_filenames.pro as well.
-  names = create_filenames(ymd1,ymd2,creation_date,algver,algrev, final=final, dev=dev,  $
-  daily=daily,monthly=monthly, annual=annual)
-
-  ;Write the results to output in netCDF4 format; 
-  ;To Do: include an output file directory
-  ;TO Do: point to separate writers for the daily, monthly and annual average output
-  result = write_tsi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,names.tsi)
-  result = write_ssi_model_to_netcdf2(ymd1,ymd2,creation_date,algver,algrev,data,spectral_bins,names.ssi)
-  
->>>>>>> 25fc56f86aa0ea978c267ee98afe8810abd07cad
   ;Dynamically determine file size (in bytes) and MD5 checksum and output to manifest file
   manifest=create_manifest(names.tsi,names.ssi)
 
