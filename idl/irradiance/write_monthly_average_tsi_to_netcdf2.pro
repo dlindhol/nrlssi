@@ -59,7 +59,7 @@ function write_monthly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   ; Define missing value and replace NaNs in the modeled data with it.
   missing_value = -99.0
   tsi = replace_nan_with_value(data.tsi, missing_value)
-  tsiunc = replace_nan_with_value(data.tsiunc, missing_value)
+  ;tsiunc = replace_nan_with_value(data.tsiunc, missing_value)
   day_zero_mjd = iso_date2mjdn('1610-01-01')
   
   ; Create NetCDF file for writing output
@@ -113,7 +113,7 @@ function write_monthly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   NCDF_ATTPUT, id, x2id, 'standard_name','time'
   NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds'
   
-  x3id = NCDF_VARDEF(id, 'time_bnds', [tid,bid], /FLOAT)
+  x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT)
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF

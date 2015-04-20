@@ -133,7 +133,7 @@ function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   NCDF_ATTPUT, id, x2id, 'standard_name','time'
   NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds'
   
-  x3id = NCDF_VARDEF(id, 'time_bnds', [tid,bid], /FLOAT)
+  x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT)
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
