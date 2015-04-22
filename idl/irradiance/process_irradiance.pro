@@ -67,7 +67,7 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin
   irradiance_data = data_list.toArray()
   
   ;Construct resulting data structure, including the spectral bins.
-  data = {nrl2_data, wavelength: spectral_bins, data: irradiance_data}
+  data = {wavelength: spectral_bins, data: irradiance_data}
   
   return, data
 end
