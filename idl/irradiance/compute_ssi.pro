@@ -184,7 +184,7 @@ function compute_ssi, sb, mg, model_params
   
   ; calculate spectrum on 1 nm grid then sum into bins
   nlambda=n_elements(lambda)      ; this is the 1 nm grid
-  nrl2=dblarr(nlambda)
+  nrl2spec=dblarr(nlambda)
 ;nrl2bin=dblarr(nband)     ; this is the binned wavelength grid ; move
 ;
   ; facular component
@@ -198,12 +198,12 @@ function compute_ssi, sb, mg, model_params
   dspot=(sb+deltasb)*dspotcoef
   
   ; spectral irradiance
-  nrl2=iquiet+dfac+dspot+ccoef
+  nrl2spec=iquiet+dfac+dspot+ccoef
 
   ; integral quantities
   dfactot=total(dfac, /double)
   dspottot=total(dspot, /double)
-  nrl2tot=total(nrl2, /double)
+  nrl2tot=total(nrl2spec, /double)
   
   ;---------- uncertainty in solar spectral irradiance
 
@@ -217,7 +217,7 @@ function compute_ssi, sb, mg, model_params
 
   
   ssi = {nrl2_ssi,    $
-  nrl2:  nrl2,        $
+  nrl2:  nrl2spec,        $
   dfactot:  dfactot,  $
   dspottot: dspottot, $
   nrl2tot:  nrl2tot,  $
