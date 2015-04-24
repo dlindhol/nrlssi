@@ -141,7 +141,7 @@ pro nrl2_to_irradiance, ymd1, ymd2, final=final, time_bin=time_bin, version=vers
   irradiance_data = process_irradiance(ymd1, ymd2, final=final, time_bin=time_bin)
 
   ;Write the data files.
-  status = write_irradiance_data(irradiance_data, version, time_bin=time_bin, output_dir=output_dir)
+  status = write_irradiance_data(ymd1,ymd2,irradiance_data, version, time_bin=time_bin, output_dir=output_dir)
   
 end
 
