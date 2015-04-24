@@ -1,13 +1,14 @@
-function write_irradiance_data, irradiance_data, version, time_bin=time_bin, output_dir=output_dir
+function write_irradiance_data, ymd1,ymd2,irradiance_data, version, time_bin=time_bin, output_dir=output_dir
   ;TODO: use tsi, ssi keywords so we can choose to write just one or the other, default to both
 
   creation_date = jd2iso_date(systime(/julian, /utc)) ;now as yyyy-mm-dd UTC
 
-  ;Get the time range from the data.
-  times = irradiance_data.data.mjd
-  ymd1 = mjd2iso_date(times[0])  ;start time as yyyy-mm-dd
-  ymd2 = mjd2iso_date(times[-1]) ;end time as yyyy-mm-dd
-  
+;  ;Get the time range from the data.
+;  times = irradiance_data.data.mjd
+;  ymd1 = mjd2iso_date(times[0])  ;start time as yyyy-mm-dd
+;  ymd2 = mjd2iso_date(times[-1]) ;end time as yyyy-mm-dd
+  ;The above didn't work - was getting output ymd1 values of 1834-08-11 when expecting 2014-01-01
+ 
   ;Make sure we have a time bin defined. 'year', 'month', or 'day'
   if n_elements(time_bin) eq 0 then time_bin = 'day' ;default to daily
 
