@@ -3,7 +3,7 @@ pro bams_paper
 ;make plots for bams paper
 
 ;open .nc file for NRLTSI2 and NRLSSI2 data from 1978-11-07 to 2014-12-31
-cdfid = ncdf_open('ssi_v02r00_daily_s19781107_e20141231_c20150321.nc',/nowrite)
+cdfid = ncdf_open('/Users/hofmann/Documents/FCDR_Solar/ssi_v02r00_daily_s19781107_e20141231_c20150321.nc',/nowrite)
 ivaridt = ncdf_varid(cdfid,'SSI')
 ncdf_varget,cdfid,ivaridt,nrl_ssi
 ivaridt = ncdf_varid(cdfid,'SSI_UNC')
@@ -35,7 +35,10 @@ sim=read_lasp_ascii_file('/Users/hofmann/Downloads/sorce_ssi_L3_c24h_0000nm_2413
 ;s=sort(sim.max_wavelength)      
 ;qmax=uniq(sim[s].max_wavelength)
 
-goto, fig9
+;MODTRAN5 surface calcs
+restore,filename='/Users/hofmann/git/nrlssi/test/mod5surfacecalcs_shortwave_nm.sav',/verb
+restore,filename='/Users/hofmann/git/nrlssi/test/mod5surfacecalcs_lw.sav'
+goto, fig2
 
 fig2:
 ;Figure 2-------------------------------
@@ -94,35 +97,7 @@ fig2:
   B3_irrad = B3_irrad * RSE
   B4_irrad = B4_irrad * RSE
   
-;  bb,T0,lambda,FBBW_B0,FBBP_B0,XW_B0,XP_B0 ;Temp (Kelvin), wavelength(nm), irradiance at 1 AU, photon flux at 1 AU, irradiance at sun, photon flux at Sun.
-;  B0_irrad_jud = XW_B0
-  
-  
-;  XP=2*PII*C/W^4/(EXP(C2/W/TEMP)-1) ;ph/cm**2/sec/cm at sun
-;  B1 = c1/(lambda1^5.*(exp(c2/(lambda1*T1))-1)) ;planck body curve for T = T1 units = W m-2 sr-1 um-1
-;  B2 = c1/(lambda1^5.*(exp(c2/(lambda1*T2))-1)) ;planck body curve for T = T2 units = W m-2 sr-1 um-1
-;  B3 = c1/(lambda1^5.*(exp(c2/(lambda1*T3))-1)) ;planck body curve for T = T3 units = W m-2 sr-1 um-1
-;  B4 = c1/(lambda1^5.*(exp(c2/(lambda1*T4))-1)) ;planck body curve for T = T3 units = W m-2 sr-1 um-1 
 
-  ;convert to W m-2 sr-1 nm-1 (RADIANCE VALUE)
-;  B0 = B0/1000.
-;  B1 = B1/1000.
-;  B2 = B2/1000.
-;  B3 = B3/1000.
-;  B4 = B4/1000.
-  
-  ;convert to W m-2 nm-1 (IRRADIANCE VALUE)
-;  B0_IRR = B0/(4.*!pi)
-;  B1_IRR = B1/(4.*!pi)
-;  B2_IRR = B2/(4.*!pi)
-;  B3_IRR = B3/(4.*!pi)
-;  B4_IRR = B4/(4.*!pi)
-  
-  ;Judith's BB procedure
-;  bb,T0,lambda,FBBW_B0,FBBP_B0,XW_B0,XP_B0
-;  bb,T1,lambda,FBBW_B1,FBBP_B1,XW_B1,XP_B1
-;  bb,T2,lambda,FBBW_B2,FBBP_B2,XW_B2,XP_B2
-  
   wien_max = bwien/[T1,T2,T3] ;wavelengths where radiance at Planck temperatures peaks
 ;  a0 = where(lambda1 ge wien_max[0]) & a0 = a0[0]
   a1 = where(lambda1 ge wien_max[0]) & a1 = a1[0]
@@ -135,17 +110,17 @@ fig2:
   p=plot(lambda,nrlssi2_ref,ytitle='Irradiance (W m!U-2!N nm!U-1!N)',xtitle='Wavelength (nm)','-k',axis_style=1,margin=[.2,.15,.2,.15],thick=2,font_size=16,title='Reference (Quiet Sun) Spectrum') 
   p0=plot(lambda[0:2285],nrlssi2_ref[0:2285],'-',color='medium purple',overplot=1) ;color section based on SORCE measurements purple
   p1=plot(lambda,B1_irrad/1000.,name='T=5770 K','--',color='grey',overplot=1,font_size=16) ;units converted to W m-2 nm-1
-;  p2=plot(lambda,B2_irrad/1000.,name='T=6000 K','-.',color='grey',overplot=1,font_size=16)
-;  p3=plot(lambda,B3_irrad/1000.,name='T=6450 K','--',sym_size=0.2,color='grey',overplot=1,font_size=16)
-;  p4=plot(wien_max*1000.,B_at_wien_max,'o-',overplot=1,name="$\lambda$!Dpeak!N",sym_size=0.6)
   
+  ;overplot Modtran5 surface calculations
+  p2=plot(nm,irradiance[*,0],name='Surface Downwelling Irradiance',color='green',overplot=1,font_size=16,min_value=10e-8);
+  p3=plot(wavelength_lw,flux_lw[*,0],color='green',overplot=1,font_size=16)
 
-  ;insert another y axis for Planck Radiance 
-;  yaxis=axis('Y',location=[10^(5.),10^(-8.)],title='Planck Radiance (W m!U-2!N nm!U-1!N sr!U-1!N) x 10!U4!N',textpos=1,axis_range=[0,10],color='grey',tickfont_size=16)
   p.xlog=1
   p.ylog=1
-  t1=text(2.01*10^2.,10^(-6.),'Total Irradiance = 1360.45 W m!U-2!N',font_size=14,/data)
-  l=legend(target=[p1],/data,linestyle=6,font_size=16,shadow=0,position=[5.*10^4.,10^2.])
+  t1=text(1.9*10^2.,10^(1.),'Total Solar Irradiance = 1360.45 W m!U-2!N',font_size=14,/data)
+
+  l=legend(target=[p1,p2],/data,linestyle=6,font_size=14,shadow=0,position=[1.9*10^4.,10.^(-6)])
+
 ;  p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig2.png';, /TRANSPARENT
 ;end of Figure 2------------------------------- 
 
