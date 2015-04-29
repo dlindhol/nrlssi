@@ -42,10 +42,10 @@
 ;   write_to_manifest, filename, filesize, checksum, fileout
 ;  
 ;@***** 
-function write_to_manifest, filename, filesize, checksum, fileout
+function write_to_manifest, output_dir=output_dir, filename, filesize, checksum, fileout
 
 close,1
-openw,1,fileout
+openw,1,output_dir+fileout
 printf,1,filename + ',' + checksum + ',' + filesize
 close,1
 
