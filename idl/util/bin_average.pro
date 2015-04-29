@@ -37,7 +37,11 @@ end
 
 function get_day_as_mjd_from_record, record
   ;Truncate to the current day
-  mjd = fix(record.(0))
+  ;mjd = fix(record.(0)) ;This was returning 'negative values', ex. record.(0) = 55927.000 and fix(record.(0))=.9609
+  time = mjd2iso_date(record.(0))
+  
+  ;convert back to MJD
+  mjd = iso_date2mjdn(time)
   
   return, mjd
 end
