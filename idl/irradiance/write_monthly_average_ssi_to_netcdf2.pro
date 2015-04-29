@@ -50,7 +50,7 @@
 ;   write_monthly_average_ssi_to_netcdf, ym1, ym2, ymd3, algver, result, file
 ;  
 ;@***** 
-function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, file
+function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, output_dir=output_dir, file
 
   ;Extract data component
   data = irradiance_data.data
@@ -66,7 +66,7 @@ function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   day_zero_mjd = iso_date2mjdn('1610-01-01')
 
   ; Create NetCDF file for writing output
-  id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
+  id = NCDF_CREATE(output_dir+file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
   ;TODO: handle error: NCDF_CREATE: Unable to create the file, /data/tmp/nrltsi.nc. (NC_ERROR=-35)
   src = 'NRLSSI2_'+version ;'creates the dynamic 'source' model version/revision for global attributes
   
