@@ -50,7 +50,7 @@
 ;   write_monthly_average_tsi_to_netcdf, ym1, ym2, ymd3, algver, result, file
 ;  
 ;@***** 
-function write_monthly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, file
+function write_monthly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, output_dir=output_dir, file
 
   ;Extract data component
   data = irradiance_data.data
@@ -63,63 +63,65 @@ function write_monthly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   dates = data.iso 
   
   ; Create NetCDF file for writing output
-  id = NCDF_CREATE(file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
+  id = NCDF_CREATE(output_dir+file, /NOCLOBBER, /netCDF4_format) ;noclobber = don't overwrite existing file
   ;TODO: handle error: NCDF_CREATE: Unable to create the file, /data/tmp/nrltsi.nc. (NC_ERROR=-35)
   src = 'NRLTSI2_'+version ;'creates the dynamic 'source' model version/revision for global attributes
   
   ; Global Attributes
-  NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.6"
-  NCDF_ATTPUT, id, /GLOBAL, "Metadata_Conventions","CF-1.6, Unidata Dataset Discovery v1.0"
-  NCDF_ATTPUT, id, /GLOBAL, "title", "Monthly Averaged TSI calculated using NRL2 solar irradiance model"
-  NCDF_ATTPUT, id, /GLOBAL, "source", src
-  NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics"
-  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CF Standard Name Table v27"
-  NCDF_ATTPUT, id, /GLOBAL, "id", file
-  NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc"
-  NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3
-  NCDF_ATTPUT, id, /GLOBAL, "license","No constraints on data use."
-  NCDF_ATTPUT, id, /GLOBAL, "summary", "This dataset contains total irradiance as a function of time (monthly-averaged) created with the Naval Research Laboratory model for spectral and total irradiance (version 2). Total solar irradiance is the total, spectrally integrated energy input to the top of the Earth’s atmosphere, at a standard distance of one Astronomical Unit from the Sun. Its units are W per m2. The dataset is created by Judith Lean (Space Science Division, Naval Research Laboratory), Odele Coddington and Peter Pilewskie (Laboratory for Atmospheric and Space Science, University of Colorado).
-  NCDF_ATTPUT, id, /GLOBAL, "keywords", "EARTH SCIENCE, ATMOSPHERE, ATMOSPHERIC RADIATION, INCOMING SOLAR RADIATION, SOLAR IRRADIANCE, SOLAR RADIATION, SOLAR FORCING, INSOLATION RECONSTRUCTION, SUN-EARTH INTERATIONS, CLIMATE INDICATORS, PALEOCLIMATE INDICATORS, SOLAR FLUX, SOLAR ENERGY, SOLAR ACTIVITY, SOLAR CYCLE"
-  NCDF_ATTPUT, id, /GLOBAL, "keywords_vocabularly","NASA Global Change Master Directory (GCMD) Earth Science Keywords, Version 8.0"
-  NCDF_ATTPUT, id, /GLOBAL, "cdm_data_type","Any"
-  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ymd1
-  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2
-  NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program"
-  NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "TSI"
-  NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00828"
-  NCDF_ATTPUT, id, /GLOBAL, "product_version", version
-  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0"
-  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_max"," 90.0"
-  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lon_min","-180.0"
-  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lon_max"," 180.0"
-  NCDF_ATTPUT, id, /GLOBAL, "spatial_resolution", "N/A"
-  NCDF_ATTPUT, id, /GLOBAL, "contributor_name", "Judith Lean, Peter Pilewskie, Odele Coddington"
-  NCDF_ATTPUT, id, /GLOBAL, "contributor_role", "Principal Investigator and originator of total and spectral solar irradiance model, Principal Investigator ensuring overall integrity of the data product, Co-Investigator and Point-of-Contact and translated research-grade code to operational routine with FCDR output data being written out in NetCDF-4"
-  
+  NCDF_ATTPUT, id, /GLOBAL, "Conventions", "CF-1.6",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "Metadata_Conventions","CF-1.6, Unidata Dataset Discovery v1.0",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "title", "Monthly Averaged TSI calculated using NRL2 solar irradiance model",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "source", src,/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CF Standard Name Table v27",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "id", file,/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3,/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "license","No constraints on data use.",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "summary", "This dataset contains total irradiance as a function of time (monthly-averaged) created with the Naval Research Laboratory model for spectral and total irradiance (version 2). Total solar irradiance is the total, spectrally integrated energy input to the top of the Earth’s atmosphere, at a standard distance of one Astronomical Unit from the Sun. Its units are W per m2. The dataset is created by Judith Lean (Space Science Division, Naval Research Laboratory), and Odele Coddington, Doug Lindholm, Peter Pilewskie, and Martin Snow (Laboratory for Atmospheric and Space Science, University of Colorado).",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "keywords", "EARTH SCIENCE, ATMOSPHERE, ATMOSPHERIC RADIATION, INCOMING SOLAR RADIATION, SOLAR IRRADIANCE, SOLAR RADIATION, SOLAR FORCING, INSOLATION RECONSTRUCTION, SUN-EARTH INTERATIONS, CLIMATE INDICATORS, PALEOCLIMATE INDICATORS, SOLAR FLUX, SOLAR ENERGY, SOLAR ACTIVITY, SOLAR CYCLE",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "keywords_vocabularly","NASA Global Change Master Directory (GCMD) Earth Science Keywords, Version 8.0",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "cdm_data_type","Any",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_start", ymd1,/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2,/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "TSI",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00828",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "product_version", version,/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_max"," 90.0",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lon_min","-180.0",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "geospatial_lon_max"," 180.0",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "spatial_resolution", "N/A",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "contributor_name", "Judith Lean, Peter Pilewskie, Odele Coddington",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "contributor_role", "Principal Investigator and originator of total and spectral solar irradiance model, Principal Investigator ensuring overall integrity of the data product, Co-Investigator and Point-of-Contact and translated research-grade code to operational routine with FCDR output data being written out in NetCDF-4",/CHAR  
   ; Define Dimensions
   tid = NCDF_DIMDEF(id, 'time', /UNLIMITED) ;time series
   bid = NCDF_DIMDEF(id, 'bounds', 2) ;time bounds dimension
   
   ; Variable Attributes
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
-  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Monthly Averaged Total Solar Irradiance (W m-2)'
-  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance'
-  NCDF_ATTPUT, id, x1id, 'units', 'W m-2'
-  NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean'
-  NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC'
+  NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Monthly Averaged Total Solar Irradiance (W m-2)',/CHAR
+  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance',/CHAR
+  NCDF_ATTPUT, id, x1id, 'units', 'W m-2',/CHAR
+  NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean',/CHAR
+  NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC',/CHAR
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
   
   x2id = NCDF_VARDEF(id, 'time', [tid], /FLOAT)
-  NCDF_ATTPUT, id, x2id, 'units','days since 1610-01-01 00:00:00'
-  NCDF_ATTPUT, id, x2id, 'standard_name','time'
-  NCDF_ATTPUT, id, x2id, 'axis','T'
-  NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds'
+  NCDF_ATTPUT, id, x2id, 'units','days since 1610-01-01 00:00:00',/CHAR
+  NCDF_ATTPUT, id, x2id, 'standard_name','time',/CHAR
+  NCDF_ATTPUT, id, x2id, 'axis','T',/CHAR
+  NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds',/CHAR
    
-  x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT)
-
+  ;x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT) ;this gave incorrect ranges in time_bnds (pegged at 9e36)
+  x3id = NCDF_VARDEF(id, 'time_bnds', [tid,bid], /FLOAT)
+  NCDF_ATTPUT, id, x3id, 'long_name', 'Minimum (inclusive) and maximum (exclusive) dates included in the time averaging',/CHAR
+  NCDF_ATTPUT, id, x3id, 'units', 'days since 1610-01-01 00:00:00',/CHAR
+  
   x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
-  NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Monthly-Averaged Total Solar Irradiance (W m-2)'
-  NCDF_ATTPUT, id, x4id, 'units', 'W m-2'
+  NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Monthly-Averaged Total Solar Irradiance (W m-2)',/CHAR
+  NCDF_ATTPUT, id, x4id, 'units', 'W m-2',/CHAR
   NCDF_ATTPUT, id, x4id, 'missing_value',missing_value 
     
   ; Put file in data mode:
