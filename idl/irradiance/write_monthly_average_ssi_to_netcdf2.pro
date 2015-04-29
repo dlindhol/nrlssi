@@ -106,7 +106,7 @@ function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
  
   ; Variable Attributes
   x0id = NCDF_VARDEF(id, 'SSI', [lid,tid], /FLOAT)
-  NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Climate Data Record of Monthly Averaged Solar Spectral Irradiance (Watt m-2 nm-1)',/CHAR
+  NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Climate Data Record of Monthly Averaged Solar Spectral Irradiance (W m-2 nm-1)',/CHAR
   NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_solar_spectral_irradiance',/CHAR
   NCDF_ATTPUT, id, x0id, 'units', 'W m-2 nm-1',/CHAR
   NCDF_ATTPUT, id, x0id, 'cell_methods','time: mean',/CHAR
