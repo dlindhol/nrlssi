@@ -1,5 +1,5 @@
 ;Construct a data product file name.
-function create_filename, ymd1, ymd2, version, time_bin, tsi=tsi, ssi=ssi, output_dir=output_dir
+function create_filename, ymd1, ymd2, version, time_bin, tsi=tsi, ssi=ssi
 
   ;Make sure output_dir is defined. Default to current directory.
   if n_elements(output_dir) eq 0 then output_dir = ''
@@ -20,16 +20,16 @@ function create_filename, ymd1, ymd2, version, time_bin, tsi=tsi, ssi=ssi, outpu
   ;TODO: error if neither set
 
   ;Construct file name based on time bin
-  if (time_bin eq 'day') then filename = output_dir + param +'_'+ version +'_'+ 'daily_s' + symd +'_e'+ eymd +'_c'+ cymd +'.nc'
+  if (time_bin eq 'day') then filename = param +'_'+ version +'_'+ 'daily_s' + symd +'_e'+ eymd +'_c'+ cymd +'.nc'
   if (time_bin eq 'month') then begin
     symd = strmid(symd,0,6);starting ym
     eymd = strmid(eymd,0,6) ;ending ym
-    filename = output_dir + param +'_'+ version +'_'+ 'monthly_s' + symd +'_e'+ eymd +'_c'+ cymd +'.nc'
+    filename = param +'_'+ version +'_'+ 'monthly_s' + symd +'_e'+ eymd +'_c'+ cymd +'.nc'
   endif
   if (time_bin eq 'year') then begin
     symd = strmid(symd,0,4);starting ym
     eymd = strmid(eymd,0,4) ;ending ym
-    filename = output_dir + param +'_'+ version +'_'+ 'yearly_s' + symd +'_e'+ eymd +'_c'+ cymd +'.nc'
+    filename = param +'_'+ version +'_'+ 'yearly_s' + symd +'_e'+ eymd +'_c'+ cymd +'.nc'
   endif
   ;TODO: else error
 
