@@ -75,7 +75,7 @@ function write_yearly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradia
   NCDF_ATTPUT, id, /GLOBAL, "title", "Yearly-Averaged SSI calculated using NRL2 solar irradiance model. Includes yearly-averaged and spectrally integrated (total) TSI value",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "source", src,/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics",/CHAR
-  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabularly", "CF Standard Name Table v27",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabulary", "CF Standard Name Table v27",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "id", file,/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3,/CHAR
