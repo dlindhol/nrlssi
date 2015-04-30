@@ -1,7 +1,5 @@
 function current_day, mjd
   iso = mjd2iso_date(mjd) ;yyyy-mm-dd
-  ;  ym  = strmid(iso, 0, 7) ;yyyy-mm
-  ;  ymd = ym + '-01' ;first day of month
   mjd1 = iso_date2mjdn(iso)
   return, mjd1
 end
