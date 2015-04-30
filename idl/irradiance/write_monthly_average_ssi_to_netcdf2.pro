@@ -135,8 +135,7 @@ function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradi
   NCDF_ATTPUT, id, x2id, 'axis','T',/CHAR
   NCDF_ATTPUT, id, x2id, 'bounds', 'time_bnds',/CHAR
   
-  ;x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT) ;this gave incorrect ranges in time_bnds (pegged at 9e36)
-  x3id = NCDF_VARDEF(id, 'time_bnds', [tid,bid], /FLOAT)
+  x3id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT) 
   NCDF_ATTPUT, id, x3id, 'long_name', 'Minimum (inclusive) and maximum (exclusive) dates included in the time averaging',/CHAR
   NCDF_ATTPUT, id, x3id, 'units', 'days since 1610-01-01 00:00:00',/CHAR
   
