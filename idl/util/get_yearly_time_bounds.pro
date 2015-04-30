@@ -17,12 +17,12 @@ function get_yearly_time_bounds, mjd
   upper = first_day_of_year(mjd+365)
 
   n = n_elements(mjd)
-  bounds = dblarr(n,2)
+  bounds = dblarr(2,n)
  
   ;TODO: there must be a better, idiomatic way
   for i = 0, n-1 do begin
-    bounds[i,0] = lower[i]
-    bounds[i,1] = upper[i]
+    bounds[0,i] = lower[i]
+    bounds[1,i] = upper[i]
   endfor
 
   return, bounds
