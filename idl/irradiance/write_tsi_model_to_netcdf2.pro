@@ -101,6 +101,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   
   ; Define Dimensions
   tid = NCDF_DIMDEF(id, 'time', /UNLIMITED) ;time series
+  bid = NCDF_DIMDEF(id, 'bounds', 2) ;time bounds dimension
   
   ; Variable Attributes
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
@@ -124,6 +125,9 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   NCDF_ATTPUT, id, x4id, 'units', 'W m-2',/CHAR
   NCDF_ATTPUT, id, x4id, 'missing_value',missing_value
   
+  x5id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT)
+  NCDF_ATTPUT, id, x5id, 'long_name', 'Minimum (inclusive) and maximum (exclusive) dates included in the time averaging',/CHAR
+  NCDF_ATTPUT, id, x5id, 'units', 'days since 1610-01-01 00:00:00',/CHAR
   
   ; Put file in data mode:
   NCDF_CONTROL, id, /ENDEF
@@ -133,7 +137,11 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   NCDF_VARPUT, id, x3id, data.mjd - day_zero_mjd ;CF-compliant time variable
   NCDF_VARPUT, id, x1id, tsi
   NCDF_VARPUT, id, x4id, tsiunc
-  
+
+  ;Define the bounds for each time bin.
+  time_bounds = get_daily_time_bounds(data.mjd)
+  NCDF_VARPUT, id, x5id, time_bounds - day_zero_mjd
+    
   ; Close the NetCDF file.
   NCDF_CLOSE, id 
   

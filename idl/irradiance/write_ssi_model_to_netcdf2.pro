@@ -111,6 +111,7 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   
   ; Define Dimensions
   tid = NCDF_DIMDEF(id, 'time', /UNLIMITED) ;time series
+  bid = NCDF_DIMDEF(id, 'bounds', 2) ;time bounds dimension
   lid = NCDF_DIMDEF(id, 'wavelength',spectral_bins.nband) ;wavelengths
  
   ; Variable Attributes
@@ -152,6 +153,10 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   NCDF_ATTPUT, id, x4id, 'units', 'W m-2',/CHAR
   NCDF_ATTPUT, id, x4id, 'missing_value',missing_value
 
+  x5id = NCDF_VARDEF(id, 'time_bnds', [bid,tid], /FLOAT)
+  NCDF_ATTPUT, id, x5id, 'long_name', 'Minimum (inclusive) and maximum (exclusive) dates included in the time averaging',/CHAR
+  NCDF_ATTPUT, id, x5id, 'units', 'days since 1610-01-01 00:00:00',/CHAR
+  
 ;  SSI_UNC not currently included in NOAA CDR delivery products due to file size  
 ;  x5id = NCDF_VARDEF(id,'SSI_UNC',[lid,tid], /FLOAT)
 ;  NCDF_ATTPUT, id, x5id, 'long_name','Uncertainty in Daily Solar Spectral Irradiance (W m-2 nm-1)'
@@ -169,7 +174,11 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
 ;  NCDF_VARPUT, id, x5id, ssiunc ;not currently included in NOAA CDR delivery products due to file size
   NCDF_VARPUT, id, t0id, spectral_bins.bandcenter
   NCDF_VARPUT, id, t1id, spectral_bins.bandwidth
-  
+
+  ;Define the bounds for each time bin.
+  time_bounds = get_daily_time_bounds(data.mjd)
+  NCDF_VARPUT, id, x5id, time_bounds - day_zero_mjd
+    
   ; Close the NetCDF file.
   NCDF_CLOSE, id 
   
