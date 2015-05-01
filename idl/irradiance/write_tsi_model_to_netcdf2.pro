@@ -119,6 +119,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   NCDF_ATTPUT, id, x3id, 'units','days since 1610-01-01 00:00:00',/CHAR
   NCDF_ATTPUT, id, x3id, 'standard_name','time',/CHAR
   NCDF_ATTPUT, id, x3id, 'axis','T',/CHAR
+  NCDF_ATTPUT, id, x3id, 'bounds', 'time_bnds',/CHAR
   
   x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
   NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Daily Total Solar Irradiance (W m-2)',/CHAR
