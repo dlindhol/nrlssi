@@ -101,7 +101,7 @@ function write_yearly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradia
   bid = NCDF_DIMDEF(id, 'bounds', 2) ;time bounds dimension
   
   ; Variable Attributes
- x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
+  x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT, CHUNK=1)
   NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Yearly Averaged Total Solar Irradiance (W m-2)',/CHAR
   NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance',/CHAR
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2',/CHAR
@@ -109,7 +109,7 @@ function write_yearly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradia
   NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC',/CHAR
   NCDF_ATTPUT, id, x1id, 'missing_value', missing_value
   
-  x2id = NCDF_VARDEF(id, 'time', [tid], /FLOAT)
+  x2id = NCDF_VARDEF(id, 'time', [tid], /FLOAT, CHUNK=1)
   NCDF_ATTPUT, id, x2id, 'units','days since 1610-01-01 00:00:00',/CHAR
   NCDF_ATTPUT, id, x2id, 'standard_name','time',/CHAR
   NCDF_ATTPUT, id, x2id, 'axis','T',/CHAR
@@ -119,7 +119,7 @@ function write_yearly_average_tsi_to_netcdf2, ymd1, ymd2, ymd3, version, irradia
   NCDF_ATTPUT, id, x3id, 'long_name', 'Minimum (inclusive) and maximum (exclusive) dates included in the time averaging',/CHAR
   NCDF_ATTPUT, id, x3id, 'units', 'days since 1610-01-01 00:00:00',/CHAR
   
-  x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
+  x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT, CHUNK=1)
   NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Yearly-Averaged Total Solar Irradiance (W m-2)',/CHAR
   NCDF_ATTPUT, id, x4id, 'units', 'W m-2',/CHAR
   NCDF_ATTPUT, id, x4id, 'missing_value',missing_value 

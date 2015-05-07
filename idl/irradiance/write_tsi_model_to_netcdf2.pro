@@ -104,7 +104,7 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   bid = NCDF_DIMDEF(id, 'bounds', 2) ;time bounds dimension
   
   ; Variable Attributes
-  x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
+  x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT, CHUNK=1)
   NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Daily Total Solar Irradiance (W m-2)',/CHAR
   NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance',/CHAR
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2',/CHAR
@@ -115,13 +115,13 @@ function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
 ;  x2id = NCDF_VARDEF(id, 'iso_time', [tid], /CHAR)
 ;  NCDF_ATTPUT, id, x2id, 'long_name', 'ISO8601 date (YYYY-MM-DD)'
 
-  x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT)
+  x3id = NCDF_VARDEF(id,'time',[tid],/FLOAT, CHUNK=1)
   NCDF_ATTPUT, id, x3id, 'units','days since 1610-01-01 00:00:00',/CHAR
   NCDF_ATTPUT, id, x3id, 'standard_name','time',/CHAR
   NCDF_ATTPUT, id, x3id, 'axis','T',/CHAR
   NCDF_ATTPUT, id, x3id, 'bounds', 'time_bnds',/CHAR
   
-  x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT)
+  x4id = NCDF_VARDEF(id,'TSI_UNC',[tid],/FLOAT, CHUNK=1)
   NCDF_ATTPUT, id, x4id, 'long_name','Uncertainty in Daily Total Solar Irradiance (W m-2)',/CHAR
   NCDF_ATTPUT, id, x4id, 'units', 'W m-2',/CHAR
   NCDF_ATTPUT, id, x4id, 'missing_value',missing_value
