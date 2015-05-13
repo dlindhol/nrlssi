@@ -1,8 +1,4 @@
-pro generate_final_files
-;time bin = 'day', 'month', or 'year'
-;if time bin not set, the default is day
-
-output_dir = '/Users/hofmann/NRL2_OUTPUT/'
+pro generate_final_files, output_dir=output_dir
 
 ;YEARLY-AVERAGED TSI and SSI
 ; each data product is stored in a single, period-of-record, file
