@@ -106,7 +106,7 @@ function write_yearly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradia
   ; Variable Attributes
   x0id = NCDF_VARDEF(id, 'SSI', [lid,tid], /FLOAT)
   NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Climate Data Record of Yearly Averaged Solar Spectral Irradiance (Watt m-2 nm-1)',/CHAR
-  NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_solar_spectral_irradiance',/CHAR
+  ;NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_solar_spectral_irradiance',/CHAR
   NCDF_ATTPUT, id, x0id, 'units', 'W m-2 nm-1',/CHAR
   NCDF_ATTPUT, id, x0id, 'cell_methods', 'time: mean',/CHAR
   NCDF_ATTPUT, id, x0id, 'missing_value', missing_value
@@ -122,7 +122,7 @@ function write_yearly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradia
  
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
   NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Yearly Averaged Total Solar Irradiance (W m-2)',/CHAR
-  NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance',/CHAR
+  ;NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance',/CHAR
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2',/CHAR
   NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean',/CHAR
   NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC',/CHAR
