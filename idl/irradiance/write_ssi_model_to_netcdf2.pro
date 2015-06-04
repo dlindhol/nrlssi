@@ -86,7 +86,7 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   NCDF_ATTPUT, id, /GLOBAL, "title", "Daily SSI calculated using NRL2 solar irradiance model. Includes spectrally integrated (total) TSI value",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "source", src,/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "institution", "Naval Research Laboratory Space Science Division and Laboratory for Atmospheric and Space Physics",/CHAR
-  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabulary", "CF Standard Name Table v27",/CHAR
+  NCDF_ATTPUT, id, /GLOBAL, "standard_name_vocabulary", "CF Standard Name Table v29",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "id", file,/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "naming_authority", "gov.noaa.ncdc",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "date_created",ymd3,/CHAR
@@ -117,7 +117,7 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   ; Variable Attributes
   x0id = NCDF_VARDEF(id, 'SSI', [lid,tid], /FLOAT)
   NCDF_ATTPUT, id, x0id, 'long_name', 'NOAA Climate Data Record of Daily Solar Spectral Irradiance (W m-2 nm-1)',/CHAR
-  ;NCDF_ATTPUT, id, x0id, 'standard_name', 'toa_solar_spectral_irradiance',/CHAR
+  NCDF_ATTPUT, id, x0id, 'standard_name', 'solar_irradiance_per_unit_wavelength',/CHAR
   NCDF_ATTPUT, id, x0id, 'units', 'W m-2 nm-1',/CHAR
   NCDF_ATTPUT, id, x0id, 'cell_methods','time: mean',/CHAR
   NCDF_ATTPUT, id, x0id, 'missing_value', missing_value
@@ -134,7 +134,7 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
  
   x1id = NCDF_VARDEF(id, 'TSI', [tid], /FLOAT)
   NCDF_ATTPUT, id, x1id, 'long_name', 'NOAA Climate Data Record of Daily Total Solar Irradiance (W m-2)',/CHAR
-  ;NCDF_ATTPUT, id, x1id, 'standard_name', 'toa_total_solar_irradiance',/CHAR
+  NCDF_ATTPUT, id, x1id, 'standard_name', 'solar_irradiance',/CHAR
   NCDF_ATTPUT, id, x1id, 'units', 'W m-2',/CHAR
   NCDF_ATTPUT, id, x1id, 'cell_methods','time: mean',/CHAR
   NCDF_ATTPUT, id, x1id, 'ancillary_variables','TSI_UNC',/CHAR
