@@ -9,8 +9,8 @@
 ;
 ; DESCRIPTION
 ;   The replace_nan_with_value.pro function returns a float array containing the given data with 
-;   NaN replaced with user designated missing value. It is subroutine of write_tsi_model_to_netcdf2.pro and write_ssi_model_to_netcdf2.
-;   A copy of the input data as floats is made so 'data' remains immutable.
+;   NaN replaced with user designated missing value. 
+;   A copy of the input data as floats is made so the 'data' remains immutable.
 ; 
 ; INPUTS
 ;   data - input data a copy of the data as floats:
@@ -35,7 +35,7 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
 ;   replace_nan_with_missing, data, value

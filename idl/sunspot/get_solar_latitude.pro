@@ -35,10 +35,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   get_solar_latitude,jd
+;   result=get_solar_latitude(jd)
 ;
 ;@***** 
 function get_solar_latitude_from_file, jd

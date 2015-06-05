@@ -1,19 +1,19 @@
-;@***h* SOLAR_IRRADIANCE_FCDR/mjd2iso_date.pro
+;@***h* SOLAR_IRRADIANCE_FCDR/mjd2iso_yyyy.pro
 ; 
 ; NAME
-;   mjd2iso_date
+;   mjd2iso_yyyy
 ;
 ; PURPOSE
-;   Converts time from Modified Julian Date (integer) to ISO 8601 standard, 'yyyy-mm-dd' 
+;   Converts time from Modified Julian Date (integer) to a 4 digit year in ISO 8601 standard, 'yyyy' 
 ;
 ; DESCRIPTION
-;   Converts time from Modified Julian Date (integer) to ISO 8601 standard, 'yyyy-mm-dd' 
+;   Converts time from Modified Julian Date (integer) to 4 digit year ISO 8601 standard, 'yyyy' 
 ;   
 ; INPUTS
 ;   mjd - Modified Julian Date
 ;   
 ; OUTPUTS
-;   a value for time in ISO format ('yyyy-mm-dd')
+;   a value for year in ISO format ('yyyy')
 ;
 ; AUTHOR
 ;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
@@ -31,10 +31,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   mjd2iso_date,mjd
+;   result=mjd2iso_yyyy(mjd)
 ;
 ;@***** 
 function mjd2iso_yyyy, mjd

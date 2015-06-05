@@ -4,12 +4,12 @@
 ;   compute_ssi.pro
 ;
 ; PURPOSE
-;   The compute_ssi.pro procedure is a function called by the driver routine,nrl2_to_irradiance,pro,
-;   to compute daily Model Solar Spectral Irradiance using multiple regression coefficients specific to 
-;   the NRLSSI2 model andgiven values for the sunspot darkening function and the facular brightening function.
+;   The compute_ssi.pro procedure is a function called by the routine,process_irradiance,pro,
+;   to compute Solar Spectral Irradiance using multiple regression coefficients specific to 
+;   the NRLSSI2 model and given values for the sunspot darkening function and the facular brightening function.
 ;
 ; DESCRIPTION
-;   The compute_ssi.pro function calculates the Model Solar Spectral Irradiance (SSI) for a specific day, given
+;   The compute_ssi.pro function calculates the Solar Spectral Irradiance (SSI) for a specific day, given
 ;   values for the sunspot darkening and the facular brightening function using a 2-component multiple regression formula.
 ; 
 ;   Variable Definitions:
@@ -135,6 +135,7 @@
 ;     dfactot - spectrally integrated value of the facular brightening
 ;     dspottot - spectrally integrated value of the sunspot darkening 
 ;     nrl2tot - spectrally integrated value of the SSI, nrl2
+;     nrl2unc - spectrally dependent uncertainty in the modeled solar spectral irradiance
 ;     
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -152,10 +153,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
-;   compute_ssi, sb, mg, model_params
+;   result=compute_ssi(sb, mg, model_params)
 ;
 ;@*****
 function compute_ssi, sb, mg, model_params
@@ -226,5 +227,4 @@ function compute_ssi, sb, mg, model_params
   
   return,ssi
 
-stop
 end

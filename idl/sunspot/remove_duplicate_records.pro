@@ -12,7 +12,7 @@
 
 ;   
 ; INPUTS
-;   ssdata_by_station - A structure containing an array of observations by that station:
+;   ssdata_by_station - An IDL hash observations by that station:
 ;     mjd - Modified Julian Date 
 ;     lat - latitude of sunspot group
 ;     lon - longitude of sunspot group
@@ -21,8 +21,9 @@
 ;     station - station name 
 ;   
 ; OUTPUTS
-;   result - a structure containing an array of observations by that station, with duplicate records removed 
-;   ndup - an integer value of the number of duplicate records found (default = 0)
+;   result - an IDL hash (an IDL Hash (compound data type of key-value pair) where the key is the Julian Day Number
+;            and the value is a List of records with duplicate records removed 
+;   ndup   - an integer value of the number of duplicate records found (default = 0)
 ;
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -40,10 +41,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   remove_duplicate_records,ssdata_by_station, ndup
+;   result=remove_duplicate_records(ssdata_by_station, ndup)
 ;
 ;@***** 
 function make_sunspot_record_hash_code, record

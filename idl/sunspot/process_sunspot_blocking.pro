@@ -9,7 +9,8 @@
 ;
 ; DESCRIPTION
 ;   This routine computes the sunspot darkening index, which is passed by structure, 'sunspot_blocking_data', to the calling 
-;   function, 'get_sunspot_blocking'. This routine calls a series of subroutines with the names and purposes, summarized below:
+;   function, 'get_sunspot_blocking' for preliminary data. 
+;   This routine calls a series of subroutines with the names and purposes, summarized below:
 ;   get_sunspot_data.pro - aquire USAF white light sunspot region data from NOAA/NGDC web repository and store
 ;                          in a structure, 'sunspot_data', identified by index -> (jd, lat, lon, area, station)
 ;                          An optional keyword, 'stations', is used to restrict data to a user-defined particular station(s).
@@ -38,16 +39,17 @@
 ;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
 ;   ymd2       - ending time range respective to midnight GMT of the given day  
 ;   stations = stations - Optional keyword to restrict sunspot darkening index to specified monitoring stations in the USAF white light network.
-;                         If omitted (default), all stations are included. Used for QA analysis.
+;                         If omitted (default), these stations are used: 'LEAR','CULG','SVTO','RAMY','BOUL','HOLL','PALE','MANI','ATHN'. 
+;                         Used for QA analysis.
 ;   output_dir=output_dir - Optional keyword to specify directory path to store sunspot darkening index in a text file. If omitted (default), output
 ;                           is not written to intermediate file. Used for QA analysis.  
 ;   
 ; OUTPUTS
-;   sunspot_blocking_struct - a structure containing the following variables:
+;   sunspot_blocking_data - a structure containing the following variables:
 ;     mjdn - the modified julian date 
 ;     ssbt - the sunspot darkening index (a mean value of the reporting stations)
 ;     dssbut - the standard deviation of the sunspot darkening index of the reporting stations
-;     quality flag - a value of 0 or 1 (1 = missing data); Used for QA analysis.
+;     quality flag - a value of 0 or 1 (1 = missing data or duplicate data); Used for QA analysis.
 ;
 ;   if optional keyword 'output_dir' is defined, an intermediate text file of the naming convention, 'sunspot_blocking_YMD1_YMD2_VER.txt',
 ;   contains the structure data listed above, where version is a defined developmental version - Used for QA monitoring. 
@@ -68,10 +70,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   process_sunspot_blocking,ymd1,ymd2,stations=stations,output_dir=output_dir
+;   result=process_sunspot_blocking(ymd1,ymd2,stations=stations,output_dir=output_dir)
 ;
 ;@***** 
 function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=output_dir

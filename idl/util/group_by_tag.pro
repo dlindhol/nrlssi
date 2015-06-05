@@ -26,7 +26,8 @@
 ;   tag - an array of USAF station names  
 ;   
 ; OUTPUTS
-;   result - a Hash where the key is the USAF station name and the value is a List of sunspot records for that station (for a particular day).  
+;   result - an IDL Hash (compound data type of key-value pair) where the key is the USAF station name and 
+;            the value is a List of sunspot records for that station (for a particular day).  
 ;
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -44,10 +45,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   group_by_tag,structures, tag
+;   result=group_by_tag(structures, tag)
 ;
 ;@***** 
 

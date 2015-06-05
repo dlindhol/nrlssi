@@ -4,10 +4,10 @@
 ;   mjd2iso_date
 ;
 ; PURPOSE
-;   Converts time from Modified Julian Date (integer) to ISO 8601 standard, 'yyyy-mm-dd' 
+;   Converts time from Modified Julian Date (integer) to ISO 8601 time standard, 'yyyy-mm-dd' 
 ;
 ; DESCRIPTION
-;   Converts time from Modified Julian Date (integer) to ISO 8601 standard, 'yyyy-mm-dd' 
+;   Converts time from Modified Julian Date (integer) to ISO 8601 time standard, 'yyyy-mm-dd' 
 ;   Uses the ITT/IDL library routine caldat.pro, which returns the calendar date given julian day 
 ;   
 ; INPUTS
@@ -32,10 +32,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   mjd2iso_date,mjd
+;   result=mjd2iso_date(mjd)
 ;
 ;@***** 
 function mjd2iso_date, mjd

@@ -6,7 +6,7 @@
 ; PURPOSE
 ;   The write_sunspot_blocking.pro procedure outputs time (in iso yyyy-mm-dd format), sunspot darkening index, 
 ;   the standard deviation of the sunspot darkening index, and a quality flag to an output text file.
-;   An optional routine utilized if the keyword paramater, output_dir, is defined in process_sunspot_blocking.pro
+;   It is an optional routine utilized if the keyword paramater, output_dir, is defined in process_sunspot_blocking.pro
 ;
 ; DESCRIPTION
 ;   This routine is executed only if an optional keyword input, 'output_dir', is set in process_sunspot_blocking.pro.
@@ -14,7 +14,7 @@
 ;   and a quality flag to an output text file.  This intermediate file is used in QA analysis.                                                    
 ;   The file- naming convention of the output follows 'sunspot_blocking_YMD1_YMD2_VER.txt', where time ranges specify start/end date 
 ;   of the time range over which the sunspot darkening is computed, and 'VER' is a hardcoded development version value to help keep track of 
-;   data output.
+;   data output (i.e. 'VER' may differ from version of the NRL2 model).
 ;                                     
 ; INPUTS
 ;   sunspot_blocking_data - a structure containing the following variables:
@@ -45,10 +45,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_sunspot_blocking,sunspot_blocking_data,file
+;   result=write_sunspot_blocking(sunspot_blocking_data,file)
 ;
 ;@***** 
 

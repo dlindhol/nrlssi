@@ -4,17 +4,17 @@
 ;   remove_hypens
 ;
 ; PURPOSE
-;   Removes hyphens from the ISO 8601 date standard 'YYYY-MM-DD' to create 'YYYYMMDD' 
+;   Removes hyphens from the ISO 8601 date standard 'YYYY-MM-DD' to create 'YYYYMMDD' format
 ;
 ; DESCRIPTION
 ;   Removes hyphens in the ISO 8601 time standard. 
 ;   Used for formatting ISO 8601 time for dynamic filename creation. 
 ;   
 ; INPUTS
-;   ymd - a value for time in ISO format ('yyyy-mm-dd')
+;   string - a value for time in ISO format ('yyyy-mm-dd')
 ;   
 ; OUTPUTS
-;   ymd_no_hyphen - ISO format without hyphens
+;   result - ISO format without hyphens
 ;
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -32,10 +32,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   02/19/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   remove_hyphens,ymd
+;   result=remove_hyphens(string)
 ;
 ;@***** 
 function remove_hyphens, string

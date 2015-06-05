@@ -4,12 +4,12 @@
 ;   compute_tsi.pro
 ;
 ; PURPOSE
-;   The compute_tsi.pro procedure is a function called by the driver routine,nrl2_to_irradiance,pro,
-;   to compute daily Model Total Solar Irradiance using multiple regression coefficients specific to the 
+;   The compute_tsi.pro procedure is a function called by the routine,process_irradiance,pro,
+;   to compute Total Solar Irradiance using multiple regression coefficients specific to the 
 ;   NRLTSI2 model and given values for the sunspot darkening function and the facular brightening function.
 ;
 ; DESCRIPTION
-;   The compute_tsi.pro function calculates the Model Total Solar Irradiance (TSI) for a specific day, given
+;   The compute_tsi.pro function calculates the Total Solar Irradiance (TSI) for a specific day, given
 ;   values for the sunspot darkening and the facular brightening function using a 2-component multiple regression formula.
 ; 
 ;   Variable Definitions:
@@ -107,10 +107,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
-;   compute_tsi, sb, mg, model_params
+;   result=compute_tsi(sb, mg, model_params)
 ;@*****
 
 function compute_tsi,sb, mg, model_params

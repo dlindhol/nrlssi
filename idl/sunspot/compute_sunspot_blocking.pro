@@ -20,7 +20,7 @@
 ;   sunspot darkening = mu * (3*mu + 2)/2.0 * area , where mu = cos(latitute) × cos(longitude) is the
 ;   cosine weighted area projection of sunspot area, and area = heliographic area of the sunspot group
 ;   
-;   sunspot darkening (with empirical corrections for the additional darkness of larger sunspot than smaller sunspot = 
+;   For reference: sunspot darkening (with empirical corrections for the additional darkness of larger sunspot than smaller sunspot = 
 ;   mu * (3*mu + 2)/2.0 * area* (0.2231 + 0.0244 * alog10(area))
 ;                                     
 ; INPUTS
@@ -47,10 +47,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   compute_sunspot_blocking,area,lat,lon
+;   result=compute_sunspot_blocking(area,lat,lon)
 ;
 ;@***** 
 function compute_sunspot_blocking, area, lat, lon

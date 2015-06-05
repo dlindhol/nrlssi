@@ -4,7 +4,7 @@
 ;   get_spectral_bins.pro
 ;
 ; PURPOSE
-;   The get_spectral_bins.pro function is called from the driver routine, nrl2_to_irradiance.pro.  It sets up wavelength bands for 
+;   The get_spectral_bins.pro function is called from the routine, process_irradiance.pro.  It sets up wavelength bands for 
 ;   the output solar spectral irradiance.  The wavelength grid is as follows:
 ;   1 nm from 115 to 750
 ;   5 nm from 750 to 5000
@@ -41,10 +41,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/15/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
-;   get_spectral_bins
+;   result=get_spectral_bins()
 ;
 ;@*****
 function get_spectral_bins

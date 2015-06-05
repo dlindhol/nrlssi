@@ -4,8 +4,8 @@
 ;   bin_ssi.pro
 ;
 ; PURPOSE
-;   The bin_ssi.pro function is called from the driver routine, nrl2_to_irradiance.pro.  It bins the Modeled
-;   Solar Spectral Irradiance into the wavelength grid, defined in get_spectral_bins.pro.
+;   The bin_ssi.pro function is called from the routine, process_irradiance.pro.  It bins the 
+;   Solar Spectral Irradiance into a variable-sized wavelength grid as defined in get_spectral_bins.pro.
 ;   The wavelength grid is as follows:
 ;   1 nm from 115 to 750
 ;   5 nm from 750 to 5000
@@ -14,23 +14,25 @@
 ;
 ; DESCRIPTION
 ;   The bin_ssi.pro function uses wavelength grid information (number of bands, bandcenters, and bandwidths),
-;   and bins the Modeled Solar Spectral Irradiance onto the wavelength grid, defined by bandcenter and 
-;   bandwidth. It outputs the binned irradiance to the main driver, nrl2_to_irradiance.pro.
+;   and bins the Solar Spectral Irradiance onto the wavelength grid, defined by bandcenter and 
+;   bandwidth. 
 ;   
 ; INPUTS
 ;  
-;   model_params  - a structure containing the wavelength information of the native modeled SSI:
+;   model_params  - a structure containing wavelength values of modeled SSI on 
 ;     lambda      - wavelength (nm; in 1-nm bins)
-;   spectral_bins - a structure containing the wavelength grid information of the desired output SSI:
+;   spectral_bins - a structure containing the desired wavelength grid information of the output SSI:
 ;     nband       - number of spectral bands, for a variable wavelength grid, that the NRL2 model bins 1 nm solar spectral irradiance onto.
 ;     bandcenter  - the bandcenters (nm) of the variable wavelength grid.
 ;     bandwidth   - the bandwidths (delta wavelength, nm)  of the variable wavelength grid. 
 ;   ssi           - a structure containing the modeled SSI:
 ;     nrl2        - the NRL2 modeled Solar Spectral Irradiance at 1 nm spectral resolution
+;     nrl2unc     - the uncertainty of the modeled Solar Spectral Irradiance
 ;          
 ; OUTPUTS
 ;   ssi_bin      - a structure containing the following variables:
 ;     nrl2bin    - the binned NRL2 modeled Solar Spectral Irradiance, on a variable wavelength grid
+;     nrl2binunc - the uncertainty of the modeled Solar Spectral Irradiance, binned for the variable wavelength grid
 ;     nrl2binsum - the sum of the binned irradiance (equal to nrl2bin * bandwidth).  
 ;     
 ; AUTHOR
@@ -49,10 +51,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ;
 ; USAGE
-;   bin_ssi, model_params, spectral_bins, ssi
+;   result=bin_ssi(model_params, spectral_bins, ssi)
 ;
 ;@*****
 function bin_ssi, model_params, spectral_bins, ssi

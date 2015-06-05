@@ -1,3 +1,47 @@
+;@***h* SOLAR_IRRADIANCE_FCDR/bin_average.pro
+;
+; NAME
+;   bin_average
+;
+; PURPOSE
+;   The bin_average.pro is a function that performs time averaging of data records.
+;
+; DESCRIPTION
+;   The bin_average.pro is a function that performs time averaging of data records. The data records 
+;   are assumed to be a list of structures where the first element is time in Modified Julian Date (MJD)
+;   and the second element is the value to be averaged. All other structure elements are ignored.  
+;   'bin' 
+;   
+; INPUTS
+;   records   - The data records (a list of structures) containing the Modified Julian Date and the value to be averaged
+;   bin       - Designates the time averaging.  It is either 'year' or 'month' or 'day'. The default is 'day'.
+;
+; OUTPUTS
+;   averaged  - An IDL hash mapping of the iso time to the average of the values in the records for that time bin.
+;   
+; AUTHOR
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;
+; COPYRIGHT
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   06/04/2015 Initial Version prepared for NCDC
+;
+; USAGE
+;   result=bin_average(records, bin)
+;
+;@*****
+
 ;These first three routines take a data structure (record) with the only assumption 
 ;that the first element is time in Modified Julian Days (MJD).
 ;The time will be converted to a new MJD that represents the desired time bin:

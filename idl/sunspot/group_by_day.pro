@@ -21,7 +21,8 @@
 ;     station - station name 
 ;   
 ; OUTPUTS
-;   result - a Hash where the key is the Julian Day Number and the value is a List of records for that day.  
+;   result - an IDL Hash (compound data type of key-value pair) where the key is the Julian Day Number 
+;            and the value is a List of records for that day.  
 ;
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -39,10 +40,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   group_by_day,structures
+;   result=group_by_day(structures)
 ;
 ;@***** 
 function group_by_day, structures

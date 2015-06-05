@@ -1,4 +1,49 @@
-;Construct a data product file name.
+;@***h* SOLAR_IRRADIANCE_FCDR/create_filename.pro
+;
+; NAME
+;   create_filename
+;
+; PURPOSE
+;   The create_filename.pro function dynamically constructs a data product file name.
+;
+; DESCRIPTION
+;   The create_filename.pro function dynamically constructs a data product file name.
+;
+; INPUTS
+;   ymd1            - starting time range for the time range of the form 'yyyy-mm-dd'
+;   ymd2            - ending time range for the time range of the form 'yyyy-mm-dd'
+;   version         - version and revision number of the NRLTSI2 and NRLSSI2 models (e.g., v02r00)
+;   time_bin        - A value of 'year', 'month', or 'day' that defines the time-averaging performed for the given data records.
+;                     'day' is the default.
+;   tsi             - Keyword parameter designating file name is to be constructed for TSI data.
+;   ssi             - Keyword parameter designating file name is to be constructed for SSI data.
+;
+; OUTPUTS
+; 
+;   filename        - The data product file name
+;
+; AUTHOR
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;
+; COPYRIGHT
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   06/04/2015 Initial Version prepared for NCDC
+;
+; USAGE
+;   result=create_filename(ymd1, ymd2, version, time_bin, tsi=tsi, ssi=ssi)
+;
+;@*****
 function create_filename, ymd1, ymd2, version, time_bin, tsi=tsi, ssi=ssi
 
   ;Make sure output_dir is defined. Default to current directory.

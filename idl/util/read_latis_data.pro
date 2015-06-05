@@ -1,3 +1,49 @@
+;@***h* SOLAR_IRRADIANCE_FCDR/read_latis_data.pro
+;
+; NAME
+;   read_latis_data
+;
+; PURPOSE
+;   The read_latis_data.pro is a function that gets data from the LASP Time Series Server as a list of structures
+;
+; DESCRIPTION
+;   The read_latis_data.pro is a function that gets data from the LASP Time Series Server as a list of structures
+;   Data is parsed from LASP's time-series server, LaTiS, via an IDL net URL.
+;
+; INPUTS
+;   dataset    - The name of the dataset
+;   start_time - starting time range to aquire the data, in 'yyyy-mm-dd' format.
+;   end_time   - ending time range to aquire the data, in 'yyyy-mm-dd' format.
+;   host       - name of the server host
+;   port       - the port on the server machine
+;   base_path  - Directory path on server to the dataset
+;   query      - query parameters used to convert time or rename parameters to match the structures in LaTiS.
+;
+; OUTPUTS
+;   list       - an IDL list containing the dataset values
+;
+; AUTHOR
+;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Doug Lindholm, Laboratory for Atmospheric and Space Physics, Boulder, CO
+;   Judith Lean, Space Science Division, Naval Research Laboratory, Washington, DC
+;
+; COPYRIGHT
+;   THIS SOFTWARE AND ITS DOCUMENTATION ARE CONSIDERED TO BE IN THE PUBLIC
+;   DOMAIN AND THUS ARE AVAILABLE FOR UNRESTRICTED PUBLIC USE. THEY ARE
+;   FURNISHED "AS IS." THE AUTHORS, THE UNITED STATES GOVERNMENT, ITS
+;   INSTRUMENTALITIES, OFFICERS, EMPLOYEES, AND AGENTS MAKE NO WARRANTY,
+;   EXPRESS OR IMPLIED, AS TO THE USEFULNESS OF THE SOFTWARE AND
+;   DOCUMENTATION FOR ANY PURPOSE. THEY ASSUME NO RESPONSIBILITY (1) FOR
+;   THE USE OF THE SOFTWARE AND DOCUMENTATION; OR (2) TO PROVIDE TECHNICAL
+;   SUPPORT TO USERS.
+;
+; REVISION HISTORY
+;   06/04/2015 Initial Version prepared for NCDC
+;
+; USAGE
+;   result=read_latis_data(dataset, start_time, end_time, host=host, port=port, base_path=base_path, query=query)
+;
+;@*****
 function read_latis_data, dataset, start_time, end_time, host=host, port=port, base_path=base_path, query=query
   ;TODO: consider complex datasets (nested functions)
   ;TODO: error handling

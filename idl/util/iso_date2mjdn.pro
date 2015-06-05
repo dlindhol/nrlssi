@@ -33,10 +33,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/15/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   iso_date2mjdn,ymd
+;   result=iso_date2mjdn(ymd)
 ;
 ;@***** 
 function iso_date2mjdn, ymd

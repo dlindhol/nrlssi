@@ -4,36 +4,36 @@
 ;   write_ssi_model_to_netcdf2.pro
 ;
 ; PURPOSE
-;   The write_ssi_model_to_netcdf2.pro function outputs Model Solar Spectral Irradiance
-;   to a netcdf4 file. This function is called from the main routine, nrl2_to_irradiance.pro.
+;   The write_ssi_model_to_netcdf2.pro function outputs daily Solar Spectral Irradiance
+;   to a netcdf4 file. This function is called from the routine, write_irradiance_data.pro.
 ;
 ; DESCRIPTION
-;   The write_ssi_model_to_netcdf2.pro function writes the Model Solar Spectral Irradiance and wavelength information 
+;   The write_ssi_model_to_netcdf2.pro function writes the daily Solar Spectral Irradiance and wavelength information 
 ;   (midpoints and band width) to a netcdf4 formatted file. Also included is the value of total (spectrally)
 ;   integrated Total Solar Irradiance for the particular date. 
-;   Two time format variables are also included: an ISO 8601 time ('yyyy-mm-dd') and a seconds since a 1610-01-01 00:00:00 epoch.
+;   The time format variables is seconds since a 1610-01-01 00:00:00 epoch
 ;   CF-1.6 metadata conventions are used in defining global and variable name attributes. 
 ;   Missing values are defined as -99.0. 
-;   This function is called from the main routine, nrl2_to_irradiance.pro.
 ; 
 ; INPUTS
 ;   ymd1  - starting time  (yyyy-mm-dd)
 ;   ymd2  - ending time  (yyyy-mm-dd)
 ;   ymd3  - creation date (yyyy-mm-dd)
-;   algver - version number of the NRLTSI2 model
-;   algrev - revision number of the NRLTSI2 model
-;   data - a structure containing the following variables
-;     mjd - Modified Julian Date  
-;     iso - iso 8601 formatted time
-;     tsi - Modeled Total Solar Irradiance
-;     ssi - Modeled Solar Spectral Irradiance (in wavelength bins) 
+;   version         - version and revision number of the NRLSSI2 model (e.g., v02r00)
+;   irradiance_data - a structure containing the following variables
+;     mjd    - Modified Julian Date
+;     iso    - iso 8601 formatted time
+;     tsi    - Modeled Total Solar Irradiance
+;     tsiunc - Uncertainty in total solar irradiance
+;     ssi    - Modeled Solar Spectral Irradiance (in wavelength bins)
 ;     ssitot - Integral of the Modeled Solar Spectral Irradiance
 ;   spectral_bins - a structure containing the following variables
 ;     nband       - number of spectral bands, for a variable wavelength grid, that the NRL2 model bins 1 nm solar spectral irradiance onto.
 ;     bandcenter  - the bandcenters (nm) of the variable wavelength grid.
 ;     bandwidth   - the bandwidths (delta wavelength, nm)  of the variable wavelength grid.    
-;   file - output filename. Created dynamically within the driver routine, nrl2_to_irradiance.pro  
-;      
+;   output_dir - Directory path for output file
+;   file       - filename (dynamically created from write_irradiance_data.pro)
+;   
 ; OUTPUTS
 ;
 ; AUTHOR
@@ -52,11 +52,11 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_ssi_model_to_netcdf2, ymd1,ymd2,ymd3,algver,algrev,data,spectral_bins,file
-;  
+;   result=write_ssi_model_to_netcdf2(ymd1,ymd2,ymd3,version, irradiance_data,output_dir=output_dir, file)
+;   
 ;@***** 
 function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, output_dir=output_dir, file
 

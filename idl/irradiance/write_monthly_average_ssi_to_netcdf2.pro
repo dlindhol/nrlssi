@@ -1,30 +1,36 @@
-;@***h* SOLAR_IRRADIANCE_FCDR/write_monthly_average_ssi_to_netcdf.pro
+;@***h* SOLAR_IRRADIANCE_FCDR/write_monthly_average_ssi_to_netcdf2.pro
 ; 
 ; NAME
-;   write_monthly_average_ssi_to_netcdf.pro
+;   write_monthly_average_ssi_to_netcdf2.pro
 ;
 ; PURPOSE
-;   The write_monthly_average_ssi_to_netcdf.pro function writes the date and monthly-averaged Model Solar Spectral Irradiance
-;   to a netcdf4 file. It is called by the function average_by_month.pro
-;
+;   The write_monthly_average_ssi_to_netcdf2.pro function outputs monthly-averaged Solar Spectral Irradiance
+;   to a netcdf4 file. This function is called from the routine, write_irradiance_data.pro.
+;   
 ; DESCRIPTION
-;   The write_monthly_average_ssi_to_netcdf.pro function writes the monthly-averaged Model Solar Spectral Irradiance, and (midpoint) 
-;   date (YYYY-MM) to a netcdf4 formatted file. CF-1.5 metadata conventions are used in defining global and variable name attributes. 
+;   The write_monthly_average_ssi_to_netcdf2.pro function outputs monthly-averaged Solar Spectral Irradiance
+;   to a netcdf4 file and (midpoint) date (YYYY-MM) to a netcdf4 formatted file. 
+;   The time format variables is seconds since a 1610-01-01 00:00:00 epoch
 ;   Missing values (NaN's or '0's) are defined as -99.0. 
 ; 
 ; INPUTS
-;   result  - a structure containing the following variables:
-;    iso - the ISO time 'YYYY-MM'
-;    mjd - midpoint of the time series (in Modified Julian date)
-;    min_mjd - the initial date (modified Julian date) in the time series used in the monthly average
-;    max_mjd - the last date (modified Julian date) in the time series used in the monthly average
-;    count - number of elements (i.e. dates) used in the temporal average
-;    tsi - mean (monthly average) of total solar irradiance
-;    tsi_stddev - standard deviation of the monthly-averaged total solar irradiance
-;    ssi- mean (monthly average) of solar spectral irradiance
-;    ssi_stddev- standard deviation of the monthly-averaged solar spectral irradiance
-;    ssitot - mean (monthly average) of the integrated solar spectral irradiance
-;    ssitot_stddev - standard deviation of the monthly-average of the integrated solar spectral irradiance
+;   ymd1  - starting time  (yyyy-mm-dd)
+;   ymd2  - ending time  (yyyy-mm-dd)
+;   ymd3  - creation date (yyyy-mm-dd)
+;   version         - version and revision number of the NRLSSI2 model (e.g., v02r00)
+;   irradiance_data - a structure containing the following variables
+;     mjd    - Modified Julian Date
+;     iso    - iso 8601 formatted time
+;     tsi    - Modeled Total Solar Irradiance
+;     tsiunc - Uncertainty in total solar irradiance
+;     ssi    - Modeled Solar Spectral Irradiance (in wavelength bins)
+;     ssitot - Integral of the Modeled Solar Spectral Irradiance
+;   spectral_bins - a structure containing the following variables
+;     nband       - number of spectral bands, for a variable wavelength grid, that the NRL2 model bins 1 nm solar spectral irradiance onto.
+;     bandcenter  - the bandcenters (nm) of the variable wavelength grid.
+;     bandwidth   - the bandwidths (delta wavelength, nm)  of the variable wavelength grid.
+;   output_dir - Directory path for output file
+;   file       - filename (dynamically created from write_irradiance_data.pro)
 ;      
 ; OUTPUTS
 ;
@@ -44,10 +50,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   11/07/2014 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_monthly_average_ssi_to_netcdf, ym1, ym2, ymd3, algver, result, file
+;   result=write_monthly_average_ssi_to_netcdf2(ymd1, ymd2, ymd3, version, irradiance_data, output_dir=output_dir, file)
 ;  
 ;@***** 
 function write_monthly_average_ssi_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, output_dir=output_dir, file

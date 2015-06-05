@@ -5,20 +5,21 @@
 ;
 ; PURPOSE
 ;   The write_to_manifest.pro function outputs filename, MD5 checksum, and 
-;   file size (in bytes) to a manifest file.
+;   file size (in bytes) to a manifest (.mnf) file.
 ;
 ; DESCRIPTION
 ;   The write_to_manifest.pro function writes the filename, MD5 checksum, and 
-;   file size (in bytes) to a manifest file.
+;   file size (in bytes) to a manifest (.mnf) file.
 ; 
 ; INPUTS
-;   filename  - name of data file, for which file size and checksum are reported
-;   filesize  - filesize (in bytes)
-;   checksum  - MD5 checksum for filename
-;   fileout   - output filename for the manifest file
+;   output_dir - Directory path for manifest file
+;   filename   - name of data file, for which file size and checksum are reported
+;   filesize   - filesize (in bytes)
+;   checksum   - MD5 checksum for filename
+;   fileout    - output filename for the manifest file
 ;      
 ; OUTPUTS
-;   fileout   - Output manifest file, containing filename, file size, and checksum in a comma separated list
+;   fileout    - Output manifest file, containing filename, file size, and checksum in a comma separated list
 ;   
 ; AUTHOR
 ;   Odele Coddington, Laboratory for Atmospheric and Space Physics, Boulder, CO
@@ -36,10 +37,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   02/23/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_to_manifest, filename, filesize, checksum, fileout
+;   result=write_to_manifest(output_dir=output_dir, filename, filesize, checksum, fileout)
 ;  
 ;@***** 
 function write_to_manifest, output_dir=output_dir, filename, filesize, checksum, fileout

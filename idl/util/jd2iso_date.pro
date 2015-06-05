@@ -32,10 +32,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   jd2iso_date,jd
+;   result=jd2iso_date(jd)
 ;
 ;@***** 
 function jd2iso_date, jd

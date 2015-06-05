@@ -31,10 +31,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   09/08/2014 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   jd2mmdd,jd
+;   result=jd2mmdd(jd)
 ;
 ;@***** 
 function jd2mmdd, jd

@@ -8,7 +8,7 @@
 ;   http://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/usaf_mwl/
 ;
 ; DESCRIPTION
-;   This routine is called from the function, process_sunspot_blocking.pro. 
+;   This routine is called from the function, process_sunspot_blocking.pro for the case of preliminary data.
 ;   It accesses the above url and parses the given record into a data structure. Each record is for a sunspot group 
 ;   measurement. The time (YYMMDD), solar latitude and longitude, sunspot area, and station ID are parsed from each record.
 ;   
@@ -16,10 +16,11 @@
 ;   ymd1       - starting time range respective to midnight GMT of the given day, in Modified Julian day (converted from 'yyyy-mm-dd' in main driver).
 ;   ymd2       - ending time range respective to midnight GMT of the given day  
 ;   stations = stations - Optional keyword to restrict sunspot darkening index to specified monitoring stations in the USAF white light network.
-;                         If omitted (default), all stations are included. Used for QA analysis.
+;                         If omitted (default), these stations are used: 'LEAR','CULG','SVTO','RAMY','BOUL','HOLL','PALE','MANI','ATHN'. 
+;                         Used for QA analysis.
 ;   
 ; OUTPUTS
-;   'data' - a structure containing (for each record in the USAF data):
+;   'data' - a structure containing (for each record in the USAF data) is returned to process_sunspot_blocking
 ;     mjd      - Modified Julian Date 
 ;     lat     - latitude of sunspot group
 ;     lon     - longitude of sunspot group
@@ -43,10 +44,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   get_sunspot_data,ymd1, ymd2, stations=stations
+;   result=get_sunspot_data(ymd1, ymd2, stations=stations)
 ;
 ;@***** 
 function parse_line_orig, line

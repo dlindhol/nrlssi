@@ -4,29 +4,28 @@
 ;   write_tsi_model_to_netcdf2.pro
 ;
 ; PURPOSE
-;   The write_tsi_model_to_netcdf2.pro function outputs Model Total Solar Irradiance
-;   to a netcdf4 file. This function is called from the main driver routine, nrl2_to_irradiance.pro.
+;   The write_tsi_model_to_netcdf2.pro function outputs daily Total Solar Irradiance
+;   to a netcdf4 file. This function is called from the routine, write_irradiance_data.pro.
 ;
 ; DESCRIPTION
-;   The write_tsi_model_to_netcdf.pro function writes the Model Total Solar Irradiance to a netcdf4 formatted file. 
-;   Two time format variables are also included: an ISO 8601 time ('yyyy-mm-dd') and a seconds since a 1610-01-01 00:00:00 epoch
+;   The write_tsi_model_to_netcdf.pro function writes the daily Total Solar Irradiance to a netcdf4 formatted file. 
+;   The time format variables is seconds since a 1610-01-01 00:00:00 epoch
 ;   CF-1.6 metadata conventions are used in defining global and variable name attributes. 
 ;   Missing values are defined as -99.0. 
-;   This function is called from the main routine, nrl2_to_irradiance.pro.
 ; 
 ; INPUTS
-;   ymd1  - starting time  (yyyy-mm-dd)
-;   ymd2  - ending time  (yyyy-mm-dd)
-;   ymd3  - creation date (yyyy-mm-dd)
-;   algver - version number of the NRLTSI2 model
-;   algrev - revision number of the NRLTSI2 model
-;   data - a structure containing the following variables
-;     mjd - Modified Julian Date  
-;     iso - iso 8601 formatted time
-;     tsi - Modeled Total Solar Irradiance
-;     ssi - Modeled Solar Spectral Irradiance (in wavelength bins) 
+;   ymd1            - starting time  (yyyy-mm-dd)
+;   ymd2            - ending time  (yyyy-mm-dd)
+;   ymd3            - creation date (yyyy-mm-dd)
+;   version         - version and revision number of the NRLTSI2 model (e.g., v02r00)
+;   irradiance_data - a structure containing the following variables
+;     mjd    - Modified Julian Date  
+;     iso    - iso 8601 formatted time
+;     tsi    - Modeled Total Solar Irradiance
+;     ssi    - Modeled Solar Spectral Irradiance (in wavelength bins) 
 ;     ssitot - Integral of the Modeled Solar Spectral Irradiance 
-;   file - output filename. Created dynamically within the driver routine, nrl2_to_irradiance.pro  
+;   output_dir - Directory path for output file
+;   file       - filename (dynamically created from write_irradiance_data.pro) 
 ;      
 ; OUTPUTS
 ;
@@ -46,10 +45,10 @@
 ;   SUPPORT TO USERS.
 ;
 ; REVISION HISTORY
-;   01/14/2015 Initial Version prepared for NCDC
+;   06/04/2015 Initial Version prepared for NCDC
 ; 
 ; USAGE
-;   write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, algver, algrev, data, file
+;   result=write_tsi_model_to_netcdf2(ymd1, ymd2, ymd3, version, irradiance_data,output_dir=output_dir, file)
 ;  
 ;@***** 
 function write_tsi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data, output_dir=output_dir, file
