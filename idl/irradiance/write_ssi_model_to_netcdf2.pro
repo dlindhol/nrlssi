@@ -99,7 +99,7 @@ function write_ssi_model_to_netcdf2, ymd1, ymd2, ymd3, version, irradiance_data,
   NCDF_ATTPUT, id, /GLOBAL, "time_coverage_end", ymd2,/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "cdr_program", "NOAA Climate Data Record Program",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "cdr_variable", "SSI, TSI",/CHAR
-  NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "gov.noaa.ncdc:C00899",/CHAR 
+  NCDF_ATTPUT, id, /GLOBAL, "metadata_link", "http://doi.org/10.7289/V51J97P6",/CHAR 
   NCDF_ATTPUT, id, /GLOBAL, "product_version", version,/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_min","-90.0",/CHAR
   NCDF_ATTPUT, id, /GLOBAL, "geospatial_lat_max"," 90.0",/CHAR
