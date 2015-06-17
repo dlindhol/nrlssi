@@ -63,7 +63,24 @@ USAF_Denig_2010-2012.txt
   
 NRL2_model_parameters_v02r00.sav
   Final model input copied from judith_2015_01_28/NRL2_model_parameters_AIndC_21_28Jan15.sav
-  
+
+data/cycle_only:
+
+spotAIndC_fac_1882_2014a_cycle_15Jun15.txt
+spotAIndC_fac_1882_2014d_cycle_15Jun15.txt
+spotAIndC_fac_1882_2014m_cycle_15Jun15.txt
+	Annual, day, and monthly spot and fac indices for "cycle only" magnetic flux (i.e. no background, "open flux" component included).
+	The spot values for these will be identical to the spot values (from Judith) that we currently use in our operational processing, but the fac values will vary.
+
+NRLTSI2_1610_2014a_18May15 (1).txt
+	Annual averaged TSI for 1610 to 2014 computed from model inputs with background and cycle components.
+NRLTSI2_cycle_1610_2014a_15Jun15.txt	
+	Annual averaged TSI for 1610 to 2014 computed from model inputs with cycle only components.
+
+TSI_ann_sigmas.ps
+	Plot of the regression fit between TSI and TSI uncertainty (without background contributions), and the separate background contribution to the TSI.
+		
+	   
 ----
 docs:
   Various documentation, emails, papers that have informed the process. 
