@@ -101,12 +101,13 @@ function get_mg_index_from_latis_orig, ymd1, ymd2
 end
 
 ;TODO: support missing ymd2, return just that day or no upper bound (latest)?
-function get_mg_index_from_latis, ymd1, ymd2, final=final
+function get_mg_index_from_latis, ymd1, ymd2, final=final, cycle=cycle
   ;add day to end time to make it inclusive
   end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
   
   ;get the dataset name
   if keyword_set(final) then dataset = 'nrl2_facular_brightening_v02r00'  $
+  else if keyword_set(cycle) then dataset = 'nrl2_facular_brightening_cycle'  $
   else dataset = 'nrl2_facular_brightening'
   
   ;add query parameters
@@ -119,10 +120,10 @@ function get_mg_index_from_latis, ymd1, ymd2, final=final
 end
 
 
-function get_mg_index, ymd1, ymd2, final=final
+function get_mg_index, ymd1, ymd2, final=final, cycle=cycle
   ;ymd: yyyy-mm-dd, ymd2 is inclusive
   ;If neither time is specified, return the entire dataset.
   ;If only the first time is specified, return only that day.
-  return, get_mg_index_from_latis(ymd1, ymd2, final=final)
+  return, get_mg_index_from_latis(ymd1, ymd2, final=final, cycle=cycle)
 end
 

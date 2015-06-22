@@ -72,7 +72,7 @@ spotAIndC_fac_1882_2014m_cycle_15Jun15.txt
 	Annual, day, and monthly spot and fac indices for "cycle only" magnetic flux (i.e. no background, "open flux" component included).
 	The spot values for these will be identical to the spot values (from Judith) that we currently use in our operational processing, but the fac values will vary.
 
-NRLTSI2_1610_2014a_18May15 (1).txt
+NRLTSI2_1610_2014a_18May15.txt
 	Annual averaged TSI for 1610 to 2014 computed from model inputs with background and cycle components.
 NRLTSI2_cycle_1610_2014a_15Jun15.txt	
 	Annual averaged TSI for 1610 to 2014 computed from model inputs with cycle only components.
