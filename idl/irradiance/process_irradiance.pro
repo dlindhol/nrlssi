@@ -53,7 +53,7 @@
 ;
 ;@*****
 
-function process_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin
+function process_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin, cycle=cycle
 
   ;Get the NRL2 model parameters
   model_params = get_model_params()
@@ -62,8 +62,8 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin
   spectral_bins = get_spectral_bins()
 
   ;Get input data
-  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final, dev=dev) ;sunspot blocking/darkening data
-  mg_index = get_mg_index(ymd1, ymd2, final=final) ;MgII index data - facular brightening
+  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final, dev=dev, cycle=cycle) ;sunspot blocking/darkening data
+  mg_index = get_mg_index(ymd1, ymd2, final=final, cycle=cycle) ;MgII index data - facular brightening
   
   ;Default to daily averages.
   if (not keyword_set(time_bin)) then time_bin = 'day'

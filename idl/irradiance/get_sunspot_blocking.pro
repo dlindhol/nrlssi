@@ -51,12 +51,13 @@ end
 
 ;Get data from LaTiS with option to get final vs prelim.
 ;Default to prelim - final released data plus the latest updates
-function get_sunspot_blocking_from_latis, ymd1, ymd2, final=final
+function get_sunspot_blocking_from_latis, ymd1, ymd2, final=final, cycle=cycle
   ;add day to end time to make it inclusive
   end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
 
   ;get the dataset name 
   if keyword_set(final) then dataset = 'nrl2_sunspot_darkening_v02r00'  $
+  else if keyword_set(cycle) then dataset = 'nrl2_sunspot_darkening_cycle'  $
   else dataset = 'nrl2_sunspot_darkening'
   
   ;add query parameters
@@ -70,8 +71,8 @@ end
 
 ;Main function. Delegate to the processing routine if dev is set.
 ;Otherwise delegate to LaTiS.
-function get_sunspot_blocking, ymd1, ymd2, final=final, dev=dev
+function get_sunspot_blocking, ymd1, ymd2, final=final, dev=dev, cycle=cycle
   if keyword_set(dev) then data = get_sunspot_blocking_from_routine(ymd1, ymd2)  $
-  else data = get_sunspot_blocking_from_latis(ymd1, ymd2, final=final)
+  else data = get_sunspot_blocking_from_latis(ymd1, ymd2, final=final, cycle=cycle)
   return, data
 end
