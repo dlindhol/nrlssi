@@ -65,6 +65,10 @@ function process_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin
   sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, final=final, dev=dev) ;sunspot blocking/darkening data
   mg_index = get_mg_index(ymd1, ymd2, final=final) ;MgII index data - facular brightening
   
+  ;Look for missing days in Sunpot_blocking record (NEW OC)
+  missing = where(sunspot_blocking.quality_flag eq 1,nmissing) ;NEW OC
+  if nmissing gt 0 then test = interpolate_sunspot_blocking(sunspot_blocking,missing,dev=dev) ;NEW OC
+    
   ;Default to daily averages.
   if (not keyword_set(time_bin)) then time_bin = 'day'
   
