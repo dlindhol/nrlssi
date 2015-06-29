@@ -22,10 +22,6 @@ function process_historical_irradiance,ymd1,ymd2,final=final,time_bin=time_bin,c
 ;  ssiuncertainty = ssi.irradiance & ssiuncertainty(*) = 0. ;fill with 0 values
 ;  ssiuncertainty = replace_missing_with_nan(ssiuncertainty, 0.) ; replace 0 values with NaN's
   
-  ;Convert start and stop dates to Modified Julian Day Number (integer) to simplify internal time management. this needs to be in years.
-  
-  mjd_start = get_year_as_iso_from_record(ymd1); iso_date2mjdn(ymd1)
-  mjd_stop  = get_year_as_iso_from_record(ymd2); iso_date2mjdn(ymd2)
   
   ;Number of time samples 
   n = n_elements(tsi.time)
