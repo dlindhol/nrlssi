@@ -2,6 +2,7 @@ pro bams_paper
 
 ;make plots for bams paper
 
+
 ;open .nc file for NRLTSI2 and NRLSSI2 data from 1978-11-07 to 2014-12-31
 cdfid = ncdf_open('/Users/hofmann/Documents/FCDR_Solar/ssi_v02r00_daily_s19781107_e20141231_c20150321.nc',/nowrite)
 ivaridt = ncdf_varid(cdfid,'SSI')
@@ -38,16 +39,12 @@ sim=read_lasp_ascii_file('/Users/hofmann/Downloads/sorce_ssi_L3_c24h_0000nm_2413
 ;MODTRAN5 surface calcs
 restore,filename='/Users/hofmann/git/nrlssi/test/mod5surfacecalcs_shortwave_nm.sav',/verb
 restore,filename='/Users/hofmann/git/nrlssi/test/mod5surfacecalcs_lw.sav'
-goto, fig2
 
-fig2:
-;Figure 2-------------------------------
+goto, fig3
+
+fig1:
+;Figure 1-------------------------------
 ;NRLSSI2 reference spectrum with blackbody curve
-;  algver = 'v02' ; get from function parameter?
-;  algrev = 'r00' ; for 'final' files;  get from function parameter?
-;  ;algrev = 'r00-preliminary' ; include '-preliminary' for operational, quarterly updates
-;  modver='28Jan15'
-;  fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
   model_params = get_model_params()
   nrlssi2_ref = model_params.iquiet
   lambda=model_params.lambda
@@ -107,107 +104,52 @@ fig2:
   
   B_at_wien_max = [B1_irrad[a1]/(10^3.),B2_irrad[a2]/(10^3.),B3_irrad[a3]/(10^3.)] ;irradiance at above wavelengths (in units W m-2 nm-1)
   
-  p=plot(lambda,nrlssi2_ref,ytitle='Irradiance (W m!U-2!N nm!U-1!N)',xtitle='Wavelength (nm)','-k',axis_style=1,margin=[.2,.15,.2,.15],thick=2,font_size=16,title='Reference (Quiet Sun) Spectrum') 
-  p0=plot(lambda[0:2285],nrlssi2_ref[0:2285],'-',color='medium purple',overplot=1) ;color section based on SORCE measurements purple
-  p1=plot(lambda,B1_irrad/1000.,name='T=5770 K','--',color='grey',overplot=1,font_size=16) ;units converted to W m-2 nm-1
+  p=plot(lambda[2286:*],nrlssi2_ref[2286:*],ytitle='Irradiance (W m!U-2!N nm!U-1!N)',xtitle='Wavelength (nm)','-k',axis_style=1,margin=[.2,.15,.2,.15],thick=2,font_size=16,title='Reference (Quiet Sun) Spectrum') 
+  p0=plot(lambda[0:2285],nrlssi2_ref[0:2285],'-',color='medium purple',sym_size=0.2,thick=2,overplot=1) ;color section based on SORCE measurements purple
+  p1=plot(lambda,B1_irrad/1000.,name='T!Dblackbody!N=5770 K','--',color='grey',overplot=1,font_size=16) ;units converted to W m-2 nm-1
   
   ;overplot Modtran5 surface calculations
-  p2=plot(nm,irradiance[*,0],name='Surface Downwelling Irradiance',color='green',overplot=1,font_size=16,min_value=10e-8);
-  p3=plot(wavelength_lw,flux_lw[*,0],color='green',overplot=1,font_size=16)
+  file='/Users/hofmann/Documents/FCDR_Solar/Modtran_calcs/BAMS_trial/sw/specflux'
+  r1=specflux_reader(file,/nm,ds=2)
+  p2=plot(r1.wavelength,r1.flux(*,0),color='green',overplot=1,font_size=16,name='Solar Irradiance at Surface') ;through 10000 nm in W m-2 nm-1
+  file='/Users/hofmann/Documents/FCDR_Solar/Modtran_calcs/BAMS_trial/lw/specflux'
+  r2=specflux_reader(file,/nm,ds=2)
+  p3=plot(r2.wavelength,r2.flux(*,0),color='green',overplot=1,font_size=16); from 10000 to 100000 nm in W m-2 nm-1
 
   p.xlog=1
   p.ylog=1
+  p.yrange=[10e-15,10e2]
+  p2.min_value=10e-12
+  p3.min_value=10e-12
   t1=text(1.9*10^2.,10^(1.),'Total Solar Irradiance = 1360.45 W m!U-2!N',font_size=14,/data)
+  l=legend(target=[p1,p2],/data,linestyle=6,font_size=14,shadow=0,position=[1.4*10^4.,10.^(-11)])
 
-  l=legend(target=[p1,p2],/data,linestyle=6,font_size=14,shadow=0,position=[1.9*10^4.,10.^(-6)])
 
-;  p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig2.png';, /TRANSPARENT
-;end of Figure 2------------------------------- 
+  ;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig1_revised2.png';, /TRANSPARENT
+;end of Figure 1------------------------------- 
 
-fig3:
-;Figure 3--------------------------------------
+fig2:
+;Figure 2--------------------------------------
 p=plot(nrl_date,nrl_tsi,'-',color='orange',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance')
 p.xrange=[1978,2015]
 qline=[1360.45,1360.45]
 p1=plot(p.xrange,qline,'.-.k',overplot=1) ;overplot line for quiet sun
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig3a.png';, /TRANSPARENT
-;end of Figure 3------------------------------- 
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig2a.png';, /TRANSPARENT
+;end of Figure 2a------------------------------- 
 
-fig3b:
+fig2b:
 restore,file='model_inputs_daily_s19781107_e20141231_c20150329.sav'
 nrl_date = jd2yf4(mjd2jd(mjd))
 p=plot(nrl_date,totfac,'-',color='deep pink',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16)
 p1=plot(nrl_date,totspot,'-',color='dodger blue',margin=[.2,.15,.2,.15],font_size=16,overplot=1)
 p.xrange=[1978,2015]
 p.yrange=[-7,5]
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig3b.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig2b.eps';, /TRANSPARENT
+;end of Figure 2b------------------------------
 
-;end of Figure 3b------------------------------
-fig5a:
-;Figure 5a--------------------------------------
-subset = where(nrl_date ge 2003.6 and nrl_date le 2004.0)
-p = ERRORPLOT(nrl_date(subset), nrl_tsi(subset), nrl_tsi_unc(subset),'-g2.',errorbar_capsize=0,errorbar_color='grey',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance !C with Uncertainties')
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig5a.eps';, /TRANSPARENT
-;end of  Figure 5a------------------------------
-
-fig5b:
-;Figure 5b--------------------------------------
-
-bin_1 =where(wavelength eq 120.5)
-bin_2=where(wavelength eq 250.5)
-bin_3=where(wavelength eq 500.5)
-bin_4=where(wavelength eq 1002.5)
-
-p=errorplot(nrl_date(subset),nrl_ssi(bin_1[0],subset),nrl_ssi_unc(bin_1[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink',title='NRLSSI2 Solar Spectral Irradiance !C with Uncertainties',errorbar_capsize=0,errorbar_color='grey')
-p1=errorplot(nrl_date(subset),nrl_ssi(bin_2[0],subset),nrl_ssi_unc(bin_2[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,ytitle='Irradiance (W m!U-2!N nm!U-1!N)',layout=[1,4,2],/current,color='deep pink',errorbar_capsize=0,errorbar_color='grey')
-p2=errorplot(nrl_date(subset),nrl_ssi(bin_3[0],subset),nrl_ssi_unc(bin_3[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,3],/current,'deep pink',errorbar_capsize=0,errorbar_color='grey')
-p3=errorplot(nrl_date(subset),nrl_ssi(bin_4[0],subset),nrl_ssi_unc(bin_4[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,4],/current,'deep pink',errorbar_capsize=0,errorbar_color='grey')
-p.yrange=[1.4*10^(-4.),2.4*10^(-4.)]
-p1.yrange=[0.0546,0.0567]
-p2.yrange=[1.896,1.912]
-p3.yrange=[0.7302,0.7331]
-
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig5b.eps';, /TRANSPARENT
-;end of  Figure 5b------------------------------
-
-fig6:
-;Figure 6------------------------------
-subset = where(nrl_date ge 2003.6 and nrl_date le 2004.0)
-p = ERRORPLOT(nrl_date(subset), nrl_tsi(subset), nrl_tsi_unc(subset),'-g2.',errorbar_capsize=0,errorbar_color='grey',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance !C Compared to Measurements',name='NRLTSI2')
-subset_tim = where(tim_time ge 2003.6 and tim_time le 2004.0)
-p1=plot(tim_time(subset_tim),tim_tsi(subset_tim),symbol='o',color='light green',overplot=1,name='SORCE TIM',sym_size=0.5)
-l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0,position=[2003.75,1357])
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig61.eps';, /TRANSPARENT
-
-subset = where(nrl_date ge 2008.7 and nrl_date le 2009.0)
-p = ERRORPLOT(nrl_date(subset), nrl_tsi(subset), nrl_tsi_unc(subset),'-g2.',errorbar_capsize=0,errorbar_color='grey',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance !C Compared to Measurements',name='NRLTSI2')
-subset_tim = where(tim_time ge 2008.7 and tim_time le 2009.0)
-p1=plot(tim_time(subset_tim),tim_tsi(subset_tim),symbol='o',color='light green',overplot=1,name='SORCE TIM',sym_size=0.5)
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig6b.eps';, /TRANSPARENT
-
-subset = where(nrl_date ge 2003.1527 and nrl_date le 2015.0)
-p = ERRORPLOT(nrl_date(subset), nrl_tsi(subset), nrl_tsi_unc(subset),'-g2.',errorbar_capsize=0,errorbar_color='grey',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance !C Compared to Measurements',name='NRLTSI2')
-subset_tim = where(tim_time ge 2003.1527 and tim_time le 2015.0)
-p1=plot(tim_time(subset_tim),tim_tsi(subset_tim),symbol='o',color='light green',overplot=1,name='SORCE TIM',sym_size=0.5,min_value=1300)
-p.xrange=[2003,2015]
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig6c.eps';, /TRANSPARENT
-
-tt=where(tim_tsi(subset_tim) eq 0.0)
-tim_tsi(subset_tim(tt)) = !values.d_NaN
-difference=tim_tsi(subset_tim) - nrl_tsi(subset)
-p = plot(tim_time(subset_tim),difference,'-ok',sym_size=0.5,ytitle= 'Difference (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,name='TIM - NRLTSI2')
-p.xrange=[2003,2015]
-p.yrange=[-1,2.5]
-zero=[0,0]
-p1=plot(p.xrange,zero,'-2',color='light grey',overplot=1)
-result=smooth(difference,365,/NaN,/edge_wrap)
-p2=plot(tim_time(subset_tim),result,'-',color='pink',overplot=1,name='365 day smooth')
-l=legend(target=[p,p2],/data,position=[2008.6,2.0],linestyle=6,font_size=16,shadow=0)
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig6d.eps';, /TRANSPARENT
-;end of Figure 6------------------------------
-
-fig7:
-;Figure 7------------------------------
+fig3:
+;Figure 3------------------------------
+;;Time series (1978-2014 of binned SSI)
 ;200-210
 ;300-400
 ;700-1000
@@ -236,23 +178,107 @@ bin_4 = where((wavelength ge wav4a) and (wavelength lt wav4b),cntwav)
 k = 13204 ;timelength of nrl_ssi time series
 
 for j=0,k-1 do begin
- bin_ssi_1[j] = total(nrl_ssi[bin_1,j]*bandwidth(bin_1),/double)
- bin_ssi_2[j] = total(nrl_ssi[bin_2,j]*bandwidth(bin_2),/double)
- bin_ssi_3[j] = total(nrl_ssi[bin_3,j]*bandwidth(bin_3),/double)
- bin_ssi_4[j] = total(nrl_ssi[bin_4,j]*bandwidth(bin_4),/double)
- ;bin_ssi_1_unc[j] = total(nrl_ssi_unc[bin_1,j],/double) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
- ;bin_ssi_2_unc[j] = total(nrl_ssi_unc[bin_2,j],/double)
- ;bin_ssi_3_unc[j] = total(nrl_ssi_unc[bin_3,j],/double)
- ;bin_ssi_4_unc[j] = total(nrl_ssi_unc[bin_4,j],/double)
- bin_ssi_1_unc[j] = total(nrl_ssi_unc[bin_1,j]*bandwidth(bin_1),/double) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
- bin_ssi_2_unc[j] = total(nrl_ssi_unc[bin_2,j]*bandwidth(bin_2),/double)
- bin_ssi_3_unc[j] = total(nrl_ssi_unc[bin_3,j]*bandwidth(bin_3),/double)
- bin_ssi_4_unc[j] = total(nrl_ssi_unc[bin_4,j]*bandwidth(bin_4),/double)
- 
-; bin_ssi_1_unc[j] = SQRT(total((nrl_ssi_unc[bin_1,j])^2.)) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
-; bin_ssi_2_unc[j] = SQRT(total((nrl_ssi_unc[bin_2,j])^2.))
-; bin_ssi_3_unc[j] = SQRT(total((nrl_ssi_unc[bin_3,j])^2.))
-; bin_ssi_4_unc[j] = SQRT(total((nrl_ssi_unc[bin_4,j])^2.))
+  bin_ssi_1[j] = total(nrl_ssi[bin_1,j]*bandwidth(bin_1),/double)
+  bin_ssi_2[j] = total(nrl_ssi[bin_2,j]*bandwidth(bin_2),/double)
+  bin_ssi_3[j] = total(nrl_ssi[bin_3,j]*bandwidth(bin_3),/double)
+  bin_ssi_4[j] = total(nrl_ssi[bin_4,j]*bandwidth(bin_4),/double)
+endfor
+
+p=plot(nrl_date,bin_ssi_1,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink',title='NRLSSI2 Solar Spectral Irradiance')
+p1=plot(nrl_date,bin_ssi_2,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,ytitle='Irradiance (W m!U-2!N)',layout=[1,4,2],/current,color='deep pink')
+p2=plot(nrl_date,bin_ssi_3,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],/current,color='deep pink')
+p3=plot(nrl_date,bin_ssi_4,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],/current,color='deep pink')
+
+p.xrange=[1978,2015]
+p1.xrange=[1978,2015]
+p2.xrange=[1978,2015]
+p3.xrange=[1978,2015]
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig3.eps';, /TRANSPARENT
+;end of Figure 3------------------------------
+
+fig4:
+;Figure 4------------------------------
+subset = where(nrl_date ge 2003.6 and nrl_date le 2004.0)
+p = ERRORPLOT(nrl_date(subset), nrl_tsi(subset), nrl_tsi_unc(subset),'-g2.',errorbar_capsize=0,errorbar_color='grey',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance !C Compared to Measurements',name='NRLTSI2')
+subset_tim = where(tim_time ge 2003.6 and tim_time le 2004.0)
+p1=plot(tim_time(subset_tim),tim_tsi(subset_tim),symbol='o',color='light green',overplot=1,name='SORCE TIM',sym_size=0.5)
+l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0,position=[2003.75,1357])
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4a.eps';, /TRANSPARENT
+
+subset = where(nrl_date ge 2008.7 and nrl_date le 2009.0)
+p = ERRORPLOT(nrl_date(subset), nrl_tsi(subset), nrl_tsi_unc(subset),'-g2.',errorbar_capsize=0,errorbar_color='grey',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance !C Compared to Measurements',name='NRLTSI2')
+subset_tim = where(tim_time ge 2008.7 and tim_time le 2009.0)
+p1=plot(tim_time(subset_tim),tim_tsi(subset_tim),symbol='o',color='light green',overplot=1,name='SORCE TIM',sym_size=0.5)
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4b.eps';, /TRANSPARENT
+
+subset = where(nrl_date ge 2003.1527 and nrl_date le 2015.0)
+p = ERRORPLOT(nrl_date(subset), nrl_tsi(subset), nrl_tsi_unc(subset),'-g2.',errorbar_capsize=0,errorbar_color='grey',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='NRLTSI2 Total Solar Irradiance !C Compared to Measurements',name='NRLTSI2')
+subset_tim = where(tim_time ge 2003.1527 and tim_time le 2015.0)
+p1=plot(tim_time(subset_tim),tim_tsi(subset_tim),symbol='o',color='light green',overplot=1,name='SORCE TIM',sym_size=0.5,min_value=1300)
+p.xrange=[2003,2015]
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4c.eps';, /TRANSPARENT
+
+tt=where(tim_tsi(subset_tim) eq 0.0)
+tim_tsi(subset_tim(tt)) = !values.d_NaN
+difference=tim_tsi(subset_tim) - nrl_tsi(subset)
+p = plot(tim_time(subset_tim),difference,'-ok',sym_size=0.5,ytitle= 'Difference (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,name='TIM - NRLTSI2')
+p.xrange=[2003,2015]
+p.yrange=[-1,2.5]
+zero=[0,0]
+p1=plot(p.xrange,zero,'-2',color='light grey',overplot=1)
+result=smooth(difference,365,/NaN,/edge_wrap)
+p2=plot(tim_time(subset_tim),result,'-',color='pink',overplot=1,name='365 day smooth')
+l=legend(target=[p,p2],/data,position=[2008.6,2.0],linestyle=6,font_size=16,shadow=0)
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4d.eps';, /TRANSPARENT
+;end of Figure 4------------------------------
+
+fig5:
+;Figure 5------------------------------
+;200-210
+;300-400
+;700-1000
+;1000-1300
+
+wav1a = 200 & wav1b = 210
+wav2a = 300 & wav2b = 400
+wav3a = 700 & wav3b = 1000
+wav4a = 1000 & wav4b = 1300
+k = 13204 ;timelength of nrl_ssi time series
+
+bin_ssi_1 = dblarr(k) ;200-210 nm
+bin_ssi_2 = dblarr(k) ;300-400 nm
+bin_ssi_3 = dblarr(k) ;700-1000 nm
+bin_ssi_4 = dblarr(k) ;1000-1300 nm
+
+bin_ssi_1_unc = dblarr(k)
+bin_ssi_2_unc = dblarr(k)
+bin_ssi_3_unc = dblarr(k)
+bin_ssi_4_unc = dblarr(k)
+
+bin_1 =where((wavelength ge wav1a) and (wavelength lt wav1b),cntwav)
+bin_2 = where((wavelength ge wav2a) and (wavelength lt wav2b),cntwav)
+bin_3 = where((wavelength ge wav3a) and (wavelength lt wav3b),cntwav)
+bin_4 = where((wavelength ge wav4a) and (wavelength lt wav4b),cntwav)
+k = 13204 ;timelength of nrl_ssi time series
+
+for j=0,k-1 do begin
+  bin_ssi_1[j] = total(nrl_ssi[bin_1,j]*bandwidth(bin_1),/double)
+  bin_ssi_2[j] = total(nrl_ssi[bin_2,j]*bandwidth(bin_2),/double)
+  bin_ssi_3[j] = total(nrl_ssi[bin_3,j]*bandwidth(bin_3),/double)
+  bin_ssi_4[j] = total(nrl_ssi[bin_4,j]*bandwidth(bin_4),/double)
+  ;bin_ssi_1_unc[j] = total(nrl_ssi_unc[bin_1,j],/double) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
+  ;bin_ssi_2_unc[j] = total(nrl_ssi_unc[bin_2,j],/double)
+  ;bin_ssi_3_unc[j] = total(nrl_ssi_unc[bin_3,j],/double)
+  ;bin_ssi_4_unc[j] = total(nrl_ssi_unc[bin_4,j],/double)
+  bin_ssi_1_unc[j] = total(nrl_ssi_unc[bin_1,j]*bandwidth(bin_1),/double) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
+  bin_ssi_2_unc[j] = total(nrl_ssi_unc[bin_2,j]*bandwidth(bin_2),/double)
+  bin_ssi_3_unc[j] = total(nrl_ssi_unc[bin_3,j]*bandwidth(bin_3),/double)
+  bin_ssi_4_unc[j] = total(nrl_ssi_unc[bin_4,j]*bandwidth(bin_4),/double)
+  
+  ; bin_ssi_1_unc[j] = SQRT(total((nrl_ssi_unc[bin_1,j])^2.)) ;when quantities are added, the uncertainties add (as an upper bound), but if independent and random would be the quadrature sum of the uncertainties
+  ; bin_ssi_2_unc[j] = SQRT(total((nrl_ssi_unc[bin_2,j])^2.))
+  ; bin_ssi_3_unc[j] = SQRT(total((nrl_ssi_unc[bin_3,j])^2.))
+  ; bin_ssi_4_unc[j] = SQRT(total((nrl_ssi_unc[bin_4,j])^2.))
 endfor
 
 subset = where(nrl_date ge 2003.5 and nrl_date le 2005.0)
@@ -260,7 +286,7 @@ subset = where(nrl_date ge 2003.5 and nrl_date le 2005.0)
 ;ssi data.
 ;loop over julian date within subset
 ;s=sort(sim.nominal_date_jdn)
-d1 = yf42jd(2003.5) 
+d1 = yf42jd(2003.5)
 d2 = yf42jd(2005.0)
 nday=548
 sim_time=dblarr(nday)
@@ -275,8 +301,8 @@ dd1=2452823 ;this is '2003-07-02'
 for i=0,nday-1 do begin
   ;obtain SORCE spectrum for this day and interpolate onto 1 nm grid
   result = where(sim.nominal_date_jdn eq dd1,cnt) ;also subset by wavelength
-  sorwl = (sim[result].min_wavelength+sim[result].max_wavelength) / 2. 
-  sorflx = sim[result].irradiance 
+  sorwl = (sim[result].min_wavelength+sim[result].max_wavelength) / 2.
+  sorflx = sim[result].irradiance
   ;;;;; SOLSTICE FUV
   r1 = sorwl gt 115.0
   r2 = sorwl lt 180
@@ -284,7 +310,7 @@ for i=0,nday-1 do begin
   rw=where(r1*r2*r3,cntw)
   ; for a full FUV spectrum there should be 65 points
   if(cntw eq 65) then begin
-    ; interpolate onto 1 nm grid 
+    ; interpolate onto 1 nm grid
     ngg=fix(sorwl(rw(cntw-1))-sorwl(rw(0))+1)
     gg=findgen(ngg)+sorwl(rw(0))
     yy=interpol(sorflx(rw),sorwl(rw),gg)
@@ -298,13 +324,13 @@ for i=0,nday-1 do begin
   rw=where(r1*r2*r3,cntw)
   ; for a full muv spectrum there should be 130 points
   if(cntw eq 130) then begin
-    ; interpolate onto 1 nm grid 
+    ; interpolate onto 1 nm grid
     ngg=fix(sorwl(rw(cntw-1))-sorwl(rw(0))+1)
     gg=findgen(ngg)+sorwl(rw(0))
     yy=interpol(sorflx(rw),sorwl(rw),gg)
     ; put this spectrum into the approriate part of the si array
     sim_ssi[i,gg(0)-115.5:gg(0)-115.5+ngg-1] = yy
-  endif  
+  endif
   ;;;;; SIM
   r1=sorwl gt 310.1
   r2=sorwl lt 2412
@@ -313,7 +339,7 @@ for i=0,nday-1 do begin
   ; note - avoid 310.02 since this has zero flux typically
   ; for a full vis-ir spectrum there should be >700 points
   if(cntw gt 600) then begin
-    ; interpolate onto 1 nm grid - unlike FUV and MUV the SIM data are 
+    ; interpolate onto 1 nm grid - unlike FUV and MUV the SIM data are
     ; not on 1 nm grid so need to specify the grid to be from 310.5 to 2400.5
     ngg=fix(sorwl(rw(cntw-1))-sorwl(rw(0))+1)
     gg=findgen(ngg)+sorwl(rw(0))
@@ -334,11 +360,11 @@ for i=0,nday-1 do begin
   result = where((sim_wl[*] ge wav1a) and (sim_wl[*] le wav1b),cntwav)  ;subset by wavelength
   if cntwav gt 0 then bin_1_sim[i] = total(sim_ssi[i,result]) else bin_1_sim[i] = !values.d_NaN ;don't count days with missing data in the total
   result = where((sim_wl[*] ge wav2a) and (sim_wl[*] le wav2b),cntwav)  ;subset by wavelength
-  if cntwav gt 0 then bin_2_sim[i] = total(sim_ssi[i,result]) else bin_2_sim[i] = !values.d_NaN 
+  if cntwav gt 0 then bin_2_sim[i] = total(sim_ssi[i,result]) else bin_2_sim[i] = !values.d_NaN
   result = where((sim_wl[*] ge wav3a) and (sim_wl[*] le wav3b),cntwav)  ;subset by wavelength
-  if cntwav gt 0 then bin_3_sim[i] = total(sim_ssi[i,result]) else bin_3_sim[i] = !values.d_NaN 
+  if cntwav gt 0 then bin_3_sim[i] = total(sim_ssi[i,result]) else bin_3_sim[i] = !values.d_NaN
   result = where((sim_wl[*] ge wav4a) and (sim_wl[*] le wav4b),cntwav)  ;subset by wavelength
-  if cntwav gt 0 then bin_4_sim[i] = total(sim_ssi[i,result])  else bin_4_sim[i] = !values.d_NaN 
+  if cntwav gt 0 then bin_4_sim[i] = total(sim_ssi[i,result])  else bin_4_sim[i] = !values.d_NaN
 endfor
 
 b1 = where(bin_1_sim gt 0) ;exclude days with missing data (irradiance will =0 on these days, based on how we placed the daily spectra into arrays)
@@ -374,16 +400,17 @@ p3.yrange=[165,165.7]
 ;ps=plot(nrl_date(subset),bin_1_sim*.85,margin=[0.25,.2,.2,.35],'.-',color='light green',overplot=1)
 ;p3=errorplot(nrl_date(subset),bin_ssi_4(subset),bin_ssi_4_unc(subset),margin=[.25,.2,.2,.25],font_size=16,axis_style=1,layout=[1,2,2],/current,'deep pink',errorbar_capsize=0,errorbar_color='grey')
 ;p3s=plot(nrl_date(subset),bin_4_sim*.994,margin=[0.25,.2,.2,.35],'.-',color='light green',overplot=1)
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7_v2.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig5_v2.eps';, /TRANSPARENT
+;end of Figure 5------------------------------
 
-;end of Figure 7------------------------------
-fig8:
+
+fig6:
 ;compare NRLTSI to NRLTSI2
 nrltsi2 = nrl_tsi ;opened at start of program
 nrltsi2_date = nrl_date
 
-;original NRLTSI values  
-result = read_nrl_nrlssi1() 
+;original NRLTSI values
+result = read_nrl_nrlssi1()
 nrltsi1 = result.tsi
 ;truncate judith data to same time period
 ;1978-11-07 through 2014-12-31 = result[310:*]
@@ -397,22 +424,21 @@ p1=plot(nrltsi2_date,nrltsi1-5.,'-',color='blue',overplot=1,name='NRLTSI - 5.0')
 p.xrange=[1978,2014.3]
 p1.min_value=1300.
 l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0)
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig8a.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig6a.eps';, /TRANSPARENT
 
 ;difference plot
 diff = nrltsi2-(nrltsi1-5.)
 p=plot(nrltsi2_date,diff,'-',ytitle='Irradiance (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,title='Residual:NRLTSI2 - NRLTSI + 5')
-p.xrange=[1978,2014.3] 
+p.xrange=[1978,2014.3]
 p.max_value=5.
 diff_mean = mean(diff(0:12897))
 diff_std = stddev(diff(0:12897))
 print,'mean diff', diff_mean
 print,'stddev of diff', diff_std
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig8b.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig6b.eps';, /TRANSPARENT
+;end of Figure 6------------------------------
 
-;end of Figure 8------------------------------
-fig9:
-
+fig7:
 upperflag = 1 ;if 1, do upper bound of uncertainties, if 0, do lower bound
 if upperflag eq 1 then print,'***** Performing Upper bound of uncertainties'
 if upperflag eq 0 then print, '***** Not Performing Upper bound of uncertainties'
@@ -420,7 +446,7 @@ if upperflag eq 0 then print, '***** Not Performing Upper bound of uncertainties
 ;compare energy max to min from NRLSSI and NRLSSI2 (in energy units and in irradiance units)
 ;include uncertainties with NRLSSI2
 ;original NRLSSI values  (NOTE - 5 less wavelength bands for NRLSSI1 compared to NRLSSI2)
-result = read_nrl_nrlssi1() 
+result = read_nrl_nrlssi1()
 nrlssi1 = result.spec
 wl_nrlssi1 = result.wl
 
@@ -459,8 +485,8 @@ nrlssi2_max_mean = fltarr(3785)
 unc_nrlssi2_max_mean = fltarr(3785)
 for ii=0,3784 do begin
   nrlssi2_max_mean[ii] = mean(nrlssi2_max[ii,*]) ;average irradiance for max conditions.
-  if upperflag eq 1 then unc_nrlssi2_max_mean[ii] = 1./nday * total(nrlssi2_max_unc[ii,*]) ; upper bound 
-  if upperflag eq 0 then unc_nrlssi2_max_mean[ii] =  1./nday * SQRT(total(nrlssi2_max_unc[ii,*])^2.) ;not upper bound 
+  if upperflag eq 1 then unc_nrlssi2_max_mean[ii] = 1./nday * total(nrlssi2_max_unc[ii,*]) ; upper bound
+  if upperflag eq 0 then unc_nrlssi2_max_mean[ii] =  1./nday * SQRT(total(nrlssi2_max_unc[ii,*])^2.) ;not upper bound
 endfor
 
 ;min = 2008.91 to 2008.98 ('2008-11-28' to '2008-12-23')
@@ -474,8 +500,8 @@ nrlssi2_min_mean = fltarr(3785)
 unc_nrlssi2_min_mean = fltarr(3785)
 for ii=0,3784 do begin
   nrlssi2_min_mean[ii] = mean(nrlssi2_min[ii,*])
-  ;unc_nrlssi2_min_mean[ii] = mean(nrlssi2_min_unc[ii,*]) 
-  if upperflag eq 1 then unc_nrlssi2_min_mean[ii] = 1./nday * total(nrlssi2_min_unc[ii,*]) ; upper bound 
+  ;unc_nrlssi2_min_mean[ii] = mean(nrlssi2_min_unc[ii,*])
+  if upperflag eq 1 then unc_nrlssi2_min_mean[ii] = 1./nday * total(nrlssi2_min_unc[ii,*]) ; upper bound
   if upperflag eq 0 then unc_nrlssi2_min_mean[ii] = 1./nday * SQRT(total(nrlssi2_min_unc[ii,*])^2.) ;not upper bound
 endfor
 
@@ -504,7 +530,7 @@ p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_minus_min,unc_nrlssi2_max_minus_min,xtit
 p1=plot(wl_nrlssi1(*,0),(nrlssi1_max_minus_min)/1000.,xlog=1,overplot=1,name='NRLSSI') ;convert from mW to W
 l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0)
 p.yrange=[-0.001,0.006]
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9a_v2.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7a_v2.eps';, /TRANSPARENT
 
 ;Energy Difference
 
@@ -516,7 +542,7 @@ p.yrange=[-0.001,0.006]
 ;l=legend(target=[p,p3],/data,linestyle=6,font_size=16,shadow=0)
 ;p.yrange=[0.0001,100]
 ;p.ylog=1
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9b_revised.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7b_revised.eps';, /TRANSPARENT
 
 high = nrlssi2_max_over_min+(unc_nrlssi2_max_over_min)*100 ;+1 error bar
 low = nrlssi2_max_over_min-(unc_nrlssi2_max_over_min)*100 ;-1 error bar
@@ -534,13 +560,34 @@ p30=plot(wl_nrlssi1(a1,0),abs(nrlssi1_max_over_min(a1)),symbol='.',linestyle=6,o
 p1=plot(wl_nrlssi2(*,0),high,'--',color='grey',overplot=1) ;positive bound of error bar
 ;p10=plot(wl_nrlssi2(b,0),high(b),'--',color='red',overplot=1) ;
 p2=plot(wl_nrlssi2(*,0),low,'--',color='grey',overplot=1) ;negative bound of error bar
-;p20=plot(wl_nrlssi2(c,0),(new_low(c)),'--',symbol='.',color='grey',overplot=1,linestyle=6) 
+;p20=plot(wl_nrlssi2(c,0),(new_low(c)),'--',symbol='.',color='grey',overplot=1,linestyle=6)
 p.xlog=1
 p.ylog=1
 l=legend(target=[p,p3],/data,linestyle=6,font_size=16,shadow=0)
 p.yrange=[0.0001,100]
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig9b_revised.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7b_revised.eps';, /TRANSPARENT
+
+
 ;
-;p.save,'/Users/hofmann/git
+;
+;fig5b:
+;;Figure 5b--------------------------------------
+;bin_1 =where(wavelength eq 120.5)
+;bin_2=where(wavelength eq 250.5)
+;bin_3=where(wavelength eq 500.5)
+;bin_4=where(wavelength eq 1002.5)
+;
+;p=errorplot(nrl_date(subset),nrl_ssi(bin_1[0],subset),nrl_ssi_unc(bin_1[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink',title='NRLSSI2 Solar Spectral Irradiance !C with Uncertainties',errorbar_capsize=0,errorbar_color='grey')
+;p1=errorplot(nrl_date(subset),nrl_ssi(bin_2[0],subset),nrl_ssi_unc(bin_2[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,ytitle='Irradiance (W m!U-2!N nm!U-1!N)',layout=[1,4,2],/current,color='deep pink',errorbar_capsize=0,errorbar_color='grey')
+;p2=errorplot(nrl_date(subset),nrl_ssi(bin_3[0],subset),nrl_ssi_unc(bin_3[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,3],/current,'deep pink',errorbar_capsize=0,errorbar_color='grey')
+;p3=errorplot(nrl_date(subset),nrl_ssi(bin_4[0],subset),nrl_ssi_unc(bin_4[0],subset),margin=[.25,.2,.2,.35],font_size=16,axis_style=1,layout=[1,4,4],/current,'deep pink',errorbar_capsize=0,errorbar_color='grey')
+;p.yrange=[1.4*10^(-4.),2.4*10^(-4.)]
+;p1.yrange=[0.0546,0.0567]
+;p2.yrange=[1.896,1.912]
+;p3.yrange=[0.7302,0.7331]
+;
+;;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig5b.eps';, /TRANSPARENT
+;;end of  Figure 5b------------------------------
+
 
 end ;pro  
