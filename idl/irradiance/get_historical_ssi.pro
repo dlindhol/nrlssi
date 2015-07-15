@@ -26,6 +26,11 @@ function get_historical_ssi, year1, year2
   wavelength = wlarray.wavelength
   bandwidth = wlarray.bandwidth
   
+  ;Reform SSI from 1D to 2D, if time elements > 1
+  ntime = n_elements(time)
+  nwavelength = n_elements(wavelength)
+  if ntime gt 1 then ssi = reform(ssi,nwavelength,ntime)
+    
   data = {wavelength: wavelength, bandwidth: bandwidth, time: time, ssi: ssi}
   
   return, data
