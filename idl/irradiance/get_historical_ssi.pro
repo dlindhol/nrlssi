@@ -1,17 +1,13 @@
-function get_historical_ssi, year1, year2
+function get_historical_ssi, ymd1, ymd2
   ;add year to end time to make it inclusive
-  end_year = strtrim(fix(year2) + 1, 2)
+  end_date = add_year_to_iso_date(ymd2)
 
   ;get the dataset name
   dataset = 'nrl2_historical_ssi'
   wldataset = 'nrl2_historical_ssi_wavelength'
 
-  ;add query parameters
-  ;query = 'convert(time,days since 1858-11-17)' ;convert times to MJD
-  ;query += '&rename(time,MJD)' ;rename parameters to match the structures we expect here.
-
   ;get the data as a list of structures
-  ssidata = read_latis_data(dataset, year1, end_year, query=query)
+  ssidata = read_latis_data(dataset, ymd1, end_date, query=query, host='localhost', port=8080)
   time_list = List()
   ssi_list = List()
   foreach spectrum, ssidata do begin
@@ -21,7 +17,7 @@ function get_historical_ssi, year1, year2
   time = time_list.toArray()
   ssi = ssi_list.toArray()
 
-  wldata = read_latis_data(wldataset, year1, end_year) ;time doesn't matter but reader requires it
+  wldata = read_latis_data(wldataset, ymd1, end_date, host='localhost', port=8080) ;time doesn't matter but reader requires it
   wlarray = wldata.toArray()
   wavelength = wlarray.wavelength
   bandwidth = wlarray.bandwidth
