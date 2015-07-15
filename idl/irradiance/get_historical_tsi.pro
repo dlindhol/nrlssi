@@ -1,4 +1,4 @@
-function get_historical_tsi, ymd1, ymd2, cycle=cycle
+function get_historical_tsi, year1, year2, cycle=cycle
   ;add day to end time to make it inclusive
   end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
 
