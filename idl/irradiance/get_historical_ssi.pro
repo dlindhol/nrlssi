@@ -7,7 +7,7 @@ function get_historical_ssi, ymd1, ymd2
   wldataset = 'nrl2_historical_ssi_wavelength'
 
   ;get the data as a list of structures
-  ssidata = read_latis_data(dataset, ymd1, end_date, query=query, host='localhost', port=8080)
+  ssidata = read_latis_data(dataset, ymd1, end_date)
   time_list = List()
   ssi_list = List()
   foreach spectrum, ssidata do begin
@@ -17,7 +17,7 @@ function get_historical_ssi, ymd1, ymd2
   time = time_list.toArray()
   ssi = ssi_list.toArray()
 
-  wldata = read_latis_data(wldataset, ymd1, end_date, host='localhost', port=8080) ;time doesn't matter but reader requires it
+  wldata = read_latis_data(wldataset, ymd1, end_date) ;time doesn't matter but reader requires it
   wlarray = wldata.toArray()
   wavelength = wlarray.wavelength
   bandwidth = wlarray.bandwidth

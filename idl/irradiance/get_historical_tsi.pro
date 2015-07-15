@@ -7,6 +7,6 @@ function get_historical_tsi, ymd1, ymd2, cycle=cycle
   else dataset = 'nrl2_historical_tsi'
 
   ;get the data as a list of structures
-  data = read_latis_data(dataset, ymd1, end_date, query=query, host='localhost', port=8080)
+  data = read_latis_data(dataset, ymd1, end_date)
   return, data
 end
