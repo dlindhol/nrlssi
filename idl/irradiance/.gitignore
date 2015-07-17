@@ -1,0 +1,6 @@
+/process_proxy_contrasts.pro
+/nrl2_to_irradiance_b.pro
+/create_historical_irradiance_uncertainties.pro
+/compute_adjusted_ssi.pro
+/compute_ssi_return_proxy.pro
+/process_adjusted_irradiance.pro
