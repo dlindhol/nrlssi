@@ -13,13 +13,16 @@ data_hist3 = process_historical_irradiance('1700-01-01','1750-12-31',/final,time
 data_hist4 = process_historical_irradiance('1751-01-01','1799-12-31',/final,time_bin='year',cycle=cycle)
 data_hist5 = process_historical_irradiance('1800-01-01','1850-12-31',/final,time_bin='year',cycle=cycle)
 data_hist6 = process_historical_irradiance('1851-01-01','1881-12-31',/final,time_bin='year',cycle=cycle)
-data_rout = process_irradiance('1882-01-01', '2014-12-31', /final, time_bin='year')
 
-;concatenate the historical irradiance structure with the routine processing irradiance structure (NOTE: need to fix process_historical_irradiance to include the SSI before can concatenate these structures)
-irradiance_data = [data_hist1.data,data_hist2.data,data_hist3.data,data_hist4.data,data_hist5.data,data_hist6.data,data_rout.data]
+;Standard irradiance processing for 1882 onward
+data_standard = process_irradiance('1882-01-01', '2014-12-31', /final, time_bin='year')
+
+;Concatenate the historical and routine processing irradiance files
+irradiance_data = [data_hist1.data,data_hist2.data,data_hist3.data,data_hist4.data,data_hist5.data,data_hist6.data,data_standard.data]
 
 ;Construct resulting data structure, including the spectral bins.
-irradiance_data = {wavelength: data_rout.wavelength, data: irradiance_data}
+irradiance_data = {wavelength: data_standard.wavelength, data: irradiance_data}
+
 ;Write the data files.
 status = write_irradiance_data(ymd1,ymd2,irradiance_data, version, time_bin='year', output_dir=output_dir)
 
