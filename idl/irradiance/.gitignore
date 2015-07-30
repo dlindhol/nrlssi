@@ -4,3 +4,8 @@
 /compute_adjusted_ssi.pro
 /compute_ssi_return_proxy.pro
 /process_adjusted_irradiance.pro
+/nrl2_to_adjusted_irradiance.pro
+/create_adjusted_filename.pro
+/write_adjusted_irradiance_data.pro
+/final_adjusted_files_to_time_series.pro
+/extract_background_tsi_unc.pro
