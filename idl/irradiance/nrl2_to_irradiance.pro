@@ -39,13 +39,14 @@
 ;
 ; REVISION HISTORY
 ;   06/04/2015 Initial Version prepared for NCDC
+;   07/30/2015 Added dev keyword to function call (needed for process_irradiance.pro for "prelim" model inputs)
 ;
 ; USAGE
-;   nrl2_to_irradiance, ymd1, ymd2, final=final, time_bin=time_bin, version=version, output_dir=output_dir
+;   nrl2_to_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin, version=version, output_dir=output_dir
 ;
 ;@*****
 
-pro nrl2_to_irradiance, ymd1, ymd2, final=final, time_bin=time_bin, version=version, output_dir=output_dir
+pro nrl2_to_irradiance, ymd1, ymd2, final=final, dev=dev, time_bin=time_bin, version=version, output_dir=output_dir
 
   ;Define the version of the data.
   ;If the version argument is not set, use the default.
@@ -54,7 +55,7 @@ pro nrl2_to_irradiance, ymd1, ymd2, final=final, time_bin=time_bin, version=vers
   if (not keyword_set(final)) then version += '-preliminary'
 
   ;Generate the data.
-  irradiance_data = process_irradiance(ymd1, ymd2, final=final, time_bin=time_bin)
+  irradiance_data = process_irradiance(ymd1, ymd2, final=final, dev=dev,time_bin=time_bin)
 
   ;Write the data files.
   status = write_irradiance_data(ymd1,ymd2,irradiance_data, version, time_bin=time_bin, output_dir=output_dir)
