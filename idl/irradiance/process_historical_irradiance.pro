@@ -16,10 +16,10 @@ function process_historical_irradiance,ymd1,ymd2,final=final,time_bin=time_bin,c
   if (not keyword_set(time_bin)) then time_bin = 'year'
   
   ;Get input data
-  tsi = get_historical_tsi(ymd1, ymd2, cycle=cycle) ; note, time must be in iso year to extract properly.
+  tsi = get_historical_tsi(ymd1, ymd2, cycle=cycle) 
   tsi = tsi.toArray() ;convert from list to structure
   
-  ssi = get_historical_ssi(ymd1, ymd2) ; note, time must be in iso year to extract properly.
+  ssi = get_historical_ssi(ymd1, ymd2) 
   
   ;Assign missing values to SSI uncertainty (for now)
   ssiuncertainty = ssi.ssi & ssiuncertainty(*) = missing_value
