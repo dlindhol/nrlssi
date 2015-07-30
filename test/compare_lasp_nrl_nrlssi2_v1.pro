@@ -1,4 +1,4 @@
-pro compare_lasp_nrl_nrlssi2
+pro compare_lasp_nrl_nrlssi2_v1
 
 jud = read_nrl_nrlssi2() ;read Judith's MEGA files, 1978-2014
 ;goto, float

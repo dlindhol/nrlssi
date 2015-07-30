@@ -1,4 +1,4 @@
-pro compare_lasp_nrl_nrlssi2
+pro compare_lasp_nrl_nrlssi2_v2
 
 time_bin = 'yearly' ;CHANGE
 
@@ -19,10 +19,10 @@ if time_bin eq 'monthly' then begin
   jud = read_nrl_nrlssi2m(nrl_ssi,startyear,endyear) ;read Judith's MEGA files, 1978-2014
 endif
 if time_bin eq 'yearly' then begin
-  nrl_ssi = '/Users/hofmann/Downloads/NRLSSI2_1882_2014a_6Apr15.txt' 
-  startyear=1882 
+  nrl_ssi = 'data/NRLSSI2_1610_2014a_18May15.txt' 
+  startyear=1610 
   endyear = 2014 
-  jud = read_nrl_nrlssi2a(nrl_ssi,startyear,endyear) ;read Judith's MEGA files, 1978-2014
+  jud = read_nrl_nrlssi2a_v2(nrl_ssi,startyear,endyear) ;read Judith's MEGA files, 1978-2014
 endif
 
  
@@ -35,7 +35,7 @@ jbandwidth=jud.wl[*,1]
 k=n_elements(judssi[0,*]) ;elements in time series
 
 ;open .nc file for NRLTSI2 and NRLSSI2 data from 1978-11-07 to 2014-12-31
-cdfid = ncdf_open('ssi_v02r00_yearly_s1882_e2014_c20150421.nc',/nowrite)
+cdfid = ncdf_open('/Users/hofmann/Downloads/ssi_v02r00_yearly_s1610_e2014_c20150716.nc',/nowrite)
 ivaridt = ncdf_varid(cdfid,'SSI')
 ncdf_varget,cdfid,ivaridt,laspssi
 ivaridt = ncdf_varid(cdfid,'time')
@@ -96,9 +96,9 @@ for j=0, k-1 do begin
 endfor
 
 ;PLOTS
-p=plot(lasp_date[0:k-1],(1-(jbin_ssi_1/lbin_ssi_1))*100,layout=[1,4,1],title='Percent Difference in SSI: 200-210 nm',font_size=10)
-p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_2/lbin_ssi_2))*100,layout=[1,4,2],title='Percent Difference in SSI: 300-400 nm',/current,font_size=10)
-p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_3/lbin_ssi_3))*100,layout=[1,4,3],title='Percent Difference in SSI: 700-1000 nm',/current,font_size=10)
-p1=plot(lasp_date[0:k-1],(1-(jbin_ssi_4/lbin_ssi_4))*100,layout=[1,4,4],title='Percent Difference in SSI: 1000-1300 nm',/current,font_size=10)
+p=plot(laspdate[0:k-1],(1-(jbin_ssi_1/lbin_ssi_1))*100,layout=[1,4,1],title='Percent Difference in SSI: 200-210 nm',font_size=10,margin=0.15)
+p1=plot(laspdate[0:k-1],(1-(jbin_ssi_2/lbin_ssi_2))*100,layout=[1,4,2],title='Percent Difference in SSI: 300-400 nm',/current,font_size=10,margin=0.15)
+p1=plot(laspdate[0:k-1],(1-(jbin_ssi_3/lbin_ssi_3))*100,layout=[1,4,3],title='Percent Difference in SSI: 700-1000 nm',/current,font_size=10,margin=0.15)
+p1=plot(laspdate[0:k-1],(1-(jbin_ssi_4/lbin_ssi_4))*100,layout=[1,4,4],title='Percent Difference in SSI: 1000-1300 nm',/current,font_size=10,margin=0.15)
 
 end ; pro
