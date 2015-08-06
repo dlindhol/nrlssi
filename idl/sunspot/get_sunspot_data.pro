@@ -262,6 +262,7 @@ function get_sunspot_data_from_latis, ymd1, ymd2
   ;Iterate through each line and parse into a data record
   ;TODO: use json?
   ;Skip header, start at 1
+  ;TODO: deal with empty data
   for i = 1, n_elements(lines)-1 do begin
     ;This will return -1 if the line is not a valid data record.
     struct = parse_line(lines[i])
