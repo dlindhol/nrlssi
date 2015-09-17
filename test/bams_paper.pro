@@ -2,6 +2,7 @@ pro bams_paper
 
 ;make plots for bams paper
 
+;goto, review
 
 ;open .nc file for NRLTSI2 and NRLSSI2 data from 1978-11-07 to 2014-12-31
 cdfid = ncdf_open('/Users/hofmann/Documents/FCDR_Solar/ssi_v02r00_daily_s19781107_e20141231_c20150321.nc',/nowrite)
@@ -25,9 +26,9 @@ ivaridt=ncdf_varid(cdfid,'TSI_UNC')
 ncdf_varget,cdfid,ivaridt,nrl_tsi_unc
 
 ;TIM measurements
-;tim=read_lasp_ascii_file('/Users/hofmann/git/nrlssi/docs/NCDC flyer/sorce_tsi_L3_c24h_latest.webarchive')
-;tim_time=jd2yf4(tim.nominal_date_jdn)
-;tim_tsi = tim.tsi_1au
+tim=read_lasp_ascii_file('/Users/hofmann/Documents/FCDR_Solar/NCDC flyer/sorce_tsi_L3_c24h_latest.webarchive')
+tim_time=jd2yf4(tim.nominal_date_jdn)
+tim_tsi = tim.tsi_1au
 
 ;SIM measurements (this is combined solstice/sim data product)
 sim=read_lasp_ascii_file('/Users/hofmann/Downloads/sorce_ssi_L3_c24h_0000nm_2413nm_20030301_20130729-3.txt')
@@ -40,7 +41,7 @@ sim=read_lasp_ascii_file('/Users/hofmann/Downloads/sorce_ssi_L3_c24h_0000nm_2413
 restore,filename='/Users/hofmann/git/nrlssi/test/mod5surfacecalcs_shortwave_nm.sav',/verb
 restore,filename='/Users/hofmann/git/nrlssi/test/mod5surfacecalcs_lw.sav'
 
-goto, fig3
+goto, fig7
 
 fig1:
 ;Figure 1-------------------------------
@@ -184,16 +185,25 @@ for j=0,k-1 do begin
   bin_ssi_4[j] = total(nrl_ssi[bin_4,j]*bandwidth(bin_4),/double)
 endfor
 
+;modified to include a relative variability axis on right hand of each plot
 p=plot(nrl_date,bin_ssi_1,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink',title='NRLSSI2 Solar Spectral Irradiance')
+a=-1. & b = 1./mean(bin_ssi_1)
+yaxis=axis('y',location='right',coord_transform=[a,b]*100.,tickfont_size=16,target=p,tickdir=1)
 p1=plot(nrl_date,bin_ssi_2,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,ytitle='Irradiance (W m!U-2!N)',layout=[1,4,2],/current,color='deep pink')
+a=-1. & b = 1./mean(bin_ssi_2)
+yaxis=axis('y',location='right',title='relative !C variability !C (%)',coord_transform=[a,b]*100.,tickfont_size=16,target=p1,tickdir=1)
 p2=plot(nrl_date,bin_ssi_3,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],/current,color='deep pink')
+a=-1. & b = 1./mean(bin_ssi_3)
+yaxis=axis('y',location='right',coord_transform=[a,b]*100.,tickfont_size=16,target=p2,tickdir=1)
 p3=plot(nrl_date,bin_ssi_4,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],/current,color='deep pink')
+a=-1. & b = 1./mean(bin_ssi_4)
+yaxis=axis('y',location='right',coord_transform=[a,b]*100.,tickfont_size=16,target=p3,tickdir=1)
 
 p.xrange=[1978,2015]
 p1.xrange=[1978,2015]
 p2.xrange=[1978,2015]
 p3.xrange=[1978,2015]
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig3.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig3_revised.eps';, /TRANSPARENT
 ;end of Figure 3------------------------------
 
 fig4:
@@ -218,18 +228,40 @@ p1=plot(tim_time(subset_tim),tim_tsi(subset_tim),symbol='o',color='light green',
 p.xrange=[2003,2015]
 ;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4c.eps';, /TRANSPARENT
 
+;modified to have log y-axis on difference plot
 tt=where(tim_tsi(subset_tim) eq 0.0)
 tim_tsi(subset_tim(tt)) = !values.d_NaN
 difference=tim_tsi(subset_tim) - nrl_tsi(subset)
 p = plot(tim_time(subset_tim),difference,'-ok',sym_size=0.5,ytitle= 'Difference (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,name='TIM - NRLTSI2')
 p.xrange=[2003,2015]
-p.yrange=[-1,2.5]
+;p.yrange=[-1,2.5]
 zero=[0,0]
 p1=plot(p.xrange,zero,'-2',color='light grey',overplot=1)
 result=smooth(difference,365,/NaN,/edge_wrap)
 p2=plot(tim_time(subset_tim),result,'-',color='pink',overplot=1,name='365 day smooth')
 l=legend(target=[p,p2],/data,position=[2008.6,2.0],linestyle=6,font_size=16,shadow=0)
-;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4d.eps';, /TRANSPARENT
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4d_revised.eps';, /TRANSPARENT
+;
+;a new try: modified to have a break in the y-axis (create break in illustrator)
+tt=where(tim_tsi(subset_tim) eq 0.0)
+tim_tsi(subset_tim(tt)) = !values.d_NaN
+difference=tim_tsi(subset_tim) - nrl_tsi(subset)
+pbottom = plot(tim_time(subset_tim),difference,'-ok',sym_size=0.5,ytitle= 'Difference (W m!U-2!N)',margin=[.2,.15,.2,.15],font_size=16,name='TIM - NRLTSI2',yrange=[-.75,.75])
+pbottom.xrange=[2003,2015]
+zero=[0,0]
+ax=pbottom.axes
+ax[2].hide=1
+p1=plot(pbottom.xrange,zero,'-2',color='light grey',overplot=1)
+result=smooth(difference,365,/NaN,/edge_wrap)
+p2=plot(tim_time(subset_tim),result,'-',color='pink',overplot=1,name='365 day smooth')
+l=legend(target=[pbottom,p2],/data,position=[2008.6,0.5],linestyle=6,font_size=16,shadow=0)
+;;pbottom.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4d_bottom_revised.eps';, /TRANSPARENT
+ptop =plot(tim_time(subset_tim),difference,'-ok',sym_size=0.5,margin=[.2,.15,.2,.50],font_size=16,name='TIM - NRLTSI2',yrange=[1,2.25],axis=2,ymajor=3,ytickvalues=[1.0,1.5,2.0])
+ptop.xrange=[2003,2015]
+axy=ptop.axes
+axy[0].hide=1
+;ptop.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig4d_top_revised.eps';, /TRANSPARENT
+
 ;end of Figure 4------------------------------
 
 fig5:
@@ -476,7 +508,7 @@ endfor
 nrlssi2 =nrl_ssi
 nrlssi2unc=nrl_ssi_unc
 nrlssi2_date = nrl_date
-j1 = 12486
+j1 = 12484 ; 12486 (12486 = Jan 13th, 2013, 12484=Jan 11, 2013)
 j2 = 12495
 nday = j2-j1+1.
 nrlssi2_max = nrlssi2[*,j1:j2]
@@ -567,9 +599,69 @@ l=legend(target=[p,p3],/data,linestyle=6,font_size=16,shadow=0)
 p.yrange=[0.0001,100]
 ;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7b_revised.eps';, /TRANSPARENT
 
+;subset energy difference (200-600 nm)
+;p=plot(wl_nrlssi2(*,0),nrlssi2_max_minus_min,xtitle='Wavelength (nm)',ytitle='W m-2 nm-1',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',name='NRLSSI2')
+p=errorplot(wl_nrlssi2(*,0),nrlssi2_max_minus_min,unc_nrlssi2_max_minus_min,xtitle='Wavelength (nm)',ytitle='W m-2 nm-1',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',errorbar_capsize=0,errorbar_color='grey',name='NRLSSI2')
 
-;
-;
+p1=plot(wl_nrlssi1(*,0),(nrlssi1_max_minus_min)/1000.,overplot=1,name='NRLSSI') ;convert from mW to W
+l=legend(target=[p,p1],/data,linestyle=6,font_size=16,shadow=0)
+p.yrange=[-0.001,0.0045]
+p.xrange=[200,600]
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7c_revised_v2.eps';, /TRANSPARENT
+
+;subset energy ratio (200-600 nm)
+p=plot(wl_nrlssi2(*,0),nrlssi2_max_over_min,xtitle='Wavelength (nm)',ytitle='Percent',margin=[.2,.15,.2,.15],font_size=16,color='deep pink',name='NRLSSI2')
+p0=plot(wl_nrlssi2(a,0),abs(nrlssi2_max_over_min(a)),color='deep pink',symbol='.',linestyle=6,overplot=1)
+p3=plot(wl_nrlssi1(*,0),(nrlssi1_max_over_min),overplot=1,name='NRLSSI') ;convert from mW to W
+p30=plot(wl_nrlssi1(a1,0),abs(nrlssi1_max_over_min(a1)),symbol='.',linestyle=6,overplot=1) ;convert from mW to W
+p1=plot(wl_nrlssi2(*,0),high,'--',color='grey',overplot=1) ;positive bound of error bar
+;p10=plot(wl_nrlssi2(b,0),high(b),'--',color='red',overplot=1) ;
+p2=plot(wl_nrlssi2(*,0),low,'--',color='grey',overplot=1) ;negative bound of error bar
+;p20=plot(wl_nrlssi2(c,0),(new_low(c)),'--',symbol='.',color='grey',overplot=1,linestyle=6)
+p.xlog=0
+p.ylog=1
+l=legend(target=[p,p3],/data,linestyle=6,font_size=16,shadow=0)
+p.yrange=[0.0001,100]
+p.xrange=[200,600]
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7d_revised_v2.eps';, /TRANSPARENT
+
+;compute the integral of the mean min/max periods for 300-400 nm, 400-600 nm, and 300-600 nm for NRLSSI2 and NRLSSI1
+b1 = where(wl_nrlssi1[*,0] ge 300 and wl_nrlssi1[*,0] le 400)
+b2 = where(wl_nrlssi1[*,0] ge 400 and wl_nrlssi1[*,0] le 600)
+b3 = where(wl_nrlssi1[*,0] ge 300 and wl_nrlssi1[*,0] le 600)
+nrlssi1_band1 = total(nrlssi1_max_mean[b1]/1000.*wl_nrlssi1[b1,1]) - total(nrlssi1_min_mean[b1]/1000.*wl_nrlssi1[b1,1]) ;W m-2
+nrlssi1_band2 = total(nrlssi1_max_mean[b2]/1000.*wl_nrlssi1[b2,1]) - total(nrlssi1_min_mean[b2]/1000.*wl_nrlssi1[b2,1]) ;W m-2
+nrlssi1_band3 = total(nrlssi1_max_mean[b3]/1000.*wl_nrlssi1[b3,1]) - total(nrlssi1_min_mean[b3]/1000.*wl_nrlssi1[b3,1]) ;W m-2
+nrlssi1_band1_ratio = (total(nrlssi1_max_mean[b1]/1000.*wl_nrlssi1[b1,1]) / total(nrlssi1_min_mean[b1]/1000.*wl_nrlssi1[b1,1]) -1.)*100 ;%
+nrlssi1_band2_ratio = (total(nrlssi1_max_mean[b2]/1000.*wl_nrlssi1[b2,1]) / total(nrlssi1_min_mean[b2]/1000.*wl_nrlssi1[b2,1]) -1.)*100 ;%
+nrlssi1_band3_ratio = (total(nrlssi1_max_mean[b3]/1000.*wl_nrlssi1[b3,1]) / total(nrlssi1_min_mean[b3]/1000.*wl_nrlssi1[b3,1]) -1.)*100 ;%
+
+b1 = where(wl_nrlssi2[*,0] ge 300 and wl_nrlssi2[*,0] le 400)
+b2 = where(wl_nrlssi2[*,0] ge 400 and wl_nrlssi2[*,0] le 600)
+b3 = where(wl_nrlssi2[*,0] ge 300 and wl_nrlssi2[*,0] le 600)
+nrlssi2_band1 = total(nrlssi2_max_mean[b1]*wl_nrlssi2[b1,1]) - total(nrlssi2_min_mean[b1]*wl_nrlssi2[b1,1]) ;W m-2
+nrlssi2_band2 = total(nrlssi2_max_mean[b2]*wl_nrlssi2[b2,1]) - total(nrlssi2_min_mean[b2]*wl_nrlssi2[b2,1]) ;W m-2
+nrlssi2_band3 = total(nrlssi2_max_mean[b3]*wl_nrlssi2[b3,1]) - total(nrlssi2_min_mean[b3]*wl_nrlssi2[b3,1]) ;W m-2
+nrlssi2_band1_ratio = (total(nrlssi2_max_mean[b1]*wl_nrlssi2[b1,1]) / total(nrlssi2_min_mean[b1]*wl_nrlssi2[b1,1])-1.)*100 ;%
+nrlssi2_band2_ratio = (total(nrlssi2_max_mean[b2]*wl_nrlssi2[b2,1]) / total(nrlssi2_min_mean[b2]*wl_nrlssi2[b2,1])-1.)*100 ;%
+nrlssi2_band3_ratio = (total(nrlssi2_max_mean[b3]*wl_nrlssi2[b3,1]) / total(nrlssi2_min_mean[b3]*wl_nrlssi2[b3,1])-1.)*100 ;%
+
+print,nrlssi1_band1,nrlssi1_band2,nrlssi1_band3
+print,nrlssi2_band1,nrlssi2_band2,nrlssi2_band3
+print,nrlssi1_band1_ratio,nrlssi1_band2_ratio,nrlssi1_band3_ratio
+print,nrlssi2_band1_ratio,nrlssi2_band2_ratio,nrlssi2_band3_ratio
+
+;bar plot of max-min per integrated band
+bp1 = barplot([nrlssi1_band1,nrlssi1_band2,nrlssi1_band3],index=0,nbars=2,fill_color='black',ytitle='W m!U-2',title='(Max - Min)',xtitle='nm',axis_style=1,xmajor=3,xtickname=['300-400','400-600','300-600'],xtickvalues=[0,1,2],xstyle=1)
+bp2 = barplot([nrlssi2_band1,nrlssi2_band2,nrlssi2_band3],index=1,nbars=2,fill_color='deep pink',/overplot)
+bp1.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7e_revised_v2.eps';, /TRANSPARENT
+
+;bar plot of (max/min)-1 * 100 per integrated band
+bp3 = barplot([nrlssi1_band1_ratio,nrlssi1_band2_ratio,nrlssi1_band3_ratio],index=0,nbars=2,fill_color='black',ytitle='Percent',title='(Max / Min -1) * 100',xtitle='nm',axis_style=1,xmajor=3,xtickname=['300-400','400-600','300-600'],xtickvalues=[0,1,2],xstyle=1)
+bp4 = barplot([nrlssi2_band1_ratio,nrlssi2_band2_ratio,nrlssi2_band3_ratio],index=1,nbars=2,fill_color='deep pink',/overplot)
+bp3.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7f_revised_v2.eps';, /TRANSPARENT
+
+
 ;fig5b:
 ;;Figure 5b--------------------------------------
 ;bin_1 =where(wavelength eq 120.5)
@@ -589,5 +681,109 @@ p.yrange=[0.0001,100]
 ;;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig5b.eps';, /TRANSPARENT
 ;;end of  Figure 5b------------------------------
 
+review:
+;respond to reviewer question 10:
+;show a time series of the integral of the spectrum of the facular contributions to the quiet sun irradiance (computed without the added small correction factor), 
+;relative to the integral of the spectrum of the facular contributions to the quiet sun irradiance (with the added small correction factor), and similarly for the sunspot darkening contribution.  
+restore,'test/ssi_nocorr_proxy_contrast_s2000-01-01_e2014-12-31_c2015-08-27.sav'
+model_params = get_model_params()
+wav1a = 200 & wav1b = 210
+wav2a = 300 & wav2b = 400
+wav3a = 700 & wav3b = 1000
+wav4a = 1000 & wav4b = 1300
+k = n_elements(data.contrast.mjd)
+
+ssifac = data.contrast.ssifac
+ssifac_nocorr = data.contrast.ssifac_nocorr
+
+ssispot = data.contrast.ssispot
+ssispot_nocorr = data.contrast.ssispot_nocorr
+
+bin_fac_1 = dblarr(k) ;200-210 nm
+bin_fac_2 = dblarr(k) ;300-400 nm
+bin_fac_3 = dblarr(k) ;700-1000 nm
+bin_fac_4 = dblarr(k) ;1000-1300 nm
+
+bin_fac_nocorr_1 = dblarr(k) ;200-210 nm
+bin_fac_nocorr_2 = dblarr(k) ;300-400 nm
+bin_fac_nocorr_3 = dblarr(k) ;700-1000 nm
+bin_fac_nocorr_4 = dblarr(k) ;1000-1300 nm
+
+bin_spot_1 = dblarr(k) ;200-210 nm
+bin_spot_2 = dblarr(k) ;300-400 nm
+bin_spot_3 = dblarr(k) ;700-1000 nm
+bin_spot_4 = dblarr(k) ;1000-1300 nm
+
+bin_spot_nocorr_1 = dblarr(k) ;200-210 nm
+bin_spot_nocorr_2 = dblarr(k) ;300-400 nm
+bin_spot_nocorr_3= dblarr(k) ;700-1000 nm
+bin_spot_nocorr_4 = dblarr(k) ;1000-1300 nm
+
+bin_1 =where((model_params.lambda ge wav1a) and (model_params.lambda lt wav1b),cntwav)
+bin_2 = where((model_params.lambda ge wav2a) and (model_params.lambda lt wav2b),cntwav)
+bin_3 = where((model_params.lambda ge wav3a) and (model_params.lambda lt wav3b),cntwav)
+bin_4 = where((model_params.lambda ge wav4a) and (model_params.lambda lt wav4b),cntwav)
+
+for j=0,k-1 do begin
+  bin_fac_1[j] = total(ssifac[bin_1,j])
+  bin_fac_2[j] = total(ssifac[bin_2,j])
+  bin_fac_3[j] = total(ssifac[bin_3,j])
+  bin_fac_4[j] = total(ssifac[bin_4,j])
+  
+  bin_fac_nocorr_1[j] = total(ssifac_nocorr[bin_1,j])
+  bin_fac_nocorr_2[j] = total(ssifac_nocorr[bin_2,j])
+  bin_fac_nocorr_3[j] = total(ssifac_nocorr[bin_3,j])
+  bin_fac_nocorr_4[j] = total(ssifac_nocorr[bin_4,j])
+  
+  bin_spot_1[j] = total(ssispot[bin_1,j])
+  bin_spot_2[j] = total(ssispot[bin_2,j])
+  bin_spot_3[j] = total(ssispot[bin_3,j])
+  bin_spot_4[j] = total(ssispot[bin_4,j])
+
+  bin_spot_nocorr_1[j] = total(ssispot_nocorr[bin_1,j])
+  bin_spot_nocorr_2[j] = total(ssispot_nocorr[bin_2,j])
+  bin_spot_nocorr_3[j] = total(ssispot_nocorr[bin_3,j])
+  bin_spot_nocorr_4[j] = total(ssispot_nocorr[bin_4,j])  
+  
+endfor
+
+;facular contributions
+p=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_1,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink')
+p2=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_1 - bin_fac_nocorr_1,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink',linestyle=3,overplot=1)
+p4=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_2,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,2],color='deep pink',/current)
+p6=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_2 - bin_fac_nocorr_2,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,2],color='deep pink',linestyle=3,overplot=1)
+p8=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_3,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],color='deep pink',/current)
+p10=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_3 - bin_fac_nocorr_3,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],color='deep pink',linestyle=3,overplot=1)
+p12=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_4,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],color='deep pink',/current)
+p14=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_fac_4 - bin_fac_nocorr_4,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],color='deep pink',linestyle=3,overplot=1)
+
+;spot contributions
+p1=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_1,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='dodger blue')
+p3=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_1 - bin_spot_nocorr_1,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='dodger blue',linestyle=3,overplot=1)
+p5=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_2,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,2],color='dodger blue',/current)
+p7=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_2 - bin_spot_nocorr_2,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,2],color='dodger blue',linestyle=3,overplot=1)
+p9=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_3,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],color='dodger blue',/current)
+p11=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_3 - bin_spot_nocorr_3,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],color='dodger blue',linestyle=3,overplot=1)
+p13=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_4,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],color='dodger blue',/current)
+p15=plot(jd2yf4(mjd2jd(data.contrast.mjd)),bin_spot_4 - bin_spot_nocorr_4,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],color='dodger blue',linestyle=3,overplot=1)
+
+;facular contributions (in percentages)
+p=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_fac_nocorr_1/bin_fac_1))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='deep pink',title='Contributions due to correction factor (%)')
+p4=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_fac_nocorr_2/bin_fac_2))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,2],color='deep pink',/current)
+p8=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_fac_nocorr_3/bin_fac_3))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],color='deep pink',/current)
+p12=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_fac_nocorr_4/bin_fac_4))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],color='deep pink',/current)
+
+;spot contributions (in percentages)
+p1=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_spot_nocorr_1/bin_spot_1))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,1],color='dodger blue')
+p5=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_spot_nocorr_2/bin_spot_2))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,2],color='dodger blue',/current)
+p9=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_spot_nocorr_3/bin_spot_3))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,3],color='dodger blue',/current)
+p13=plot(jd2yf4(mjd2jd(data.contrast.mjd)),(1-(bin_spot_nocorr_4/bin_spot_4))*100,margin=[.2,.15,.2,.15],font_size=16,axis_style=1,layout=[1,4,4],color='dodger blue',/current)
+
+;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig3.eps';, /TRANSPARENT
+;end of Figure 3------------------------------
+
+
+;p4=plot((1-result.contrast.ssifactot_nocorr/result.contrast.ssifactot)*100)
+;p5=plot((1-result.contrast.ssispottot_nocorr/result.contrast.ssispottot)*100)
 
 end ;pro  
