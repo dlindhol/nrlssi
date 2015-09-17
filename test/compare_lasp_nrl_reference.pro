@@ -24,7 +24,7 @@ nrl_reference='data/judith_2015_01_28/NRLSSI2_Reference_Spectra_CDR_11Feb15.txt'
   algrev = 'r00' ; for 'final' files;  get from function parameter?
   modver='28Jan15'
   fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
-  model_params = get_model_params(fn)
+  model_params = get_model_params(file=fn)
  
   ;these sb and mg values are monthly averages for Sept, 2001 (high), May 2004 (moderate), and July 2008 (low)
   lasp_high = compute_ssi(3162.5460,0.16737667,model_params) 

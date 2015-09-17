@@ -47,7 +47,7 @@ for i=0,ik-1 do begin
   if time_bin eq 'monthly' then begin
     ym1 = strtrim(string(year),2)+'01'
     ym2 = strtrim(string(year),2)+'12'
-    file = '/Users/hofmann/NRL2_OUTPUT/ssi_v02r00_monthly_s'+ym1+'_e'+ym2+'_c20150421.nc'
+    file = '/Users/hofmann/NRL2_OUTPUT/ssi_v02r00_monthly_s'+ym1+'_e'+ym2+'_c20150730.nc'
   endif
   if time_bin eq 'daily' then begin
     ym1 = strtrim(string(year),2)+'0101'

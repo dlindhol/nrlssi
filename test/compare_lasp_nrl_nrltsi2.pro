@@ -1,6 +1,6 @@
 pro compare_lasp_nrl_nrltsi2
 
-time_bin = 'daily'
+time_bin = 'yearly'
 
 if time_bin eq 'daily' then begin 
   nrl_tsi = '/Users/hofmann/Downloads/NRLTSI2_1882_2014d_6Apr15.txt'
@@ -9,7 +9,8 @@ if time_bin eq 'monthly' then begin
   nrl_tsi = '/Users/hofmann/Downloads/NRLTSI2_1882_2014m_6Apr15.txt'
 endif
 if time_bin eq 'yearly' then begin
-  nrl_tsi = '/Users/hofmann/Downloads/NRLTSI2_1882_2014a_6Apr15.txt' 
+  ;nrl_tsi = '/Users/hofmann/Downloads/NRLTSI2_1882_2014a_6Apr15.txt' 
+  nrl_tsi = '/Users/hofmann/Downloads/NRLTSI2_1610_2014a_18May15.txt'
 endif
  
 ;template to read NRL ascii file of daily TSI
@@ -36,17 +37,30 @@ endif
     fieldlocations:[2L, 11L, 16L, 32L], $
     fieldgroups:[0L, 1L, 2L, 3L]}
 
-;template to read NRL ascii file of yearly TSI
+;template to read NRL ascii file of yearly TSI (goes with the '/Users/hofmann/Downloads/NRLTSI2_1882_2014a_6Apr15.txt' file)
+;  tempa = {version:1.0, $
+;    datastart:4L, $
+;    delimiter:32b, $
+;    missingvalue:!VALUES.F_NAN, $
+;    commentsymbol:'', $
+;    fieldcount:3l, $
+;    fieldtypes:[3l, 4l,4l], $ ; float
+;    fieldnames:['year','tsi','tsiunc'], $
+;    fieldlocations:[2L, 10L, 26L], $
+;    fieldgroups:[0L, 1L, 2L]}
+
+  ;template to read NRL ascii file of yearly TSI (goes with the '/Users/hofmann/Downloads/NRLTSI2_1610_2014a_18May15.txt' file)
   tempa = {version:1.0, $
-    datastart:4L, $
+    datastart:5L, $
     delimiter:32b, $
     missingvalue:!VALUES.F_NAN, $
     commentsymbol:'', $
-    fieldcount:3l, $
-    fieldtypes:[3l, 4l,4l], $ ; float
-    fieldnames:['year','tsi','tsiunc'], $
-    fieldlocations:[2L, 10L, 26L], $
-    fieldgroups:[0L, 1L, 2L]}
+    fieldcount:2l, $
+    fieldtypes:[3l, 4l], $ ; float
+    fieldnames:['year','tsi'], $
+    fieldlocations:[2L, 10L], $
+    fieldgroups:[0L, 1L]}
+    
 
 if time_bin eq 'daily' then jud = read_ascii(nrl_tsi, template = tempd) ;structure that holds the contents of nrl_output  
 if time_bin eq 'monthly' then jud = read_ascii(nrl_tsi, template = tempm) ;structure that holds the contents of nrl_output 
@@ -54,10 +68,11 @@ if time_bin eq 'yearly' then jud = read_ascii(nrl_tsi, template = tempa) ;struct
 
 ;truncate judith data to same time period
 judtsi = jud.tsi
-judtsiunc=jud.tsiunc
+;judtsiunc=jud.tsiunc
 
 ;create LASP TSI data from saved annual, monthly and daily inputs
-restore,'test/LASP_annual_month_day_indices_1882_2014.sav',/verb
+;restore,'test/LASP_annual_month_day_indices_1882_2014.sav',/verb
+restore,'test/LASP_annual_indices_1610_2014.sav',/verb ; goes with 'NRLTSI2_1610_2014a_18May15.txt' above for nrl_tsi
 if time_bin eq 'daily' then begin
   sb = sb_d
   mg = mg_d
@@ -89,8 +104,8 @@ p.xtitle='Year'
 p1=plot(lasp_date,(1-(judtsiunc/lasptsiunc))*100,'r',layout=[1,2,2],/current)
 p1.ytitle='(1-NRL/LASP)*100'
 p1.title='Percent Difference in TSI Uncertainty'
-p.xrange=[1882,2015]
-p1.xrange=[1882,2015]
+p.xrange=[1610,2015]
+p1.xrange=[1610,2015]
 
 
 end ; pro
