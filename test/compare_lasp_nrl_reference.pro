@@ -1,5 +1,7 @@
 pro compare_lasp_nrl_reference
-nrl_reference='data/reference_spectra/NRLSSI2_Reference_Spectra_CDR_11Feb15.txt' ;nrl reference spectra
+
+;First, NRL reference from Judith
+  nrl_reference='data/reference_spectra/NRLSSI2_Reference_Spectra_00_GW80_15Sep15.txt' ;nrl reference spectra
 
   ;template to read NRL ascii file of reference spectra
   temp = {version:1.0, $
@@ -20,28 +22,21 @@ nrl_reference='data/reference_spectra/NRLSSI2_Reference_Spectra_CDR_11Feb15.txt'
   nrl_low = nrl.field4
   nrl_quiet = nrl.field5
   
-;  algver = 'v02' ; get from function parameter?
-;  algrev = 'r00' ; for 'final' files;  get from function parameter?
-;  modver='28Jan15'
-;  fn='~/git/nrlssi/data/judith_2015_01_28/NRL2_model_parameters_AIndC_21_'+modver+'.sav'
-;  model_params = get_model_params(file=fn)
-  
-  if n_elements(file) eq 0 then file = 'data/NRL2_model_parameters_v02r00.sav'
   model_params = get_model_params()
   
   ;these sb and mg values are monthly averages for Sept, 2001 (high), May 2004 (moderate), and July 2008 (low)
   lasp_high = compute_ssi(3162.5460,0.16737667,model_params) 
-  lasp_high2 = compute_ssi(3162.5464,0.16737668,model_params) ;Judith's exact input values (note she averaged 31 days)
+  ;lasp_high2 = compute_ssi(3162.5464,0.16737668,model_params) ;Judith's exact input values (note she averaged 31 days)
   lasp_high_tsi = compute_tsi(3162.5460,0.16737667,model_params)
-  lasp_high_tsi2 = compute_tsi(3162.5464,0.16737668,model_params) 
+  ;lasp_high_tsi2 = compute_tsi(3162.5464,0.16737668,model_params) 
   lasp_moderate = compute_ssi(671.66613,0.15545161,model_params)
-  lasp_moderate2 = compute_ssi(671.66608,0.15545161,model_params) ;Judith's exact indice values
+  ;lasp_moderate2 = compute_ssi(671.66608,0.15545161,model_params) ;Judith's exact indice values
   lasp_moderate_tsi = compute_tsi(671.66613,0.15545161,model_params)
-  lasp_moderate_tsi2 = compute_tsi(671.66608,0.15545161,model_params)
+  ;lasp_moderate_tsi2 = compute_tsi(671.66608,0.15545161,model_params)
   lasp_low = compute_ssi(2.6735484,0.15061290,model_params)
-  lasp_low2 = compute_ssi(2.6735482,0.15061291,model_params); Judith's exact indice values
+  ;lasp_low2 = compute_ssi(2.6735482,0.15061291,model_params); Judith's exact indice values
   lasp_low_tsi = compute_tsi(2.6735484,0.15061290,model_params)
-  lasp_low_tsi2 = compute_tsi(2.6735482,0.15061291,model_params)
+  ;lasp_low_tsi2 = compute_tsi(2.6735482,0.15061291,model_params)
   lasp_quiet = model_params.iquiet
   
   p=plot(model_params.lambda,(1.0-nrl_high/lasp_high.nrl2)*100,'k',name='High',xlog=1)
