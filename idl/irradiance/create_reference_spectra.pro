@@ -1,51 +1,50 @@
-pro create_reference_spectra
+function create_reference_spectra,version=version, output_dir=output_dir
 
+  if n_elements(version) eq 0 then version = 'v02r00'  ;default to current final release version
+  creation_date = jd2iso_date(systime(/julian, /utc)) ;now as yyyy-mm-dd UTC
+  cymd = remove_hyphens(creation_date)
+  outfile = output_dir+'NRLSSI2_'+version+'_reference_spectra_c'+cymd+'_.txt'
+  
+  ;Default to monthly averages
+  time_bin = 'month'
+  
   ;Get the NRL2 model parameters (includes quiet spectrum)
   model_params = get_model_params()
   lambda = model_params.lambda ;1 nm wavelength bins
-  
+
   ;Quiet
   quiet = model_params.iquiet  ;quiet spectrum
-  
+
   ;Low : defined as July 2008 (month avg)
   ymd1='2008-07-01'
   ymd2='2008-07-31'
-  ;Get input data
   sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, /final) ;sunspot blocking/darkening data
   mg_index = get_mg_index(ymd1, ymd2, /final) ;MgII index data - facular brightening
-  ssb = sunspot_blocking.toArray() & ssb = mean(ssb.ssbt)
-  mgi = mg_index.toArray() & mgi = mean(mgi.index)
-  print,'Low Solar Activity (July 2008): spot, fac: ', ssb, mgi
-  ssi = compute_ssi(ssb, mgi, model_params) ;calculate SSI for given sb and mg (1 nm bands)
-  low = ssi.nrl2
-  
-  ;Moderate: defined as May 2004 (month avg)
-  ymd1='2004-05-01'
-  ymd2='2004-05-31'
-  ;Get input data
-  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, /final) ;sunspot blocking/darkening data
-  mg_index = get_mg_index(ymd1, ymd2, /final) ;MgII index data - facular brightening
-  ssb = sunspot_blocking.toArray() & ssb = mean(ssb.ssbt)
-  mgi = mg_index.toArray() & mgi = mean(mgi.index)
-  print,'Moderate Solar Activity (May 2004): spot, fac: ', ssb, mgi
-  ssi = compute_ssi(ssb, mgi, model_params) ;calculate SSI for given sb and mg (1 nm bands)
-  moderate = ssi.nrl2
-  
-  ;High: defined as Sept 2001 (month avg)
-  ymd1='2001-09-01'
-  ymd2='2001-09-30'
-  ;Get input data
-  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, /final) ;sunspot blocking/darkening data
-  mg_index = get_mg_index(ymd1, ymd2, /final) ;MgII index data - facular brightening
-  ssb = sunspot_blocking.toArray() & ssb = mean(ssb.ssbt)
-  mgi = mg_index.toArray() & mgi = mean(mgi.index)
-  print,'High Solar Activity (Sept 2001): spot, fac: ', ssb, mgi
-  ssi = compute_ssi(ssb, mgi, model_params) ;calculate SSI for given sb and mg (1 nm bands)
-  high = ssi.nrl2  
-  
-  judssi = compute_ssi (3162.5464, 0.16737688,model_params)
+  sb = sunspot_blocking.toArray() & sb = mean(sb.ssbt)
+  mg = mg_index.toArray() & mg = mean(mg.index)
+  low = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
+  lowssi = low.nrl2 & lowssitot = low.nrl2tot
 
-  
+  ;Moderate: defined as May 2004 (month avg)
+  ymd1 = '2004-05-01'
+  ymd2 = '2004-05-31'
+  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, /final) ;sunspot blocking/darkening data
+  mg_index = get_mg_index(ymd1, ymd2, /final) ;MgII index data - facular brightening
+  sb = sunspot_blocking.toArray() & sb = mean(sb.ssbt)
+  mg = mg_index.toArray() & mg = mean(mg.index)
+  moderate = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)
+  moderatessi = moderate.nrl2 & moderatessitot = moderate.nrl2tot
+    
+  ;High: defined as Sept 2001 (month avg)
+  ymd1 = '2001-09-01'
+  ymd2 = '2001-09-30'
+  sunspot_blocking = get_sunspot_blocking(ymd1, ymd2, /final) ;sunspot blocking/darkening data
+  mg_index = get_mg_index(ymd1, ymd2, /final) ;MgII index data - facular brightening
+  sb = sunspot_blocking.toArray() & sb = mean(sb.ssbt)
+  mg = mg_index.toArray() & mg = mean(mg.index)
+  high = compute_ssi(sb, mg, model_params) ;calculate SSI for given sb and mg (1 nm bands)  
+  highssi = high.nrl2 & highssitot = high.nrl2tot
+    
   ;Maunder Minimum (need to get this from Judith's data file)
   mm_temp = {version:1.0, $
     datastart:5L, $
@@ -62,38 +61,17 @@ pro create_reference_spectra
   maunder_minimum = mm.field2
   
   
-  ;Compare low, moderate, and high against Judith's results:
-  ;template to read NRL ascii file of reference spectra
-  temp_jud = {version:1.0, $
-    datastart:4L, $
-    delimiter:32b, $
-    missingvalue:!VALUES.F_NAN, $
-    commentsymbol:'', $
-    fieldcount:5l, $
-    fieldtypes:[4l, 5l, 5l, 5l,5l], $ ; float
-    fieldnames:['field1', 'field2', 'field3', 'field4','field5'], $
-    fieldlocations:[3L, 14L, 30L, 46L, 62L], $
-    fieldgroups:[0L, 1L, 2L, 3L, 4L]}
+  ;write to output file
+  openw,1,outfile
+  printf,1,'NRLSSI2 Reference Spectra in W per m^2 per nm'
+  printf,1,'WAV (nm)     Sept 2001     May 2004      July 2008     Maunder Minimum    QUIET'
 
-  ;nrl = read_ascii('data/reference_spectra/NRLSSI2_Reference_Spectra_CDR_11Feb15.txt', template = temp_jud) ;structure that holds the contents of nrl_output
-  nrl = read_ascii('~/Downloads/NRLSSI2_Reference_Spectra_CDR_11Feb15.txt', template = temp_jud) ;structure that holds the contents of nrl_output
-  jlambda = nrl.field1
-  jhigh = nrl.field2
-  jmoderate = nrl.field3
-  jlow = nrl.field4
-  jquiet = nrl.field5
+  printf,1,FORMAT = '(A6,5(5X,F10.4))','TSI',highssitot,moderatessitot,lowssitot, total(maunder_minimum,/double),total(quiet,/double)
   
-  ;Make Comparison Plots
-  ;p=plot(lambda,(1.0-jhigh/high)*100,'k',name='High',xlog=1)
-  p=plot(lambda,(1-jhigh/judssi.nrl2)*100,'k',name='High',xlog=1)
-  p1=plot(lambda,(1-jmoderate/moderate)*100,'r',overplot=1,name='Moderate')
-  p2=plot(lambda,(1-jlow/low)*100,'b',overplot=1,name='Low')
-  p3=plot(lambda,(1-jquiet/quiet)*100,'g',overplot=1,name='Quiet')
-  p.ytitle='(1 - NRL/LASP) * 100'
-  p.xtitle='Wavelength'
-  l=legend(target=[p,p1,p2,p3],/data)
-  ;p.xrange=[0,1000]
-  ;p.save,'data/reference_spectra/comparison_b.png'
+  for i=0,n_elements(model_params.lambda)-1 do begin
+    printf,1,FORMAT = '(F7.1,5(5X,e10.4E2))',lambda[i], highssi[i],moderatessi[i],lowssi[i],maunder_minimum[i],quiet[i]
+  endfor  
+  close,1
   
-
+  
   end
