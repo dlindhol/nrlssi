@@ -625,10 +625,10 @@ p.yrange=[0.0001,100]
 p.xrange=[200,600]
 ;p.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7d_revised_v2.eps';, /TRANSPARENT
 
-;compute the integral of the mean min/max periods for 300-400 nm, 400-600 nm, and 300-600 nm for NRLSSI2 and NRLSSI1
+;compute the integral of the mean min/max periods for 300-400 nm, 400-600 nm, and 600-800 nm for NRLSSI2 and NRLSSI1
 b1 = where(wl_nrlssi1[*,0] ge 300 and wl_nrlssi1[*,0] le 400)
 b2 = where(wl_nrlssi1[*,0] ge 400 and wl_nrlssi1[*,0] le 600)
-b3 = where(wl_nrlssi1[*,0] ge 300 and wl_nrlssi1[*,0] le 600)
+b3 = where(wl_nrlssi1[*,0] ge 600 and wl_nrlssi1[*,0] le 900)
 nrlssi1_band1 = total(nrlssi1_max_mean[b1]/1000.*wl_nrlssi1[b1,1]) - total(nrlssi1_min_mean[b1]/1000.*wl_nrlssi1[b1,1]) ;W m-2
 nrlssi1_band2 = total(nrlssi1_max_mean[b2]/1000.*wl_nrlssi1[b2,1]) - total(nrlssi1_min_mean[b2]/1000.*wl_nrlssi1[b2,1]) ;W m-2
 nrlssi1_band3 = total(nrlssi1_max_mean[b3]/1000.*wl_nrlssi1[b3,1]) - total(nrlssi1_min_mean[b3]/1000.*wl_nrlssi1[b3,1]) ;W m-2
@@ -638,7 +638,7 @@ nrlssi1_band3_ratio = (total(nrlssi1_max_mean[b3]/1000.*wl_nrlssi1[b3,1]) / tota
 
 b1 = where(wl_nrlssi2[*,0] ge 300 and wl_nrlssi2[*,0] le 400)
 b2 = where(wl_nrlssi2[*,0] ge 400 and wl_nrlssi2[*,0] le 600)
-b3 = where(wl_nrlssi2[*,0] ge 300 and wl_nrlssi2[*,0] le 600)
+b3 = where(wl_nrlssi2[*,0] ge 600 and wl_nrlssi2[*,0] le 900)
 nrlssi2_band1 = total(nrlssi2_max_mean[b1]*wl_nrlssi2[b1,1]) - total(nrlssi2_min_mean[b1]*wl_nrlssi2[b1,1]) ;W m-2
 nrlssi2_band2 = total(nrlssi2_max_mean[b2]*wl_nrlssi2[b2,1]) - total(nrlssi2_min_mean[b2]*wl_nrlssi2[b2,1]) ;W m-2
 nrlssi2_band3 = total(nrlssi2_max_mean[b3]*wl_nrlssi2[b3,1]) - total(nrlssi2_min_mean[b3]*wl_nrlssi2[b3,1]) ;W m-2
@@ -652,14 +652,14 @@ print,nrlssi1_band1_ratio,nrlssi1_band2_ratio,nrlssi1_band3_ratio
 print,nrlssi2_band1_ratio,nrlssi2_band2_ratio,nrlssi2_band3_ratio
 
 ;bar plot of max-min per integrated band
-bp1 = barplot([nrlssi1_band1,nrlssi1_band2,nrlssi1_band3],index=0,nbars=2,fill_color='black',ytitle='W m!U-2',title='(Max - Min)',xtitle='nm',axis_style=1,xmajor=3,xtickname=['300-400','400-600','300-600'],xtickvalues=[0,1,2],xstyle=1)
+bp1 = barplot([nrlssi1_band1,nrlssi1_band2,nrlssi1_band3],index=0,nbars=2,fill_color='black',ytitle='W m!U-2',title='(Max - Min)',xtitle='nm',axis_style=1,xmajor=3,xtickname=['300-400','400-600','600-900'],xtickvalues=[0,1,2],xstyle=1)
 bp2 = barplot([nrlssi2_band1,nrlssi2_band2,nrlssi2_band3],index=1,nbars=2,fill_color='deep pink',/overplot)
-bp1.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7e_revised_v2.eps';, /TRANSPARENT
+bp1.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7e_revised_v3.eps';, /TRANSPARENT
 
 ;bar plot of (max/min)-1 * 100 per integrated band
-bp3 = barplot([nrlssi1_band1_ratio,nrlssi1_band2_ratio,nrlssi1_band3_ratio],index=0,nbars=2,fill_color='black',ytitle='Percent',title='(Max / Min -1) * 100',xtitle='nm',axis_style=1,xmajor=3,xtickname=['300-400','400-600','300-600'],xtickvalues=[0,1,2],xstyle=1)
+bp3 = barplot([nrlssi1_band1_ratio,nrlssi1_band2_ratio,nrlssi1_band3_ratio],index=0,nbars=2,fill_color='black',ytitle='Percent',title='(Max / Min -1) * 100',xtitle='nm',axis_style=1,xmajor=3,xtickname=['300-400','400-600','600-900'],xtickvalues=[0,1,2],xstyle=1)
 bp4 = barplot([nrlssi2_band1_ratio,nrlssi2_band2_ratio,nrlssi2_band3_ratio],index=1,nbars=2,fill_color='deep pink',/overplot)
-bp3.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7f_revised_v2.eps';, /TRANSPARENT
+bp3.save,'/Users/hofmann/git/nrlssi/docs/BAMS_figures/fig7f_revised_v3.eps';, /TRANSPARENT
 
 
 ;fig5b:
