@@ -47,7 +47,7 @@ function write_to_manifest, output_dir=output_dir, filename, filesize, checksum,
 
 close,1
 openw,1,output_dir+fileout
-printf,1,filename + ',' + checksum + ',' + filesize
+printf,1,filename + ',' + checksum + ',' + strtrim(filesize,2)
 close,1
 
 end

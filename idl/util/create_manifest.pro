@@ -45,32 +45,19 @@
 ;   result=create_manifest(output_dir=output_dir,tsifile,ssifile)
 ;
 ;@*****
-function create_manifest,output_dir=output_dir,tsifile,ssifile
+function create_manifest, file
 
   ;Determine file sizes (in bytes)
-  command = 'ls -l '+output_dir+tsifile+ " |awk '{print $5}'"
-  spawn, command, tsi_bytes
-  command = 'ls -l '+output_dir+ssifile+ " |awk '{print $5}'"
-  spawn, command, ssi_bytes
+  bytes = (file_info(file)).size
   
-  ;Perform MD5 checksum on files
-  ;The system command depends on OS
-  os = !Version.OS
-  if (os eq 'linux') then md5_command = 'md5sum'
-  if (os eq 'darwin') then md5_command = 'md5'
-  
-  command = md5_command + ' ' + output_dir+tsifile + " | awk '{print $4}'" 
-  spawn,command,tsi_checksum
-  command = md5_command + ' ' + output_dir+ssifile + " | awk '{print $4}'" 
-  spawn,command,ssi_checksum
+  ;Perform MD5 checksum on file
+  checksum = get_checksum(file)
   
   ;Create the resulting structure for manifest data.
-
-    struct = {manifest,          $
-      tsibytes:     tsi_bytes[0],   $
-      ssibytes:     ssi_bytes[0],    $
-      tsichecksum:  tsi_checksum[0], $
-      ssichecksum:  ssi_checksum[0]  $
-    }   
+  struct = {manifest,   $
+    bytes: bytes,       $
+    checksum: checksum  $
+  }   
+ 
   return,struct
 end ; pro

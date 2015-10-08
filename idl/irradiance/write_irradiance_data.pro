@@ -83,12 +83,12 @@ function write_irradiance_data, ymd1,ymd2,irradiance_data, version, time_bin=tim
   endif
   
   ;Dynamically determine file size (in bytes) and MD5 checksum and output to manifest file
-  ;TODO: refactor to make separate call for tsi, ssi
-  manifest=create_manifest(output_dir=output_dir, tsi_file, ssi_file)
+  tsi_manifest = create_manifest(output_dir + tsi_file)
+  ssi_manifest = create_manifest(output_dir + ssi_file)
 
   ;Write the manifest data to file
-  result = write_to_manifest(output_dir=output_dir, tsi_file, manifest.tsibytes, manifest.tsichecksum, tsi_file + '.mnf')
-  result = write_to_manifest(output_dir=output_dir, ssi_file, manifest.ssibytes, manifest.ssichecksum, ssi_file + '.mnf')
+  result = write_to_manifest(output_dir=output_dir, tsi_file, tsi_manifest.bytes, tsi_manifest.checksum, tsi_file + '.mnf')
+  result = write_to_manifest(output_dir=output_dir, ssi_file, ssi_manifest.bytes, ssi_manifest.checksum, ssi_file + '.mnf')
 
   ;TODO: error handling, return combined status
   return, 0
