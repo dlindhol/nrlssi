@@ -247,10 +247,14 @@ function get_sunspot_data_from_latis, ymd1, ymd2
   end_date = mjd2iso_date(iso_date2mjdn(ymd2) + 1)
 
   ;Make LaTiS request for csv
+  ;TODO: use read_latis_data
   netUrl = OBJ_NEW('IDLnetUrl')
   netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
   netUrl->SetProperty, URL_PORT  = 8090
   netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_sunspot_regions.csv'
+;  netUrl->SetProperty, URL_HOST  = 'localhost' ;'localhost'
+;  netUrl->SetProperty, URL_PORT  = 8080
+;  netURL->SetProperty, URL_PATH  = 'lisird/latis/usaf_sunspot_regions.csv'
   netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + end_date
   lines = netURL->Get(/string_array)
   ;buffer = netURL->Get(/buffer)

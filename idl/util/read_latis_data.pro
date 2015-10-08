@@ -52,6 +52,9 @@ function read_latis_data, dataset, start_time, end_time, host=host, port=port, b
   if not keyword_set(host)      then host = 'lisird-dev'
   if not keyword_set(port)      then port = 8090
   if not keyword_set(base_path) then base_path = 'lisird3/latis'
+;  if not keyword_set(host)      then host = 'lasp.colorado.edu'
+;  if not keyword_set(port)      then port = 80
+;  if not keyword_set(base_path) then base_path = 'lisird/latis'
   if n_elements(query) gt 0     then query = '&' + query else query=''
 
   netUrl = OBJ_NEW('IDLnetUrl')
