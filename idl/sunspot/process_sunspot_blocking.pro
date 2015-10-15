@@ -85,7 +85,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   
   ;use a development version to help keep track of data output
   ;set to 1.0 for final release
-  version='v0.15'
+  version='v1.0'
   
   ;TODO: error if ymd1 not provided
   
