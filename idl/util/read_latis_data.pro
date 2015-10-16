@@ -48,8 +48,11 @@ function read_latis_data, dataset, start_time, end_time, host=host, port=port, b
   ;TODO: consider complex datasets (nested functions)
   ;TODO: error handling
   ;TODO: support authentication
+ 
   
-  if not keyword_set(host)      then host = 'lisird-dev'
+;   if not keyword_set(host)      then host = 'localhost'
+;   if not keyword_set(port)      then port = 8080
+  if not keyword_set(host)      then host = 'lisird-dev.lasp.colorado.edu'
   if not keyword_set(port)      then port = 8090
   if not keyword_set(base_path) then base_path = 'lisird3/latis'
 ;  if not keyword_set(host)      then host = 'lasp.colorado.edu'

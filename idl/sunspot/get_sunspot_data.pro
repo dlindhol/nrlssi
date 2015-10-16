@@ -252,7 +252,7 @@ function get_sunspot_data_from_latis, ymd1, ymd2
   netUrl->SetProperty, URL_HOST  = 'lisird-dev.lasp.colorado.edu' ;'localhost'
   netUrl->SetProperty, URL_PORT  = 8090
   netURL->SetProperty, URL_PATH  = 'lisird3/latis/usaf_sunspot_regions.csv'
-;  netUrl->SetProperty, URL_HOST  = 'localhost' ;'localhost'
+;  netUrl->SetProperty, URL_HOST  = 'localhost'
 ;  netUrl->SetProperty, URL_PORT  = 8080
 ;  netURL->SetProperty, URL_PATH  = 'lisird/latis/usaf_sunspot_regions.csv'
   netURL->SetProperty, URL_QUERY = '&time>=' + ymd1 + '&time<' + end_date
