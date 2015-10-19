@@ -3,7 +3,7 @@ function create_reference_spectra,version=version, output_dir=output_dir
   if n_elements(version) eq 0 then version = 'v02r00'  ;default to current final release version
   creation_date = jd2iso_date(systime(/julian, /utc)) ;now as yyyy-mm-dd UTC
   cymd = remove_hyphens(creation_date)
-  outfile = output_dir+'NRLSSI2_'+version+'_reference_spectra_c'+cymd+'_.txt'
+  outfile = output_dir+'NRLSSI2_'+version+'_reference_spectra_c'+cymd+'.txt'
   
   ;Default to monthly averages
   time_bin = 'month'
