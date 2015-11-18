@@ -1,10 +1,11 @@
 function write_model_inputs, ymd1, ymd2, output_dir=output_dir
+  ;output_dir is expected to end with the file separator (/)
   
   ;Get final sunspot blocking
   sb_final = get_sunspot_blocking(ymd1, ymd2, /final)
   ;Compute the start time for prelim data (after last day of final)
   nfinal = sb_final.count()
-  if (nfinal gt 0) then ymd_prelim = mjd2iso_date(sb_final[-1].(0) + 1)
+  if (nfinal gt 0) then ymd_prelim = mjd2iso_date(sb_final[-1].(0) + 1) else ymd_prelim = ymd1
   ;Get prelim sunspot blocking
   sb_prelim = get_sunspot_blocking(ymd_prelim, ymd2)
   
@@ -15,8 +16,15 @@ function write_model_inputs, ymd1, ymd2, output_dir=output_dir
 
 
   ;Open output file
+  ;sample file name: tsi-ssi_v02r00_model-input-time-series_s19780101_e20151231_c20151115.txt
   if KEYWORD_SET(output_dir) then dir = output_dir else dir = ''
-  file = dir + 'nrl2_model_inputs.csv'
+  file = dir                                        ;directory
+  file += 'tsi-ssi_v02r00_model-input-time-series'  ;base file name, TODO: manage version
+  file += "_s" + remove_hyphens(ymd1)               ;start date
+  file += "_e" + remove_hyphens(ymd2)               ;end date
+  caldat, systime(/utc, /julian), mon, day, year
+  file += "_c" + string(format='(I4,I02,I02)', year, mon, day)  ;current/cration date
+  file += ".txt" 
   openw, unit, file, /get_lun
 
   ;Print header
