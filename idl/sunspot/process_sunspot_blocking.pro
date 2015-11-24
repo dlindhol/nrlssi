@@ -71,6 +71,7 @@
 ;
 ; REVISION HISTORY
 ;   06/04/2015 Initial Version prepared for NCDC
+;   11/02/2015 OC Included mean sunspot area in the output structure
 ; 
 ; USAGE
 ;   result=process_sunspot_blocking(ymd1,ymd2,stations=stations,output_dir=output_dir)
@@ -121,7 +122,8 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
   ;Define the structure to hold a final daily averaged result.
   sunspot_blocking_struct = {sunspot_blocking,  $
     mjdn:0l,  $
-    ssbt:0.0d, dssbt:0.0d,   $
+;    ssbt:0.0d, dssbt:0.0d,   $
+    ssbt:0.0d, dssbt:0.0d,  area:0.0d,  $ ; (includ area in structure)
 ;    ssbuv:0.0d, dssbuv:0.0d,  $
     quality_flag:0  $
   }
@@ -165,6 +167,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
       
       ;Create Hash to hold sum of all sunspot group contribution to blocking for each station.
       ssbt_by_station  = Hash()
+      area_by_station = Hash() 
 ;      ssbuv_by_station = Hash()
       
       ;Compute the total and uv sunspot blocking contribution for each record/observation/sunspot group.
@@ -195,6 +198,7 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
         ;Sum the total ssb contribution from all the sunspot groups observed by this station on this day.
         ;Missing values will be treated as 0. A quality flag is set above.
         ssbt_by_station[station]  = total(ssbt,  /NaN) ;treat NaNs as 0
+        area_by_station[station]  = total(area, /NaN) ;treats NaNs as 0 
 ;        ssbuv_by_station[station] = total(ssbuv, /NaN) ;treat NaNs as 0
       endforeach
       
@@ -208,8 +212,11 @@ function process_sunspot_blocking, ymd1, ymd2, stations=stations, output_dir=out
         ;TODO: deal with only one sample, stddev of array of one is NaN
         ssbt_list = ssbt_by_station.values()
         ssbt_array = ssbt_list.toArray() ;IDL can't do mean ... on List so convert to array
+        area_list = area_by_station.values() 
+        area_array = area_list.toArray() 
         sunspot_blocking_data[i].ssbt  = mean(ssbt_array, /double)
         sunspot_blocking_data[i].dssbt = stddev(ssbt_array, /double)
+        sunspot_blocking_data[i].area = mean(area_array, /double)
       
 ;        ssbuv_list = ssbuv_by_station.values()
 ;        ssbuv_array = ssbuv_list.toArray() ;IDL can't do mean ... on List so convert to array

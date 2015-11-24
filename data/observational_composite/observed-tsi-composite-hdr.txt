@@ -1,0 +1,14 @@
+The Solar Irradiance Climate Data Record (CDR) (Coddington and Lean, 2015; Coddington et al., 2015) includes a composite observational record of total solar irradiance (TSI) constructed from space-based radiometer composite records between 1978 and 2014 and Total Irradiance Monitor (TIM) (Kopp et al. 2005) observations after the launch of the SOlar Radiation and Climate Experiment (SORCE) (Rottman 2005). The prescribed observational composite is the average of two individual, composite records each constructed separately using different bias corrections and assumptions about the uncertainties and repeatability of the extant solar irradiance database and each first, separately normalized to the SORCE TIM absolute scale by regression analysis prior to the averaging. Fröhlich and Lean (1998) describe the Physikalisch-Meteorologisches Observatorium Davos (PMOD) composite and Willson and Mordvinov (2003) the Active Cavity Radiometer Irradiance Monitor (ACRIM) composite. 
+
+Then, the subset of the average record that overlaps in time with SORCE TIM is replaced by the TIM observations and the assigned uncertainty is that reported by SORCE TIM.  For the period of the record prior to the SORCE TIM epoch, the assigned uncertainties are equal to the differences in the PMOD and ACRIM composites (after their normalization to the SORCE TIM scale) plus an added value of 0.5 W m-2 that is the uncertainty of the SORCE TIM’s absolute scale.  The Solar Irradiance CDR TSI observational composite will be extended in the future by 
+appending TIM observations and their uncertainties.
+
+Since exposure and time-dependent degradation is a challenging problem that requires refinements throughout the lifetime of a mission, the time period in the observational TSI composite comprised of TIM data will always trace to the most up-to-date record of the published instrument data.  The versions of all data that comprise the observational composite will be written to the file header.
+
+References:
+Coddington, O., and J. Lean (2015), Climate Algorithm Theoretical Basis Document Total Solar Irradiance and Solar Spectral Irradiance, CRDP-ATBD-0612, Available from http://www1.ncdc.noaa.gov/pub/data/sds/cdr/CDRs/Solar%20Spectral%20Irradiance/AlgorithmDescription.pdf (Accessed 4 October 2015).
+Coddington, O., J. Lean, P. Pilewskie, M. Snow, and D. Lindholm (2015), A solar irradiance climate data record, BAMS, (in review).
+Fröhlich, C., and J. Lean, 1998: The Sun’s Total Irradiance: Cycles, Trends and Related Climate Change Uncertainties since 1976, Geophys. Res. Lett., 25, 23 4377-4380.
+Kopp, G., G. Lawrence, and G. Rottman, 2005: The Total Irradiance Monitor (TIM): Science Results. Sol. Phys., 230, 129-139.
+Rottman, G., 2005: The SORCE mission, Sol. Phys., 230, 7-25.
+Willson, R. D., and A. V. Mordvinov, 2003: Secular total solar irradiance trend during solar cycles 21-23. Geophys. Res. Lett., 30, doi:10.1029/2002GL016038.
