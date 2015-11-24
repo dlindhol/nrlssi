@@ -17,8 +17,18 @@ function write_tsi_composite, ymd1, ymd2, output_dir=output_dir
   file += ".txt" 
   openw, unit, file, /get_lun
 
-  ;Print header
-  header = 'time (yyyy-MM-dd), TSI (W m-2), uncertainty (W m-2)'
+  ;Print metadata header
+  openr, hdr, 'data/observational_composite/observed-tsi-composite-hdr.txt', /get_lun
+  line = ''
+  while not eof(hdr) do begin
+    readf, hdr, line
+    printf, unit, '; ' + line
+  endwhile
+  free_lun, hdr
+
+  ;Print data header
+  printf, unit, ';' ;empty line
+  header = '; time (yyyy-MM-dd), TSI (W m-2), uncertainty (W m-2)'
   printf, unit, header
   
   ;Loop over samples (days) and print row of csv data.
